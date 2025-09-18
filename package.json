@@ -1,0 +1,25 @@
+{
+  "name": "projeto-central-compras",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArthurLumertzG/projeto-central-compras.git"
+  },
+  "author": "GurizesTech",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ArthurLumertzG/projeto-central-compras/issues"
+  },
+  "homepage": "https://github.com/ArthurLumertzG/projeto-central-compras#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0",
+    "uuid": "^13.0.0"
+  }
+}
