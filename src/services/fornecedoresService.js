@@ -1,6 +1,7 @@
 const FornecedoresModel = require("../models/fornecedoresModel");
 const DefaultResponseDto = require("../dtos/defaultResponse.dto");
 const AppError = require("../errors/AppError");
+const { validateFornecedor } = require("../utils/validator");
 
 const { v4: uuidv4 } = require("uuid");
 
@@ -27,15 +28,11 @@ class FornecedoresService {
   }
 
   async create(fornecedor) {
-    if (!fornecedor) {
-      throw new AppError("Fornecedor não informado", 400);
-    }
+    const fornecedorError = validateFornecedor(fornecedor);
+    if (fornecedorError) throw new AppError(fornecedorError, 400);
 
-    const { nome, categoria, email, telefone, status } = fornecedor;
-    if (!(nome && categoria && email && telefone && status)) {
-      throw new AppError("Há dados faltantes.", 400);
-    }
-
+    fornecedor.email = fornecedor.email.toLowerCase();
+    const { email } = fornecedor;
     const existingFornecedor = await this.fornecedoresModel.selectByEmail(email);
 
     if (existingFornecedor) {
@@ -56,16 +53,16 @@ class FornecedoresService {
   async update(id, fornecedor) {
     const updatedFornecedor = await this.fornecedoresModel.update(id, fornecedor);
     if (!updatedFornecedor) {
-      throw new AppError(`Fornecedor com o id ${id} não encontrado`, 404);
+      throw new AppError(`Fornecedor não encontrado`, 404);
     }
 
     return new DefaultResponseDto(true, "Fornecedor atualizado com sucesso", updatedFornecedor);
   }
 
   async delete(id) {
-    const deletedFornecedor = await this.fornecedoresModel.delete(id);
-    if (!deletedFornecedor) {
-      throw new AppError(`Fornecedor com o id ${id} não encontrado`, 404);
+    const fornecedorIsDeleted = await this.fornecedoresModel.delete(id);
+    if (!fornecedorIsDeleted) {
+      throw new AppError(`Fornecedor não encontrado`, 404);
     }
 
     return new DefaultResponseDto(true, "Fornecedor deletado com sucesso", null);

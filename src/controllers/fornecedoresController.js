@@ -29,7 +29,7 @@ class FornecedoresController {
   async delete(req, res) {
     const { id } = req.params;
     const response = await fornecedoresService.delete(id);
-    res.status(204).json(response);
+    res.status(200).json(response);
   }
 }
 

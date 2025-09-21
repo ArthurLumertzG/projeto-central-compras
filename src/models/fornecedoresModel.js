@@ -71,6 +71,7 @@ class FornecedoresModel {
 
     fornecedores.splice(deletedFornecedorIndex, 1);
     await fs.writeFile(this.file, JSON.stringify(fornecedores, null, 2), "utf8");
+    return true;
   }
 }
 

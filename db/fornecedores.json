@@ -1,10 +1,18 @@
 [
   {
-    "id": "b6d09d26-373f-4edc-8b51-1e501bc41224",
-    "nome": "Carlos",
+    "id": "a9383549-13f1-449a-9b0a-6c72fce4dcee",
+    "nome": "Carlos1",
     "categoria": "categoriafoda",
     "email": "teste@teste.com",
     "telefone": "51999999",
+    "status": "on"
+  },
+  {
+    "id": "480305b1-5736-484b-94bd-beb92b6c840c",
+    "nome": "teste update",
+    "categoria": "outra categoria mto foda",
+    "email": "teste3@teste.com",
+    "telefone": "1239999999",
     "status": "on"
   }
 ]
