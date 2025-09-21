@@ -1,8 +1,10 @@
-{
-  "id": "83cfd604-4674-4637-98bb-2470d0865815",
-  "nome": "sfdsa",
-  "categoria": "asdfdsaf",
-  "email": "sadfdff",
-  "telefone": 123456,
-  "status": "on"
-}
+[
+  {
+    "id": "b6d09d26-373f-4edc-8b51-1e501bc41224",
+    "nome": "Carlos",
+    "categoria": "categoriafoda",
+    "email": "teste@teste.com",
+    "telefone": "51999999",
+    "status": "on"
+  }
+]

@@ -1,27 +1,12 @@
 const express = require("express");
 const router = express.Router();
+const fornecedoresController = require("../controllers/fornecedoresController");
+const asyncHandler = require("../middlewares/asyncHandler");
 
-const FornecedoresService = require("../services/fornecedoresService");
-const fornecedoresService = new FornecedoresService();
-
-router.get("/", (req, res) => {
-  res.send(fornecedoresService.getAll());
-});
-
-router.get("/:id", (req, res) => {
-  const { id } = req.params;
-  res.send("Mostrar funcionário com id: " + id);
-});
-
-router.post("/", async (req, res) => {
-  try {
-    const fornecedor = req.body;
-    const result = await fornecedoresService.createFornecedor(fornecedor);
-    return res.status(201).json({ data: result });
-  } catch (err) {
-    console.error("Erro: ", err);
-    return res.status(500).json({ error: "Erro interno do servidor " + err });
-  }
-});
+router.get("/", asyncHandler(fornecedoresController.getAll));
+router.get("/:id", asyncHandler(fornecedoresController.getById));
+router.post("/", asyncHandler(fornecedoresController.create));
+router.patch("/:id", asyncHandler(fornecedoresController.update));
+router.delete("/:id", asyncHandler(fornecedoresController.delete));
 
 module.exports = router;
