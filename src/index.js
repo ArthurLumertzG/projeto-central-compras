@@ -1,8 +1,9 @@
 const express = require("express");
 const app = express();
-const port = 3000;
 const errorHandler = require("./middlewares/errorHandler.js");
 const AppError = require("./errors/AppError.js");
+
+const port = 3000;
 
 const fornecedoresRoutes = require("./routes/fornecedoresRoutes.js");
 
