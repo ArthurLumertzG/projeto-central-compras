@@ -14,5 +14,13 @@
     "email": "teste3@teste.com",
     "telefone": "1239999999",
     "status": "on"
+  },
+  {
+    "id": "000a3f5c-f0e1-4d9c-a68b-37c64c6f0a96",
+    "nome": "Arthur Lumertz",
+    "categoria": "MDF",
+    "email": "arthur@teste.com",
+    "telefone": "5199999987",
+    "status": "on"
   }
 ]
