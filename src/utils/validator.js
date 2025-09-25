@@ -10,7 +10,10 @@ const validateFornecedor = (fornecedor) => {
     return `Campos obrigatórios faltando: ${fieldsMissing.join(", ")}`;
   }
 
-  if (fornecedor.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fornecedor.email)) {
+  if (
+    fornecedor.email &&
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fornecedor.email)
+  ) {
     return "Email inválido";
   }
 
@@ -21,4 +24,6 @@ const validateFornecedor = (fornecedor) => {
   return null;
 };
 
-module.exports = { validateFornecedor };
+const validateProduto = (produto) => {};
+
+module.exports = { validateFornecedor, validateProduto };
