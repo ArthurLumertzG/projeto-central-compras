@@ -5,6 +5,7 @@ const asyncHandler = require("../middlewares/asyncHandler");
 
 router.get("/", asyncHandler(fornecedoresController.getAll));
 router.get("/:id", asyncHandler(fornecedoresController.getById));
+router.get("/email/:email", asyncHandler(fornecedoresController.getByEmail));
 router.post("/", asyncHandler(fornecedoresController.create));
 router.patch("/:id", asyncHandler(fornecedoresController.update));
 router.delete("/:id", asyncHandler(fornecedoresController.delete));
@@ -90,6 +91,39 @@ module.exports = router;
  *         schema:
  *           type: string
  *         description: ID do fornecedor
+ *     responses:
+ *       200:
+ *         description: Fornecedor encontrado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Fornecedor encontrado com sucesso"
+ *                 data:
+ *                   $ref: '#/components/schemas/Fornecedor'
+ *       404:
+ *         description: Fornecedor não encontrado
+ */
+
+/**
+ * @swagger
+ * /fornecedores/email/{email}:
+ *   get:
+ *     summary: Busca um fornecedor pelo email
+ *     tags: [Fornecedores]
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email do fornecedor
  *     responses:
  *       200:
  *         description: Fornecedor encontrado com sucesso
