@@ -1,0 +1,20 @@
+[
+  {
+    "id": "9d9b45be-8c28-4692-9222-b4d59dd59107",
+    "nome": "Carlos Webber",
+    "email": "usuario@teste.com",
+    "user": "carlos.webber",
+    "password": "$2b$10$fXnk94XAGP/5Smpwbi1aie0.DflfYMlow/P4EklEKjyIvOKNt7/IK",
+    "level": "admin",
+    "status": "on"
+  },
+  {
+    "id": "94b63f6d-cc46-4fc3-a0dd-3b754d9c8c5d",
+    "nome": "miguel",
+    "email": "usuario@teste.com",
+    "user": "carlos.webber",
+    "password": "$2b$10$KM4T1F651.WJIYiROhrGSOf04sro4mG43Y3GkNzBCQluwfp9mjxBG",
+    "level": "admin",
+    "status": "on"
+  }
+]

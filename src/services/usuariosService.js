@@ -1,12 +1,15 @@
 const UsuariosModel = require("../models/usuariosModel");
 const DefaultResponseDto = require("../dtos/defaultResponse.dto");
 const AppError = require("../errors/AppError");
+const { validateUsuario } = require("../utils/validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const process = require("process");
-const { validadeUsuario } = require("../utils/validator");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const { v4: uuidv4 } = require("uuid");
+const jwtSecret = process.env.JWT_SECRET;
 
 class UsuariosService {
   constructor() {
@@ -25,9 +28,21 @@ class UsuariosService {
       throw new AppError("Usuário ou senha inválidos", 401);
     }
 
-    const token = jwt.sign({ sub: usuario.id, email: usuario.email, level: usuario.level, status: usuario.status }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    if (usuario.status !== "on") {
+      throw new AppError("Usuário inativo. Contate o administrador.", 403);
+    }
 
-    return new DefaultResponseDto(true, "Login realizado com sucesso", token);
+    const jwtPayload = {
+      sub: usuario.id,
+      nome: usuario.nome,
+      email: usuario.email,
+      level: usuario.level,
+      status: usuario.status,
+    };
+
+    const token = jwt.sign(jwtPayload, jwtSecret, { expiresIn: "1h" });
+
+    return new DefaultResponseDto(true, "Login realizado com sucesso", { token });
   }
 
   async getAll() {
@@ -36,7 +51,9 @@ class UsuariosService {
       return new DefaultResponseDto(true, "Nenhum usuário encontrado", []);
     }
 
-    return new DefaultResponseDto(true, "Usuários encontrados com sucesso", usuarios);
+    const usuariosWithoutPasswords = usuarios.map(({ password, ...rest }) => rest);
+
+    return new DefaultResponseDto(true, "Usuários encontrados com sucesso", usuariosWithoutPasswords);
   }
 
   async getById(id) {
@@ -44,7 +61,10 @@ class UsuariosService {
     if (!usuario) {
       throw new AppError("Usuário não encontrado", 404);
     }
-    return new DefaultResponseDto(true, "Usuário encontrado com sucesso", usuario);
+
+    const { password, ...usuarioWithoutPassword } = usuario;
+
+    return new DefaultResponseDto(true, "Usuário encontrado com sucesso", usuarioWithoutPassword);
   }
 
   async getByEmail(email) {
@@ -52,11 +72,14 @@ class UsuariosService {
     if (!usuario) {
       throw new AppError("Usuário não encontrado", 404);
     }
-    return new DefaultResponseDto(true, "Usuário encontrado com sucesso", usuario);
+
+    const { password, ...usuarioWithoutPassword } = usuario;
+
+    return new DefaultResponseDto(true, "Usuário encontrado com sucesso", usuarioWithoutPassword);
   }
 
   async create(usuario) {
-    const usuarioError = validadeUsuario(usuario);
+    const usuarioError = validateUsuario(usuario);
     if (usuarioError) throw new AppError(usuarioError, 400);
 
     usuario.email = usuario.email.toLowerCase();
@@ -72,26 +95,64 @@ class UsuariosService {
 
     const hashedPassword = await bcrypt.hash(usuario.password, saltRounds);
 
+    const { confirmedPassword, ...restUsuario } = usuario;
     const newUsuario = {
       id: newId,
+      ...restUsuario,
       password: hashedPassword,
-      ...usuario,
     };
 
     const createdUsuario = await this.usuariosModel.create(newUsuario);
 
-    const token = jwt.sign({ sub: createdUsuario.id, email: createdUsuario.email, level: createdUsuario.level, status: createdUsuario.status }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const jwtPayload = {
+      sub: createdUsuario.id,
+      nome: createdUsuario.nome,
+      email: createdUsuario.email,
+      level: createdUsuario.level,
+      status: createdUsuario.status,
+    };
 
-    return new DefaultResponseDto(true, "Usuário criado com sucesso", token);
+    const token = jwt.sign(jwtPayload, jwtSecret, { expiresIn: "1h" });
+
+    return new DefaultResponseDto(true, "Usuário criado com sucesso", { token });
   }
 
   async update(id, usuario) {
-    const updatedUsuario = await this.usuariosModel.update(id, usuario);
-    if (!updatedUsuario) {
-      throw new AppError(`Usuário não encontrado`, 404);
+    const originalUsuario = await this.usuariosModel.selectById(id);
+    if (!originalUsuario) {
+      throw new AppError("Usuário não encontrado", 404);
     }
 
-    return new DefaultResponseDto(true, "Usuário atualizado com sucesso", updatedUsuario);
+    if (originalUsuario.id !== usuario.id) {
+      throw new AppError("Não é permitido alterar o ID do usuário", 403);
+    }
+
+    if (originalUsuario.level === "user" && usuario.level === "admin") {
+      throw new AppError("Usuário comum não pode se tornar admin", 403);
+    }
+
+    if (usuario.password) {
+      if (usuario.password.length < 6) {
+        throw new AppError("A senha deve ter pelo menos 6 caracteres", 400);
+      }
+
+      if (usuario.password !== usuario.confirmedPassword) {
+        throw new AppError("As senhas não coincidem", 400);
+      }
+
+      const saltRounds = 10;
+      usuario.password = await bcrypt.hash(usuario.password, saltRounds);
+    }
+
+    const { confirmedPassword, ...updateFields } = usuario;
+
+    const updatedUsuario = await this.usuariosModel.update(id, updateFields);
+    if (!updatedUsuario) {
+      throw new AppError("Usuário não encontrado", 404);
+    }
+
+    const { password, ...usuarioWithoutPassword } = updatedUsuario;
+    return new DefaultResponseDto(true, "Usuário atualizado com sucesso", usuarioWithoutPassword);
   }
 
   async delete(id) {

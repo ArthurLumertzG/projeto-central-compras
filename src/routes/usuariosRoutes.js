@@ -81,6 +81,36 @@ module.exports = router;
  *           format: password
  *           description: Senha do usuário
  *           example: "senha123"
+ *     UsuarioPublic:
+ *       type: object
+ *       description: Representa um usuário exposto em respostas (sem campos sensíveis).
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *           description: ID único do usuário
+ *           example: "a9383549-13f1-449a-9b0a-6c72fce4dcee"
+ *         nome:
+ *           type: string
+ *           description: Nome do usuário
+ *           example: "Carlos Webber"
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: Email do usuário
+ *           example: "usuario@teste.com"
+ *         user:
+ *           type: string
+ *           description: Nome de usuário
+ *           example: "carlos.webber"
+ *         level:
+ *           type: string
+ *           description: Nível de acesso do usuário
+ *           example: "admin"
+ *         status:
+ *           type: string
+ *           description: Status do usuário
+ *           example: "on"
  */
 
 /**
@@ -110,9 +140,12 @@ module.exports = router;
  *                   type: string
  *                   example: "Login realizado com sucesso"
  *                 data:
- *                   type: string
- *                   description: JWT Token
- *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOTM4MzU0OS0xM2YxLTQ0OWEtOWIwYS02YzcyZmNlNGRjZWUiLCJlbWFpbCI6InVzdWFyaW9AdGVzdGUuY29tIiwibGV2ZWwiOiJhZG1pbiIsInN0YXR1cyI6Im9uIiwiaWF0IjoxNjk1NjYzNjAwLCJleHAiOjE2OTU2NjcyMDB9.abcdefghijklmnopqrstuvwxyz123456"
+ *                   type: object
+ *                   properties:
+ *                     token:
+ *                       type: string
+ *                       description: JWT Token
+ *                       example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOTM4MzU0OS0xM2YxLTQ0OWEtOWIwYS02YzcyZmNlNGRjZWUiLCJlbWFpbCI6InVzdWFyaW9AdGVzdGUuY29tIiwibGV2ZWwiOiJhZG1pbiIsInN0YXR1cyI6Im9uIiwiaWF0IjoxNjk1NjYzNjAwLCJleHAiOjE2OTU2NjcyMDB9.abcdefghijklmnopqrstuvwxyz123456"
  *       401:
  *         description: Usuário ou senha inválidos
  *         content:
@@ -151,7 +184,7 @@ module.exports = router;
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Usuario'
+ *                     $ref: '#/components/schemas/UsuarioPublic'
  */
 
 /**
@@ -182,7 +215,7 @@ module.exports = router;
  *                   type: string
  *                   example: "Usuário encontrado com sucesso"
  *                 data:
- *                   $ref: '#/components/schemas/Usuario'
+ *                   $ref: '#/components/schemas/UsuarioPublic'
  *       404:
  *         description: Usuário não encontrado
  */
@@ -215,7 +248,7 @@ module.exports = router;
  *                   type: string
  *                   example: "Usuário encontrado com sucesso"
  *                 data:
- *                   $ref: '#/components/schemas/Usuario'
+ *                   $ref: '#/components/schemas/UsuarioPublic'
  *       404:
  *         description: Usuário não encontrado
  */
@@ -247,9 +280,12 @@ module.exports = router;
  *                   type: string
  *                   example: "Usuário criado com sucesso"
  *                 data:
- *                   type: string
- *                   description: JWT Token
- *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                   type: object
+ *                   properties:
+ *                     token:
+ *                       type: string
+ *                       description: JWT Token
+ *                       example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
  *       400:
  *         description: Dados inválidos
  *       409:
@@ -290,7 +326,7 @@ module.exports = router;
  *                   type: string
  *                   example: "Usuário atualizado com sucesso"
  *                 data:
- *                   $ref: '#/components/schemas/Usuario'
+ *                   $ref: '#/components/schemas/UsuarioPublic'
  *       404:
  *         description: Usuário não encontrado
  */
