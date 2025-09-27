@@ -32,13 +32,7 @@ class UsuariosService {
       throw new AppError("Usuário inativo. Contate o administrador.", 403);
     }
 
-    const jwtPayload = {
-      sub: usuario.id,
-      nome: usuario.nome,
-      email: usuario.email,
-      level: usuario.level,
-      status: usuario.status,
-    };
+    const jwtPayload = this.createJwtPayload(usuario);
 
     const token = jwt.sign(jwtPayload, jwtSecret, { expiresIn: "1h" });
 
@@ -104,13 +98,7 @@ class UsuariosService {
 
     const createdUsuario = await this.usuariosModel.create(newUsuario);
 
-    const jwtPayload = {
-      sub: createdUsuario.id,
-      nome: createdUsuario.nome,
-      email: createdUsuario.email,
-      level: createdUsuario.level,
-      status: createdUsuario.status,
-    };
+    const jwtPayload = this.createJwtPayload(createdUsuario);
 
     const token = jwt.sign(jwtPayload, jwtSecret, { expiresIn: "1h" });
 
@@ -129,6 +117,11 @@ class UsuariosService {
 
     if (originalUsuario.level === "user" && usuario.level === "admin") {
       throw new AppError("Usuário comum não pode se tornar admin", 403);
+    }
+
+    if (usuario.email && usuario.email !== originalUsuario.email) {
+      const emailExists = await this.usuariosModel.selectByEmail(usuario.email);
+      if (emailExists) throw new AppError("Email já cadastrado", 409);
     }
 
     if (usuario.password) {
@@ -161,6 +154,16 @@ class UsuariosService {
       throw new AppError("Usuário não encontrado", 404);
     }
     return new DefaultResponseDto(true, "Usuário deletado com sucesso", null);
+  }
+
+  createJwtPayload(usuario) {
+    return {
+      sub: usuario.id,
+      nome: usuario.nome,
+      email: usuario.email,
+      level: usuario.level,
+      status: usuario.status,
+    };
   }
 }
 
