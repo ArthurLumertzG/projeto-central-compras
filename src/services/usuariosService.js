@@ -111,7 +111,7 @@ class UsuariosService {
       throw new AppError("Usuário não encontrado", 404);
     }
 
-    if (originalUsuario.id !== usuario.id) {
+    if (usuario.id && originalUsuario.id !== usuario.id) {
       throw new AppError("Não é permitido alterar o ID do usuário", 403);
     }
 

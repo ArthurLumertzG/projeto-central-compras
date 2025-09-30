@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const storesController = require("../controllers/storesController");
+const storesController = require("../controllers/storeController");
 const asyncHandler = require("../middlewares/asyncHandler");
 
 router.get("/", asyncHandler(storesController.getAll));
@@ -216,4 +216,3 @@ module.exports = router;
  *       404:
  *         description: Loja não encontrada
  */
-

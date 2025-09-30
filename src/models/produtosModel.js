@@ -41,12 +41,7 @@ class ProdutosModel {
   async selectByName(nome) {
     const produtos = await this.select();
 
-    return (
-      produtos.find(
-        (produto) =>
-          produto?.nome?.trim()?.toLowerCase() === nome?.trim()?.toLowerCase()
-      ) || null
-    );
+    return produtos.find((produto) => produto?.nome?.trim()?.toLowerCase() === nome?.trim()?.toLowerCase()) || null;
   }
 
   async create(produto) {
@@ -59,9 +54,7 @@ class ProdutosModel {
 
   async update(id, produto) {
     const produtos = await this.select();
-    const updatedProdutoIndex = produtos.findIndex(
-      (produto) => produto.id === id
-    );
+    const updatedProdutoIndex = produtos.findIndex((produto) => produto.id === id);
 
     if (updatedProdutoIndex === -1) return null;
 
@@ -76,9 +69,7 @@ class ProdutosModel {
 
   async delete(id) {
     const produtos = await this.select();
-    const deletedProdutoIndex = produtos.findIndex(
-      (produto) => produto.id === id
-    );
+    const deletedProdutoIndex = produtos.findIndex((produto) => produto.id === id);
 
     if (deletedProdutoIndex === -1) return null;
 

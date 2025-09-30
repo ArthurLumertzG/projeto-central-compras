@@ -1,0 +1,17 @@
+[
+  {
+    "id": "c1a2f3d4-5b6c-789d-012e-345f6789abcd",
+    "store_id": "7a6cc1282c5f6ec0235acd2bfa780145aa2a67fd",
+    "item": [
+      {
+        "product_id": "9b8a7c6d-5e4f-3210-1234-abcdef987654",
+        "quantity": 2,
+        "campaign_id": "3d2c1b0a-9f8e-7654-3210-fedcba987654",
+        "unit_price": 150
+      }
+    ],
+    "total_amount": 300,
+    "status": "Pending",
+    "date": "2023-08-15T16:00:00Z"
+  }
+]

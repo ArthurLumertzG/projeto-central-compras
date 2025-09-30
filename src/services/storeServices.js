@@ -1,4 +1,4 @@
-const StoresModel = require("../models/storesModel");
+const StoresModel = require("../models/storeModel");
 const DefaultResponseDto = require("../dtos/defaultResponse.dto");
 const AppError = require("../errors/AppError");
 const { validateStore } = require("../utils/validator");

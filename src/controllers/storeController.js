@@ -1,4 +1,4 @@
-const StoresService = require("../services/storesService");
+const StoresService = require("../services/storeServices");
 const storesService = new StoresService();
 
 class StoresController {

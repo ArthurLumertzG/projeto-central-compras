@@ -1,65 +1,68 @@
-const fs = require("fs").promises;
-const path = require("path");
+const PedidosModel = require("../models/pedidosModel");
+const AppError = require("../errors/AppError");
+const DefaultResponseDto = require("../dtos/defaultResponse.dto");
+const pedidosModel = new PedidosModel();
+
+const { v4: uuidv4 } = require("uuid");
 
 class PedidosService {
-    constructor() {
-        this.filePath = path.join(__dirname, "../data/order.json");
+  constructor() {}
+
+  async getAll() {
+    const data = await pedidosModel.select();
+    return new DefaultResponseDto(true, "Pedidos encontrados com sucesso", data);
+  }
+
+  async getById(id) {
+    const pedido = await pedidosModel.selectById(id);
+    if (!pedido) throw new AppError("Pedido não encontrado", 404);
+    return new DefaultResponseDto(true, "Pedido encontrado com sucesso", pedido);
+  }
+
+  async getByDate(date) {
+    const pedidos = await pedidosModel.selectByDate(date);
+    if (!pedidos || pedidos.length === 0) {
+      throw new AppError("Nenhum pedido encontrado para a data informada", 404);
     }
+    return new DefaultResponseDto(true, "Pedidos encontrados com sucesso", pedidos);
+  }
 
-    async getAll() {
-        const data = await fs.readFile(this.filePath, "utf-8");
-        return JSON.parse(data || "[]");
-    }
+  async create(pedido) {
+    const pedidos = await pedidosModel.select();
 
-    async getById(id) {
-        const pedidos = await this.getAll();
-        return pedidos.find((pedido) => pedido.id === id);
-    }
+    const newId = uuidv4();
 
-    async getByDate(date) {
-        const pedidos = await this.getAll();
-        return pedidos.filter((pedido) => pedido.date.startsWith(date));
-    }
+    const newPedido = {
+      id: newId,
+      ...pedido,
+      date: pedido.date || new Date().toISOString(),
+    };
 
-    async create(pedido) {
-        const pedidos = await this.getAll();
+    pedidos.push(newPedido);
+    await pedidosModel.create(newPedido);
+    return new DefaultResponseDto(true, "Pedido criado com sucesso", newPedido);
+  }
 
-        const newPedido = {
-            id: crypto.randomUUID(),
-            ...pedido,
-            date: pedido.date || new Date().toISOString(),
-        };
+  async update(id, updateData) {
+    const pedido = await pedidosModel.selectById(id);
+    if (!pedido) throw new AppError("Pedido não encontrado", 404);
 
-        pedidos.push(newPedido);
-        await fs.writeFile(this.filePath, JSON.stringify(pedidos, null, 2));
-        return newPedido;
-    }
+    const updatedPedido = {
+      ...pedido,
+      ...updateData,
+    };
 
-    async update(id, updateData) {
-        const pedidos = await this.getAll();
-        const index = pedidos.findIndex((pedido) => pedido.id === id);
+    await pedidosModel.update(id, updatedPedido);
+    return new DefaultResponseDto(true, "Pedido atualizado com sucesso", updatedPedido);
+  }
 
-        if (index === -1) return null;
+  async delete(id) {
+    const pedido = await pedidosModel.selectById(id);
+    if (!pedido) throw new AppError("Pedido não encontrado", 404);
 
-        pedidos[index] = {
-            ...pedidos[index],
-            ...updateData,
-        };
-
-        await fs.writeFile(this.filePath, JSON.stringify(pedidos, null, 2));
-        return pedidos[index];
-    }
-
-    async delete(id) {
-        const pedidos = await this.getAll();
-        const index = pedidos.findIndex((pedido) => pedido.id === id);
-
-        if (index === -1) return null;
-
-        const deletedPedido = pedidos.splice(index, 1);
-        await fs.writeFile(this.filePath, JSON.stringify(pedidos, null, 2));
-        return deletedPedido[0];
-    }
+    await pedidosModel.delete(id);
+    return new DefaultResponseDto(true, "Pedido deletado com sucesso", pedido);
+  }
 }
 
 module.exports = PedidosService;

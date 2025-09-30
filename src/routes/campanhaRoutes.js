@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const campanhasController = require("../controllers/campanhasController");
+const campanhasController = require("../controllers/campanhaController");
 const asyncHandler = require("../middlewares/asyncHandler");
 
 router.get("/", asyncHandler(campanhasController.getAll));

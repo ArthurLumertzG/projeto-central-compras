@@ -1,4 +1,4 @@
-const CampanhasService = require("../services/campanhasService");
+const CampanhasService = require("../services/campanhaService");
 const campanhasService = new CampanhasService();
 
 class CampanhasController {

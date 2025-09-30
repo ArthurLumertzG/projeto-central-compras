@@ -1,34 +1,10 @@
 [
   {
-    "id": "a9383549-13f1-449a-9b0a-6c72fce4dcee",
-    "nome": "Carlos1",
-    "categoria": "categoriafoda",
-    "email": "teste@teste.com",
-    "telefone": "51999999",
-    "status": "on"
-  },
-  {
-    "id": "480305b1-5736-484b-94bd-beb92b6c840c",
-    "nome": "teste update",
-    "categoria": "outra categoria mto foda",
-    "email": "teste3@teste.com",
-    "telefone": "1239999999",
-    "status": "on"
-  },
-  {
-    "id": "000a3f5c-f0e1-4d9c-a68b-37c64c6f0a96",
-    "nome": "Arthur Lumertz",
-    "categoria": "MDF",
-    "email": "arthur@teste.com",
-    "telefone": "5199999987",
-    "status": "on"
-  },
-  {
-    "id": "e4158232-8fe5-46f1-826b-b0b74f8c86cf",
-    "nome": "Carlos Webber",
-    "categoria": "Computadores",
-    "email": "carlos.webber@exemplo.com",
-    "telefone": "51999999999",
+    "id": "a1e09865-77ec-44b2-8bfe-388cdde94df6",
+    "nome": "Arthur Gabriel Davi Kevin",
+    "categoria": "Futebol",
+    "email": "futebol@teste.com",
+    "telefone": "5199999929",
     "status": "on"
   }
 ]
