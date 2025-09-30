@@ -7,5 +7,23 @@
     "estoque": 10,
     "fornecedor_id": "e4158232-8fe5-46f1-826b-b0b74f8c86cf",
     "status": "ativo"
+  },
+  {
+    "id": "b2738b5c-5a8a-4e8b-98c0-fc8c1e7a91d1",
+    "nome": "Notebook normal",
+    "descricao": "i7, 16GB RAM, 512GB SSD",
+    "preco": 4599.9,
+    "estoque": 25,
+    "fornecedor_id": "a9383549-13f1-449a-9b0a-6c72fce4dcee",
+    "status": "ativo"
+  },
+  {
+    "id": "42a7f1af-e08c-406d-9d5d-affb8630edf9",
+    "nome": "PC",
+    "descricao": "Pc de mesa",
+    "preco": 49999.9,
+    "estoque": 25,
+    "fornecedor_id": "a9383549-13f1-449a-9b0a-6c72fce4dcee",
+    "status": "ativo"
   }
 ]

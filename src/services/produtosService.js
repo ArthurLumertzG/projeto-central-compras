@@ -53,7 +53,6 @@ class ProdutosService {
     const produtoError = await validateProduto(produto);
     if (produtoError) throw new AppError(produtoError, 400);
 
-    produto.nome = produto.nome.toLowerCase();
     const { nome } = produto;
     const existingProduto = await this.produtosModel.selectByName(nome);
 

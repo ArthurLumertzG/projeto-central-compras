@@ -20,8 +20,8 @@ module.exports = router;
  *       type: object
  *       required:
  *         - nome
- *         - descrição
- *         - preço
+ *         - descricao
+ *         - preco
  *         - estoque
  *         - fornecedor_id
  *         - status
@@ -36,11 +36,11 @@ module.exports = router;
  *           type: string
  *           description: Nome do produto
  *           example: "Notebook Gamer"
- *         descrição:
+ *         descricao:
  *           type: string
  *           description: Descrição detalhada do produto
  *           example: "Notebook com processador i7, 16GB RAM, 512GB SSD"
- *         preço:
+ *         preco:
  *           type: number
  *           format: float
  *           description: Preço do produto
