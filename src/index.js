@@ -9,6 +9,7 @@ const port = 3000;
 
 const fornecedoresRoutes = require("./routes/fornecedoresRoutes.js");
 const produtosRoutes = require("./routes/produtosRoutes.js");
+const usuariosRoutes = require("./routes/usuariosRoutes.js");
 
 const swaggerOptions = {
   definition: {
@@ -45,6 +46,8 @@ app.get("/", (req, res) => {
 
 app.use("/fornecedores", fornecedoresRoutes);
 app.use("/produtos", produtosRoutes);
+app.use("/usuarios", usuariosRoutes);
+
 
 app.use((req, res, next) => {
   next(new AppError(`Rota ${req.originalUrl} não encontrada`, 404));

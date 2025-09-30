@@ -13,6 +13,12 @@ class FornecedoresController {
     res.status(200).json(response);
   }
 
+  async getByEmail(req, res) {
+    const { email } = req.params;
+    const response = await fornecedoresService.getByEmail(email);
+    res.status(200).json(response);
+  }
+
   async create(req, res) {
     const fornecedor = req.body;
     const response = await fornecedoresService.create(fornecedor);

@@ -24,6 +24,7 @@ const validateFornecedor = (fornecedor) => {
   return null;
 };
 
+
 const validateProduto = async (produto) => {
   if (!produto) {
     return "Produto não informado";
@@ -40,9 +41,19 @@ const validateProduto = async (produto) => {
 
   const fieldsMissing = requiredFields.filter((field) => !produto[field]);
 
+const validateUsuario = (usuario) => {
+  if (!usuario) {
+    return "Usuário não informado";
+  }
+
+  const requiredFields = ["nome", "email", "user", "password", "confirmedPassword", "level", "status"];
+  const fieldsMissing = requiredFields.filter((field) => !usuario[field]);
+>
+
   if (fieldsMissing.length > 0) {
     return `Campos obrigatórios faltando: ${fieldsMissing.join(", ")}`;
   }
+
 
   const FornecedoresService = require("../services/fornecedoresService");
   const fornecedoresService = new FornecedoresService();
@@ -60,9 +71,30 @@ const validateProduto = async (produto) => {
 
   if (!fornecedorValido) {
     return "O id de fornecedor informado não existe!";
+
+  if (usuario.password < 6) {
+    return "A senha deve ter pelo menos 6 caracteres";
+  }
+
+  if (usuario.status !== "on" && usuario.status !== "off") {
+    return "Status inválido";
+  }
+
+  if (usuario.level !== "admin" && usuario.level !== "user") {
+    return "Nível inválido";
+  }
+
+  if (usuario.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(usuario.email)) {
+    return "Email inválido";
+  }
+
+  if (usuario.password !== usuario.confirmedPassword) {
+    return "As senhas não coincidem";
+
   }
 
   return null;
 };
 
-module.exports = { validateFornecedor, validateProduto };
+module.exports = { validateFornecedor, validateUsuario, validateProduto };
+
