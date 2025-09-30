@@ -10,7 +10,10 @@ const validateFornecedor = (fornecedor) => {
     return `Campos obrigatórios faltando: ${fieldsMissing.join(", ")}`;
   }
 
-  if (fornecedor.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fornecedor.email)) {
+  if (
+    fornecedor.email &&
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fornecedor.email)
+  ) {
     return "Email inválido";
   }
 
@@ -21,6 +24,23 @@ const validateFornecedor = (fornecedor) => {
   return null;
 };
 
+
+const validateProduto = async (produto) => {
+  if (!produto) {
+    return "Produto não informado";
+  }
+
+  const requiredFields = [
+    "nome",
+    "descricao",
+    "preco",
+    "estoque",
+    "fornecedor_id",
+    "status",
+  ];
+
+  const fieldsMissing = requiredFields.filter((field) => !produto[field]);
+
 const validateUsuario = (usuario) => {
   if (!usuario) {
     return "Usuário não informado";
@@ -28,10 +48,29 @@ const validateUsuario = (usuario) => {
 
   const requiredFields = ["nome", "email", "user", "password", "confirmedPassword", "level", "status"];
   const fieldsMissing = requiredFields.filter((field) => !usuario[field]);
+>
 
   if (fieldsMissing.length > 0) {
     return `Campos obrigatórios faltando: ${fieldsMissing.join(", ")}`;
   }
+
+
+  const FornecedoresService = require("../services/fornecedoresService");
+  const fornecedoresService = new FornecedoresService();
+
+  const response = await fornecedoresService.getAll();
+  const fornecedores = response.data;
+
+  if (!fornecedores || fornecedores.length === 0) {
+    return "Não há fornecedores registrados.";
+  }
+
+  const fornecedorValido = fornecedores.some(
+    (fornecedor) => fornecedor.id == produto.fornecedor_id
+  );
+
+  if (!fornecedorValido) {
+    return "O id de fornecedor informado não existe!";
 
   if (usuario.password < 6) {
     return "A senha deve ter pelo menos 6 caracteres";
@@ -51,9 +90,11 @@ const validateUsuario = (usuario) => {
 
   if (usuario.password !== usuario.confirmedPassword) {
     return "As senhas não coincidem";
+
   }
 
   return null;
 };
 
-module.exports = { validateFornecedor, validateUsuario };
+module.exports = { validateFornecedor, validateUsuario, validateProduto };
+

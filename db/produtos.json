@@ -1,0 +1,11 @@
+[
+  {
+    "id": "124dfac1-f6db-4b60-b0b2-f0e2d4e2bad9",
+    "nome": "mouse com fio",
+    "descricao": "Mouse de conexão 12.4GHz",
+    "preco": 169.9,
+    "estoque": 10,
+    "fornecedor_id": "e4158232-8fe5-46f1-826b-b0b74f8c86cf",
+    "status": "ativo"
+  }
+]
