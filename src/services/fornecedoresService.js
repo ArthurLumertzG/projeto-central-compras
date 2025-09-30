@@ -27,6 +27,14 @@ class FornecedoresService {
     return new DefaultResponseDto(true, "Fornecedor encontrado com sucesso", fornecedor);
   }
 
+  async getByEmail(email) {
+    const fornecedor = await this.fornecedoresModel.selectByEmail(email);
+    if (!fornecedor) {
+      throw new AppError("Fornecedor não encontrado", 404);
+    }
+    return new DefaultResponseDto(true, "Fornecedor encontrado com sucesso", fornecedor);
+  }
+
   async create(fornecedor) {
     const fornecedorError = validateFornecedor(fornecedor);
     if (fornecedorError) throw new AppError(fornecedorError, 400);
