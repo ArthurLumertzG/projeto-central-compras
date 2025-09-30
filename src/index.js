@@ -8,6 +8,7 @@ const swaggerJSDoc = require("swagger-jsdoc");
 const port = 3000;
 
 const fornecedoresRoutes = require("./routes/fornecedoresRoutes.js");
+const produtosRoutes = require("./routes/produtosRoutes.js");
 
 const swaggerOptions = {
   definition: {
@@ -15,7 +16,8 @@ const swaggerOptions = {
     info: {
       title: "API - Central de Compras",
       version: "1.0.0",
-      description: "API para gerenciar fornecedores, produtos e compras. Desenvolvido por GurizesTech (Arthur Lumertz, Carlos Miguel Webber, Davi Valvassori, Gabriel Pereira, Kevin Demétrio)",
+      description:
+        "API para gerenciar fornecedores, produtos e compras. Desenvolvido por GurizesTech (Arthur Lumertz, Carlos Miguel Webber, Davi Valvassori, Gabriel Pereira, Kevin Demétrio)",
       license: {
         name: "GurizesTech License",
       },
@@ -42,6 +44,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/fornecedores", fornecedoresRoutes);
+app.use("/produtos", produtosRoutes);
 
 app.use((req, res, next) => {
   next(new AppError(`Rota ${req.originalUrl} não encontrada`, 404));
@@ -49,6 +52,10 @@ app.use((req, res, next) => {
 app.use(errorHandler);
 
 app.listen(port, () => {
-  console.log(`Projeto Central de Compras está rodando em: http://localhost:${port}`);
-  console.log(`Documentação da API disponível em: http://localhost:${port}/docs`);
+  console.log(
+    `Projeto Central de Compras está rodando em: http://localhost:${port}`
+  );
+  console.log(
+    `Documentação da API disponível em: http://localhost:${port}/docs`
+  );
 });

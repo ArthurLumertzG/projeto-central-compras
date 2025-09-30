@@ -22,5 +22,13 @@
     "email": "arthur@teste.com",
     "telefone": "5199999987",
     "status": "on"
+  },
+  {
+    "id": "e4158232-8fe5-46f1-826b-b0b74f8c86cf",
+    "nome": "Carlos Webber",
+    "categoria": "Computadores",
+    "email": "carlos.webber@exemplo.com",
+    "telefone": "51999999999",
+    "status": "on"
   }
 ]
