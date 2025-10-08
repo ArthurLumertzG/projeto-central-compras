@@ -72,6 +72,57 @@ module.exports = router;
  *           format: date-time
  *           description: Data do pedido
  *           example: "2023-08-15T16:00:00Z"
+ *     PedidoInput:
+ *       type: object
+ *       required:
+ *         - store_id
+ *         - item
+ *         - total_amount
+ *         - status
+ *         - date
+ *       description: Schema para criação e atualização de pedido (sem ID).
+ *       properties:
+ *         store_id:
+ *           type: string
+ *           format: uuid
+ *           description: ID da loja que realizou o pedido
+ *           example: "7a6cc1282c5f6ec0235acd2bfa780145aa2a67fd"
+ *         item:
+ *           type: array
+ *           description: Lista de itens do pedido
+ *           items:
+ *             type: object
+ *             properties:
+ *               product_id:
+ *                 type: string
+ *                 format: uuid
+ *                 example: "9b8a7c6d-5e4f-3210-1234-abcdef987654"
+ *               quantity:
+ *                 type: integer
+ *                 example: 2
+ *               campaign_id:
+ *                 type: string
+ *                 format: uuid
+ *                 example: "3d2c1b0a-9f8e-7654-3210-fedcba987654"
+ *               unit_price:
+ *                 type: number
+ *                 format: float
+ *                 example: 150.00
+ *         total_amount:
+ *           type: number
+ *           format: float
+ *           description: Valor total do pedido
+ *           example: 300.00
+ *         status:
+ *           type: string
+ *           description: Status do pedido
+ *           enum: [Pending, Shipped, Delivered]
+ *           example: "Pending"
+ *         date:
+ *           type: string
+ *           format: date-time
+ *           description: Data do pedido
+ *           example: "2023-08-15T16:00:00Z"
  */
 
 /**
@@ -151,7 +202,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Pedido'
+ *             $ref: '#/components/schemas/PedidoInput'
  *     responses:
  *       201:
  *         description: Pedido criado com sucesso
@@ -181,7 +232,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Pedido'
+ *             $ref: '#/components/schemas/PedidoInput'
  *     responses:
  *       200:
  *         description: Pedido atualizado com sucesso

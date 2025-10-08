@@ -53,6 +53,39 @@ module.exports = router;
  *           type: number
  *           description: Percentual de desconto
  *           example: 20
+ *     CampanhaInput:
+ *       type: object
+ *       required:
+ *         - nome
+ *         - supplier_id
+ *         - start_date
+ *         - end_date
+ *         - discount_percentage
+ *       description: Schema para criação e atualização de campanha (sem ID).
+ *       properties:
+ *         nome:
+ *           type: string
+ *           description: Nome da campanha
+ *           example: "Black Friday"
+ *         supplier_id:
+ *           type: string
+ *           format: uuid
+ *           description: ID do fornecedor vinculado
+ *           example: "7a6cc1282c5f6ec0235acd2bfa780145aa2a67fd"
+ *         start_date:
+ *           type: string
+ *           format: date-time
+ *           description: Data de início da campanha
+ *           example: "2023-11-01 00:00:00"
+ *         end_date:
+ *           type: string
+ *           format: date-time
+ *           description: Data de término da campanha
+ *           example: "2023-11-30 23:59:59"
+ *         discount_percentage:
+ *           type: number
+ *           description: Percentual de desconto
+ *           example: 20
  */
 
 /**
@@ -125,7 +158,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Campanha'
+ *             $ref: '#/components/schemas/CampanhaInput'
  *     responses:
  *       201:
  *         description: Campanha criada com sucesso
@@ -164,7 +197,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Campanha'
+ *             $ref: '#/components/schemas/CampanhaInput'
  *     responses:
  *       200:
  *         description: Campanha atualizada com sucesso

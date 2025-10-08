@@ -38,7 +38,6 @@ class CampanhasModel {
     return campanhas.find((campanha) => campanha.id === id);
   }
 
-  // Opcional: buscar por nome de campanha
   async selectByNome(nome) {
     const campanhas = await this.select();
     return campanhas.find((campanha) => campanha.nome === nome);

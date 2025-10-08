@@ -64,6 +64,48 @@ module.exports = router;
  *           type: string
  *           description: Status do usuário
  *           example: "on"
+ *     UsuarioInput:
+ *       type: object
+ *       required:
+ *         - nome
+ *         - email
+ *         - user
+ *         - password
+ *         - confirmedPassword
+ *         - level
+ *       description: Schema para criação e atualização de usuário (sem ID).
+ *       properties:
+ *         nome:
+ *           type: string
+ *           description: Nome do usuário
+ *           example: "Carlos Webber"
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: Email do usuário
+ *           example: "usuario@teste.com"
+ *         user:
+ *           type: string
+ *           description: Nome de usuário para login
+ *           example: "carlos.webber"
+ *         password:
+ *           type: string
+ *           format: password
+ *           description: Senha do usuário
+ *           example: "senha123"
+ *         confirmedPassword:
+ *           type: string
+ *           format: password
+ *           description: Confirmação da senha do usuário
+ *           example: "senha123"
+ *         level:
+ *           type: string
+ *           description: Nível de acesso do usuário
+ *           example: "admin"
+ *         status:
+ *           type: string
+ *           description: Status do usuário
+ *           example: "on"
  *     LoginCredentials:
  *       type: object
  *       required:
@@ -264,7 +306,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Usuario'
+ *             $ref: '#/components/schemas/UsuarioInput'
  *     responses:
  *       201:
  *         description: Usuário criado com sucesso
@@ -310,7 +352,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Usuario'
+ *             $ref: '#/components/schemas/UsuarioInput'
  *     responses:
  *       200:
  *         description: Usuário atualizado com sucesso

@@ -50,6 +50,35 @@ module.exports = router;
  *           type: string
  *           description: Status do fornecedor
  *           example: "on"
+ *     FornecedorInput:
+ *       type: object
+ *       required:
+ *         - nome
+ *         - email
+ *         - telefone
+ *       description: Schema para criação e atualização de fornecedor (sem ID).
+ *       properties:
+ *         nome:
+ *           type: string
+ *           description: Nome do fornecedor
+ *           example: "Carlos Webber"
+ *         categoria:
+ *           type: string
+ *           description: Categoria do fornecedor
+ *           example: "Computadores"
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: Email do fornecedor
+ *           example: "teste@teste.com"
+ *         telefone:
+ *           type: string
+ *           description: Telefone do fornecedor
+ *           example: "51999999"
+ *         status:
+ *           type: string
+ *           description: Status do fornecedor
+ *           example: "on"
  */
 
 /**
@@ -155,7 +184,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Fornecedor'
+ *             $ref: '#/components/schemas/FornecedorInput'
  *     responses:
  *       201:
  *         description: Fornecedor criado com sucesso
@@ -196,7 +225,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Fornecedor'
+ *             $ref: '#/components/schemas/FornecedorInput'
  *     responses:
  *       200:
  *         description: Fornecedor atualizado com sucesso

@@ -26,7 +26,6 @@ class CampanhasService {
   }
 
   async create(campanha) {
-    // Aqui você pode incluir validações específicas (ex: datas, fornecedor, etc)
     const newId = uuidv4();
     const newCampanha = {
       id: newId,

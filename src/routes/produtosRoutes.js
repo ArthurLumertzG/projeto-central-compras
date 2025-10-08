@@ -58,6 +58,43 @@ module.exports = router;
  *           type: string
  *           description: Status do produto
  *           example: "ativo"
+ *     ProdutoInput:
+ *       type: object
+ *       required:
+ *         - nome
+ *         - descricao
+ *         - preco
+ *         - estoque
+ *         - fornecedor_id
+ *         - status
+ *       description: Schema para criação e atualização de produto (sem ID).
+ *       properties:
+ *         nome:
+ *           type: string
+ *           description: Nome do produto
+ *           example: "Notebook Gamer"
+ *         descricao:
+ *           type: string
+ *           description: Descrição detalhada do produto
+ *           example: "Notebook com processador i7, 16GB RAM, 512GB SSD"
+ *         preco:
+ *           type: number
+ *           format: float
+ *           description: Preço do produto
+ *           example: 4599.90
+ *         estoque:
+ *           type: integer
+ *           description: Quantidade em estoque
+ *           example: 25
+ *         fornecedor_id:
+ *           type: string
+ *           format: uuid
+ *           description: ID do fornecedor associado ao produto
+ *           example: "a9383549-13f1-449a-9b0a-6c72fce4dcee"
+ *         status:
+ *           type: string
+ *           description: Status do produto
+ *           example: "ativo"
  */
 
 /**
@@ -163,7 +200,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Produto'
+ *             $ref: '#/components/schemas/ProdutoInput'
  *     responses:
  *       201:
  *         description: Produto criado com sucesso
@@ -202,7 +239,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Produto'
+ *             $ref: '#/components/schemas/ProdutoInput'
  *     responses:
  *       200:
  *         description: Produto atualizado com sucesso

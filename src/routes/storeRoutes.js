@@ -49,6 +49,35 @@ module.exports = router;
  *           type: string
  *           description: Status da loja
  *           example: "on"
+ *     StoreInput:
+ *       type: object
+ *       required:
+ *         - nome
+ *         - email
+ *         - telefone
+ *       description: Schema para criação e atualização de loja (sem ID).
+ *       properties:
+ *         nome:
+ *           type: string
+ *           description: Nome da loja
+ *           example: "Loja Central"
+ *         categoria:
+ *           type: string
+ *           description: Categoria da loja
+ *           example: "Eletrônicos"
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: Email da loja
+ *           example: "loja@teste.com"
+ *         telefone:
+ *           type: string
+ *           description: Telefone da loja
+ *           example: "51999999"
+ *         status:
+ *           type: string
+ *           description: Status da loja
+ *           example: "on"
  */
 
 /**
@@ -121,7 +150,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Store'
+ *             $ref: '#/components/schemas/StoreInput'
  *     responses:
  *       201:
  *         description: Loja criada com sucesso
@@ -162,7 +191,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Store'
+ *             $ref: '#/components/schemas/StoreInput'
  *     responses:
  *       200:
  *         description: Loja atualizada com sucesso
