@@ -1,11 +1,12 @@
 [
   {
-    "id": "adb0bea9-5d10-4e58-8178-7d6bfbae44b0",
-    "nome": "Loja Central",
-    "endereco": "Morrinhos",
-    "cnpj": "09346601000125",
-    "email": "loja1@teste.com",
+    "id": "49d00912-051b-42b8-abed-9c13a00dffca",
+    "nome": "Loja lateral",
+    "categoria": "Isotonicos",
+    "email": "Loja@teste.com",
     "telefone": "51999999",
-    "status": "on"
+    "status": "on",
+    "cnpj": "12345678912345",
+    "endereco": "Rua 25 de março"
   }
 ]

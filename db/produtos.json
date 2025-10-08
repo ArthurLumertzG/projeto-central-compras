@@ -1,9 +1,18 @@
 [
   {
-    "id": "a697c0c6-21dd-452a-9e56-39ecbefc3b61",
+    "id": "1f1b73ec-fe8b-483a-bf5c-8b953c2228a4",
+    "nome": "Notebook Gamer",
+    "descricao": "Notebook com processador i7, 16GB RAM, 512GB SSD",
+    "preco": 4599.9,
+    "estoque": 25,
+    "fornecedor_id": "a9383549-13f1-449a-9b0a-6c72fce4dcee",
+    "status": "ativo"
+  },
+  {
+    "id": "9427614c-c270-48d6-8efd-32ee07196f58",
     "nome": "Notebook",
     "descricao": "Notebook com processador i7, 16GB RAM, 512GB SSD",
-    "preco": 14599.9,
+    "preco": 4599.9,
     "estoque": 25,
     "fornecedor_id": "a1e09865-77ec-44b2-8bfe-388cdde94df6",
     "status": "ativo"

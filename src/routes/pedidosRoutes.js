@@ -130,7 +130,7 @@ module.exports = router;
  * /pedidos:
  *   get:
  *     summary: Lista todos os pedidos
- *     tags: [Pedidos]
+ *     tags: [Pedidos - Davi da Silva Valvassori]
  *     responses:
  *       200:
  *         description: Lista de pedidos retornada com sucesso
@@ -147,7 +147,7 @@ module.exports = router;
  * /pedidos/{id}:
  *   get:
  *     summary: Busca um pedido pelo ID
- *     tags: [Pedidos]
+ *     tags: [Pedidos - Davi da Silva Valvassori]
  *     parameters:
  *       - in: path
  *         name: id
@@ -171,7 +171,7 @@ module.exports = router;
  * /pedidos/search/date:
  *   get:
  *     summary: Busca pedidos por data
- *     tags: [Pedidos]
+ *     tags: [Pedidos - Davi da Silva Valvassori]
  *     parameters:
  *       - in: query
  *         name: date
@@ -196,7 +196,7 @@ module.exports = router;
  * /pedidos:
  *   post:
  *     summary: Cria um novo pedido
- *     tags: [Pedidos]
+ *     tags: [Pedidos - Davi da Silva Valvassori]
  *     requestBody:
  *       required: true
  *       content:
@@ -219,7 +219,7 @@ module.exports = router;
  * /pedidos/{id}:
  *   patch:
  *     summary: Atualiza um pedido existente
- *     tags: [Pedidos]
+ *     tags: [Pedidos - Davi da Silva Valvassori]
  *     parameters:
  *       - in: path
  *         name: id
@@ -249,7 +249,7 @@ module.exports = router;
  * /pedidos/{id}:
  *   delete:
  *     summary: Remove um pedido
- *     tags: [Pedidos]
+ *     tags: [Pedidos - Davi da Silva Valvassori]
  *     parameters:
  *       - in: path
  *         name: id

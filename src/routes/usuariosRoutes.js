@@ -160,7 +160,7 @@ module.exports = router;
  * /usuarios/login:
  *   post:
  *     summary: Realiza login do usuário
- *     tags: [Usuários]
+ *     tags: [Usuários - Carlos Miguel Webber Model]
  *     requestBody:
  *       required: true
  *       content:
@@ -208,7 +208,7 @@ module.exports = router;
  * /usuarios:
  *   get:
  *     summary: Lista todos os usuários
- *     tags: [Usuários]
+ *     tags: [Usuários - Carlos Miguel Webber Model]
  *     responses:
  *       200:
  *         description: Lista de usuários retornada com sucesso
@@ -234,7 +234,7 @@ module.exports = router;
  * /usuarios/{id}:
  *   get:
  *     summary: Busca um usuário pelo ID
- *     tags: [Usuários]
+ *     tags: [Usuários - Carlos Miguel Webber Model]
  *     parameters:
  *       - in: path
  *         name: id
@@ -267,7 +267,7 @@ module.exports = router;
  * /usuarios/email/{email}:
  *   get:
  *     summary: Busca um usuário pelo email
- *     tags: [Usuários]
+ *     tags: [Usuários - Carlos Miguel Webber Model]
  *     parameters:
  *       - in: path
  *         name: email
@@ -300,7 +300,7 @@ module.exports = router;
  * /usuarios:
  *   post:
  *     summary: Cria um novo usuário
- *     tags: [Usuários]
+ *     tags: [Usuários - Carlos Miguel Webber Model]
  *     requestBody:
  *       required: true
  *       content:
@@ -339,7 +339,7 @@ module.exports = router;
  * /usuarios/{id}:
  *   patch:
  *     summary: Atualiza um usuário existente
- *     tags: [Usuários]
+ *     tags: [Usuários - Carlos Miguel Webber Model]
  *     parameters:
  *       - in: path
  *         name: id
@@ -378,7 +378,7 @@ module.exports = router;
  * /usuarios/{id}:
  *   delete:
  *     summary: Remove um usuário
- *     tags: [Usuários]
+ *     tags: [Usuários - Carlos Miguel Webber Model]
  *     parameters:
  *       - in: path
  *         name: id

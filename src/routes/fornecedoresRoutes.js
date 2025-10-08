@@ -86,7 +86,7 @@ module.exports = router;
  * /fornecedores:
  *   get:
  *     summary: Lista todos os fornecedores
- *     tags: [Fornecedores]
+ *     tags: [Fornecedores - Todos]
  *     responses:
  *       200:
  *         description: Lista de fornecedores retornada com sucesso
@@ -112,7 +112,7 @@ module.exports = router;
  * /fornecedores/{id}:
  *   get:
  *     summary: Busca um fornecedor pelo ID
- *     tags: [Fornecedores]
+ *     tags: [Fornecedores - Todos]
  *     parameters:
  *       - in: path
  *         name: id
@@ -145,7 +145,7 @@ module.exports = router;
  * /fornecedores/email/{email}:
  *   get:
  *     summary: Busca um fornecedor pelo email
- *     tags: [Fornecedores]
+ *     tags: [Fornecedores - Todos]
  *     parameters:
  *       - in: path
  *         name: email
@@ -178,7 +178,7 @@ module.exports = router;
  * /fornecedores:
  *   post:
  *     summary: Cria um novo fornecedor
- *     tags: [Fornecedores]
+ *     tags: [Fornecedores - Todos]
  *     requestBody:
  *       required: true
  *       content:
@@ -212,7 +212,7 @@ module.exports = router;
  * /fornecedores/{id}:
  *   patch:
  *     summary: Atualiza um fornecedor existente
- *     tags: [Fornecedores]
+ *     tags: [Fornecedores - Todos]
  *     parameters:
  *       - in: path
  *         name: id
@@ -251,7 +251,7 @@ module.exports = router;
  * /fornecedores/{id}:
  *   delete:
  *     summary: Remove um fornecedor
- *     tags: [Fornecedores]
+ *     tags: [Fornecedores - Todos]
  *     parameters:
  *       - in: path
  *         name: id

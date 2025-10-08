@@ -49,6 +49,14 @@ module.exports = router;
  *           type: string
  *           description: Status da loja
  *           example: "on"
+ *         cnpj:
+ *           type: string
+ *           description: CNPJ da loja
+ *           example: "12345678912345"
+ *         endereco:
+ *           type: string
+ *           description: Endereço da loja
+ *           example: "Rua 25 de março"
  *     StoreInput:
  *       type: object
  *       required:
@@ -78,6 +86,14 @@ module.exports = router;
  *           type: string
  *           description: Status da loja
  *           example: "on"
+ *         cnpj:
+ *           type: string
+ *           description: CNPJ da loja
+ *           example: "12345678912345"
+ *         endereco:
+ *           type: string
+ *           description: Endereço da loja
+ *           example: "Rua 25 de março"
  */
 
 /**
@@ -85,7 +101,7 @@ module.exports = router;
  * /stores:
  *   get:
  *     summary: Lista todas as lojas
- *     tags: [Stores]
+ *     tags: [Stores - Kevin Demétrio dos Santos]
  *     responses:
  *       200:
  *         description: Lista de lojas retornada com sucesso
@@ -111,7 +127,7 @@ module.exports = router;
  * /stores/{id}:
  *   get:
  *     summary: Busca uma loja pelo ID
- *     tags: [Stores]
+ *     tags: [Stores - Kevin Demétrio dos Santos]
  *     parameters:
  *       - in: path
  *         name: id
@@ -144,7 +160,7 @@ module.exports = router;
  * /stores:
  *   post:
  *     summary: Cria uma nova loja
- *     tags: [Stores]
+ *     tags: [Stores - Kevin Demétrio dos Santos]
  *     requestBody:
  *       required: true
  *       content:
@@ -178,7 +194,7 @@ module.exports = router;
  * /stores/{id}:
  *   patch:
  *     summary: Atualiza uma loja existente
- *     tags: [Stores]
+ *     tags: [Stores - Kevin Demétrio dos Santos]
  *     parameters:
  *       - in: path
  *         name: id
@@ -217,7 +233,7 @@ module.exports = router;
  * /stores/{id}:
  *   delete:
  *     summary: Remove uma loja
- *     tags: [Stores]
+ *     tags: [Stores - Kevin Demétrio dos Santos]
  *     parameters:
  *       - in: path
  *         name: id

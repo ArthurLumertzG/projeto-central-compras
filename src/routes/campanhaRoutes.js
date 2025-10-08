@@ -93,7 +93,7 @@ module.exports = router;
  * /campanhas:
  *   get:
  *     summary: Lista todas as campanhas
- *     tags: [Campanhas]
+ *     tags: [Campanhas - Gabriel Pereira José]
  *     responses:
  *       200:
  *         description: Lista de campanhas retornada com sucesso
@@ -119,7 +119,7 @@ module.exports = router;
  * /campanhas/{id}:
  *   get:
  *     summary: Busca uma campanha pelo ID
- *     tags: [Campanhas]
+ *     tags: [Campanhas - Gabriel Pereira José]
  *     parameters:
  *       - in: path
  *         name: id
@@ -152,7 +152,7 @@ module.exports = router;
  * /campanhas:
  *   post:
  *     summary: Cria uma nova campanha
- *     tags: [Campanhas]
+ *     tags: [Campanhas - Gabriel Pereira José]
  *     requestBody:
  *       required: true
  *       content:
@@ -184,7 +184,7 @@ module.exports = router;
  * /campanhas/{id}:
  *   patch:
  *     summary: Atualiza uma campanha existente
- *     tags: [Campanhas]
+ *     tags: [Campanhas - Gabriel Pereira José]
  *     parameters:
  *       - in: path
  *         name: id
@@ -223,7 +223,7 @@ module.exports = router;
  * /campanhas/{id}:
  *   delete:
  *     summary: Remove uma campanha
- *     tags: [Campanhas]
+ *     tags: [Campanhas - Gabriel Pereira José]
  *     parameters:
  *       - in: path
  *         name: id

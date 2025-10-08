@@ -1,11 +1,11 @@
 [
   {
-    "id": "59818311-b61c-4524-8212-cc2f32735de3",
-    "nome": "Carlos Webber",
-    "email": "usuario@teste.com",
-    "user": "carlos.webber",
-    "password": "$2b$10$dfLzWrNL4p50KM8lab9A2u7QaT1kPDUGV6KaKEbwNKubQc2Eyki3m",
-    "level": "admin",
+    "id": "ac370744-da4a-4bb4-9715-628b0cc79d2f",
+    "nome": "Webber",
+    "email": "miguel@teste.com",
+    "user": "miguel.webber",
+    "password": "$2b$10$AYUDpMsWGNLyY5gX6485zegI0R1YRB0GOq5IsP5vgx7LBKZ8HMCk.",
+    "level": "user",
     "status": "on"
   }
 ]

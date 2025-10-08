@@ -102,7 +102,7 @@ module.exports = router;
  * /produtos:
  *   get:
  *     summary: Lista todos os produtos
- *     tags: [Produtos]
+ *     tags: [Produtos - Arthur Lumertz Guimarães]
  *     responses:
  *       200:
  *         description: Lista de produtos retornada com sucesso
@@ -128,7 +128,7 @@ module.exports = router;
  * /produtos/id/{id}:
  *   get:
  *     summary: Busca um produto pelo ID
- *     tags: [Produtos]
+ *     tags: [Produtos - Arthur Lumertz Guimarães]
  *     parameters:
  *       - in: path
  *         name: id
@@ -161,7 +161,7 @@ module.exports = router;
  * /produtos/name/{name}:
  *   get:
  *     summary: Busca um produto pelo nome
- *     tags: [Produtos]
+ *     tags: [Produtos - Arthur Lumertz Guimarães]
  *     parameters:
  *       - in: path
  *         name: name
@@ -194,7 +194,7 @@ module.exports = router;
  * /produtos:
  *   post:
  *     summary: Cria um novo produto
- *     tags: [Produtos]
+ *     tags: [Produtos - Arthur Lumertz Guimarães]
  *     requestBody:
  *       required: true
  *       content:
@@ -226,7 +226,7 @@ module.exports = router;
  * /produtos/{id}:
  *   patch:
  *     summary: Atualiza um produto existente
- *     tags: [Produtos]
+ *     tags: [Produtos - Arthur Lumertz Guimarães]
  *     parameters:
  *       - in: path
  *         name: id
@@ -265,7 +265,7 @@ module.exports = router;
  * /produtos/{id}:
  *   delete:
  *     summary: Remove um produto
- *     tags: [Produtos]
+ *     tags: [Produtos - Arthur Lumertz Guimarães]
  *     parameters:
  *       - in: path
  *         name: id
