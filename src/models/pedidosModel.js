@@ -1,84 +1,100 @@
-const fs = require("fs").promises;
-const path = require("path");
-
-const dataFile = path.join(__dirname, "../../db/pedidos.json");
+const database = require("../../db/database");
 
 class PedidosModel {
-    constructor() {
-        this.file = dataFile;
+  constructor() {
+    this.tableName = "pedidos";
+  }
+
+  async select() {
+    try {
+      const query = {
+        text: `SELECT * FROM ${this.tableName} WHERE deletado_em IS NULL ORDER BY criado_em DESC`,
+        values: [],
+      };
+      const result = await database.query(query);
+      return result.rows;
+    } catch (error) {
+      console.error("Erro ao buscar pedidos:", error);
+      throw error;
     }
+  }
 
-    // Seleciona todos os pedidos
-    async select() {
-        let fileContent;
-        try {
-            fileContent = await fs.readFile(this.file, "utf8");
-        } catch (err) {
-            if (err.code === "ENOENT") {
-                await fs.writeFile(this.file, "[]", "utf8");
-                return [];
-            }
-            throw err;
-        }
-
-        if (!fileContent.trim()) {
-            return [];
-        }
-
-        try {
-            return JSON.parse(fileContent);
-        } catch (err) {
-            console.warn("Arquivo JSON inválido. Resetando para [].");
-            await fs.writeFile(this.file, "[]", "utf8");
-            return [];
-        }
+  async selectById(id) {
+    try {
+      const query = {
+        text: `SELECT * FROM ${this.tableName} WHERE id = $1 AND deletado_em IS NULL`,
+        values: [id],
+      };
+      const result = await database.query(query);
+      return result.rows[0] || null;
+    } catch (error) {
+      console.error("Erro ao buscar pedido por ID:", error);
+      throw error;
     }
+  }
 
-    // Busca por ID
-    async selectById(id) {
-        const pedidos = await this.select();
-        return pedidos.find((pedido) => pedido.id === id);
+  async selectByDate(date) {
+    try {
+      const query = {
+        text: `SELECT * FROM ${this.tableName} WHERE DATE(criado_em) = $1 AND deletado_em IS NULL ORDER BY criado_em DESC`,
+        values: [date],
+      };
+      const result = await database.query(query);
+      return result.rows;
+    } catch (error) {
+      console.error("Erro ao buscar pedidos por data:", error);
+      throw error;
     }
+  }
 
-    // Busca por data (YYYY-MM-DD)
-    async selectByDate(date) {
-        const pedidos = await this.select();
-        return pedidos.filter((pedido) => pedido.date.startsWith(date));
+  async create(pedido) {
+    try {
+      const query = {
+        text: `INSERT INTO ${this.tableName} (id, valor_total, descricao, usuario_id, loja_id, status, forma_pagamento, prazo_dias, criado_em) 
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+               RETURNING *`,
+        values: [pedido.id, pedido.valor_total, pedido.descricao, pedido.usuario_id, pedido.loja_id, pedido.status, pedido.forma_pagamento, pedido.prazo_dias, pedido.criado_em],
+      };
+      const result = await database.query(query);
+      return result.rows[0];
+    } catch (error) {
+      console.error("Erro ao criar pedido:", error);
+      throw error;
     }
+  }
 
-    // Criação de pedido
-    async create(pedido) {
-        const pedidos = await this.select();
-        pedidos.push(pedido);
-        const json = JSON.stringify(pedidos, null, 2);
-        await fs.writeFile(this.file, json, "utf8");
-        return pedido;
+  async update(id, pedido) {
+    try {
+      const fields = Object.keys(pedido);
+      const setClause = fields.map((field, index) => `"${field}" = $${index + 2}`).join(", ");
+      const values = [id, ...Object.values(pedido)];
+
+      const query = {
+        text: `UPDATE ${this.tableName} SET ${setClause} WHERE id = $1 AND deletado_em IS NULL RETURNING *`,
+        values: values,
+      };
+
+      const result = await database.query(query);
+      return result.rows[0] || null;
+    } catch (error) {
+      console.error("Erro ao atualizar pedido:", error);
+      throw error;
     }
+  }
 
-    // Atualização de pedido
-    async update(id, pedido) {
-        const pedidos = await this.select();
-        const updatedPedidoIndex = pedidos.findIndex((pedido) => pedido.id === id);
-
-        if (updatedPedidoIndex === -1) return null;
-
-        pedidos[updatedPedidoIndex] = { ...pedidos[updatedPedidoIndex], ...pedido };
-
-        await fs.writeFile(this.file, JSON.stringify(pedidos, null, 2), "utf8");
-        return pedidos[updatedPedidoIndex];
+  async delete(id) {
+    try {
+      const query = {
+        text: `UPDATE ${this.tableName} SET deletado_em = NOW() WHERE id = $1 AND deletado_em IS NULL`,
+        values: [id],
+      };
+      const result = await database.query(query);
+      return result.rowCount > 0;
+    } catch (error) {
+      console.error("Erro ao deletar pedido:", error);
+      throw error;
     }
-
-    // Exclusão de pedido
-    async delete(id) {
-        const pedidos = await this.select();
-        const deletedPedidoIndex = pedidos.findIndex((pedido) => pedido.id === id);
-
-        if (deletedPedidoIndex === -1) return null;
-
-        pedidos.splice(deletedPedidoIndex, 1);
-        await fs.writeFile(this.file, JSON.stringify(pedidos, null, 2), "utf8");
-        return true;
-    }
+  }
 }
 
 module.exports = PedidosModel;
