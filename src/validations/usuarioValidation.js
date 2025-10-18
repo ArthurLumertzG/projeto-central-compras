@@ -16,18 +16,12 @@ const createUsuarioSchema = Joi.object({
     "any.required": "Sobrenome é obrigatório",
   }),
 
-  email: Joi.string()
-    .trim()
-    .lowercase()
-    .email()
-    .max(255)
-    .required()
-    .messages({
-      "string.empty": "Email é obrigatório",
-      "string.email": "Email inválido",
-      "string.max": "Email deve ter no máximo 255 caracteres",
-      "any.required": "Email é obrigatório",
-    }),
+  email: Joi.string().trim().lowercase().email().max(255).required().messages({
+    "string.empty": "Email é obrigatório",
+    "string.email": "Email inválido",
+    "string.max": "Email deve ter no máximo 255 caracteres",
+    "any.required": "Email é obrigatório",
+  }),
 
   senha: Joi.string()
     .min(8)
@@ -59,9 +53,17 @@ const createUsuarioSchema = Joi.object({
       "string.max": "Telefone deve ter no máximo 20 caracteres",
     }),
 
-  funcao: Joi.string().trim().max(100).allow(null, "").messages({
-    "string.max": "Função deve ter no máximo 100 caracteres",
-  }),
+  funcao: Joi.string()
+    .trim()
+    .max(100)
+    .allow(null, "")
+    .messages({
+      "string.max": "Função deve ter no máximo 100 caracteres",
+    })
+    .valid("admin", "usuario", "fornecedor", "loja")
+    .messages({
+      "any.only": "Função deve ser uma das seguintes: admin, usuario, fornecedor, loja",
+    }),
 
   endereco_id: Joi.string().uuid().allow(null).messages({
     "string.guid": "ID do endereço deve ser um UUID válido",

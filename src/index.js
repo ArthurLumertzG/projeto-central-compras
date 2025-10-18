@@ -10,9 +10,11 @@ const port = 3000;
 const fornecedoresRoutes = require("./routes/fornecedoresRoutes.js");
 const produtosRoutes = require("./routes/produtosRoutes.js");
 const usuariosRoutes = require("./routes/usuariosRoutes.js");
-const storeRoutes = require("./routes/storeRoutes.js");
+const enderecosRoutes = require("./routes/enderecosRoutes.js");
+const lojasRoutes = require("./routes/lojasRoutes.js");
 const campanhaRoutes = require("./routes/campanhaRoutes.js");
 const pedidosRoutes = require("./routes/pedidosRoutes.js");
+const lojasFornecedorRoutes = require("./routes/lojaFornecedorRoutes.js");
 
 const swaggerOptions = {
   definition: {
@@ -49,7 +51,9 @@ app.get("/", (req, res) => {
 app.use("/fornecedores", fornecedoresRoutes);
 app.use("/produtos", produtosRoutes);
 app.use("/usuarios", usuariosRoutes);
-app.use("/stores", storeRoutes);
+app.use("/enderecos", enderecosRoutes);
+app.use("/lojas", lojasRoutes);
+app.use("/loja-fornecedor", lojasFornecedorRoutes);
 app.use("/campanhas", campanhaRoutes);
 app.use("/pedidos", pedidosRoutes);
 

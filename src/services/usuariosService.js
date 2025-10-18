@@ -1,4 +1,5 @@
 const UsuariosModel = require("../models/usuariosModel");
+const EnderecosService = require("./enderecosService");
 const DefaultResponseDto = require("../dtos/defaultResponse.dto");
 const AppError = require("../errors/AppError");
 const bcrypt = require("bcrypt");
@@ -16,6 +17,7 @@ const SALT_ROUNDS = 12; // Aumentado para maior segurança
 class UsuariosService {
   constructor() {
     this.usuariosModel = new UsuariosModel();
+    this.enderecosService = new EnderecosService();
   }
 
   /**
@@ -124,17 +126,26 @@ class UsuariosService {
    */
   async create(usuarioData) {
     // Validação completa com Joi
+    usuarioData.funcao = "usuario";
     const { error, value } = createUsuarioSchema.validate(usuarioData);
     if (error) {
       throw new AppError(error.details[0].message, 400);
     }
 
-    const { email, senha, confirmedPassword, ...restData } = value;
+    const { email, senha, confirmedPassword, endereco_id, ...restData } = value;
 
     // Verifica se o email já existe
     const existingUsuario = await this.usuariosModel.selectByEmail(email);
     if (existingUsuario) {
       throw new AppError("Já existe um usuário com este email", 409);
+    }
+
+    // VALIDAÇÃO CRÍTICA: Se endereco_id foi fornecido, verifica se existe
+    if (endereco_id) {
+      const enderecoExists = await this.enderecosService.exists(endereco_id);
+      if (!enderecoExists) {
+        throw new AppError("Endereço não encontrado. Crie o endereço primeiro antes de criar o usuário.", 404);
+      }
     }
 
     // Hash da senha
@@ -146,6 +157,7 @@ class UsuariosService {
       ...restData,
       email,
       senha: hashedPassword,
+      endereco_id: endereco_id || null,
       email_verificado: false, // Por padrão, email não verificado
       criado_em: new Date(),
       atualizado_em: new Date(),
@@ -207,6 +219,14 @@ class UsuariosService {
       }
       // Se alterar email, marca como não verificado novamente
       value.email_verificado = false;
+    }
+
+    // VALIDAÇÃO: Se está alterando endereco_id, verifica se existe
+    if (value.endereco_id) {
+      const enderecoExists = await this.enderecosService.exists(value.endereco_id);
+      if (!enderecoExists) {
+        throw new AppError("Endereço não encontrado. Crie ou use um endereço válido.", 404);
+      }
     }
 
     // Adiciona timestamp de atualização

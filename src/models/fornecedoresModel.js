@@ -33,18 +33,43 @@ class FornecedoresModel {
     }
   }
 
-  async selectByEmail(email) {
+  /**
+   * Busca um fornecedor por CNPJ
+   * @param {string} cnpj - CNPJ do fornecedor (14 dígitos)
+   * @returns {Promise<Object|null>} Fornecedor encontrado ou null
+   */
+  async selectByCnpj(cnpj) {
     try {
       const query = {
-        text: `SELECT f.*, u.email FROM ${this.tableName} f 
-               INNER JOIN usuarios u ON f.usuario_id = u.id 
-               WHERE u.email = $1 AND f.deletado_em IS NULL`,
-        values: [email],
+        text: `SELECT * FROM ${this.tableName} WHERE cnpj = $1 AND deletado_em IS NULL`,
+        values: [cnpj],
       };
       const result = await database.query(query);
       return result.rows[0] || null;
     } catch (error) {
-      console.error("Erro ao buscar fornecedor por email:", error);
+      console.error("Erro ao buscar fornecedor por CNPJ:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Busca fornecedores por usuário responsável
+   * @param {string} usuario_id - UUID do usuário
+   * @returns {Promise<Array>} Lista de fornecedores do usuário
+   */
+  async selectByUsuarioId(usuario_id) {
+    try {
+      const query = {
+        text: `SELECT * FROM ${this.tableName} 
+               WHERE usuario_id = $1 
+               AND deletado_em IS NULL 
+               ORDER BY criado_em DESC`,
+        values: [usuario_id],
+      };
+      const result = await database.query(query);
+      return result.rows;
+    } catch (error) {
+      console.error("Erro ao buscar fornecedores por usuário:", error);
       throw error;
     }
   }
