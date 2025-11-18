@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const errorHandler = require("./middlewares/errorHandler.js");
 const AppError = require("./errors/AppError.js");
@@ -22,7 +23,8 @@ const swaggerOptions = {
     info: {
       title: "API - Central de Compras",
       version: "1.0.0",
-      description: "API para gerenciar fornecedores, produtos e compras. Desenvolvido por GurizesTech (Arthur Lumertz, Carlos Miguel Webber, Davi Valvassori, Gabriel Pereira, Kevin Demétrio)",
+      description:
+        "API para gerenciar fornecedores, produtos e compras. Desenvolvido por GurizesTech (Arthur Lumertz, Carlos Miguel Webber, Davi Valvassori, Gabriel Pereira, Kevin Demétrio)",
       license: {
         name: "GurizesTech License",
       },
@@ -42,6 +44,7 @@ const swaggerOptions = {
 const swaggerSpecs = swaggerJSDoc(swaggerOptions);
 app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpecs));
 
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -63,6 +66,10 @@ app.use((req, res, next) => {
 app.use(errorHandler);
 
 app.listen(port, () => {
-  console.log(`Projeto Central de Compras está rodando em: http://localhost:${port}`);
-  console.log(`Documentação da API disponível em: http://localhost:${port}/docs`);
+  console.log(
+    `Projeto Central de Compras está rodando em: http://localhost:${port}`,
+  );
+  console.log(
+    `Documentação da API disponível em: http://localhost:${port}/docs`,
+  );
 });
