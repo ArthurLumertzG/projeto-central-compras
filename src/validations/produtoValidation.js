@@ -44,6 +44,10 @@ const createProdutoSchema = Joi.object({
     "string.max": "Categoria deve ter no máximo 100 caracteres",
     "any.required": "Categoria é obrigatória",
   }),
+
+  imagem_url: Joi.string().uri().allow(null, "").optional().messages({
+    "string.uri": "URL da imagem deve ser uma URL válida",
+  }),
 });
 
 /**
@@ -80,6 +84,10 @@ const updateProdutoSchema = Joi.object({
   categoria: Joi.string().min(2).max(100).messages({
     "string.min": "Categoria deve ter no mínimo 2 caracteres",
     "string.max": "Categoria deve ter no máximo 100 caracteres",
+  }),
+
+  imagem_url: Joi.string().uri().allow(null, "").optional().messages({
+    "string.uri": "URL da imagem deve ser uma URL válida",
   }),
 
   // Campos bloqueados - não podem ser atualizados diretamente

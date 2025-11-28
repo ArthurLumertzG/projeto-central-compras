@@ -50,10 +50,10 @@ class ProdutosModel {
   async create(produto) {
     try {
       const query = {
-        text: `INSERT INTO ${this.tableName} (id, nome, descricao, valor_unitario, quantidade_estoque, fornecedor_id, categoria, criado_em, atualizado_em) 
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+        text: `INSERT INTO ${this.tableName} (id, nome, descricao, valor_unitario, quantidade_estoque, fornecedor_id, categoria, imagem_url, criado_em, atualizado_em) 
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
                RETURNING *`,
-        values: [produto.id, produto.nome, produto.descricao, produto.valor_unitario, produto.quantidade_estoque, produto.fornecedor_id, produto.categoria, produto.criado_em, produto.atualizado_em],
+        values: [produto.id, produto.nome, produto.descricao, produto.valor_unitario, produto.quantidade_estoque, produto.fornecedor_id, produto.categoria, produto.imagem_url, produto.criado_em, produto.atualizado_em],
       };
       const result = await database.query(query);
       return result.rows[0];

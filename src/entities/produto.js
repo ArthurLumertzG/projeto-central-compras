@@ -9,6 +9,7 @@
  * @property {number} quantidade_estoque - Quantidade disponível em estoque (inteiro não-negativo)
  * @property {string} fornecedor_id - UUID do fornecedor associado
  * @property {string} categoria - Categoria do produto (2-100 caracteres)
+ * @property {string|null} imagem_url - URL da imagem do produto (opcional)
  * @property {Date} criado_em - Data de criação do registro
  * @property {Date} atualizado_em - Data da última atualização
  * @property {Date|null} deletado_em - Data de exclusão lógica (soft delete), null se ativo
@@ -24,11 +25,12 @@ class Produto {
    * @param {number} quantidade_estoque - Quantidade em estoque
    * @param {string} fornecedor_id - UUID do fornecedor
    * @param {string} categoria - Categoria do produto
+   * @param {string|null} imagem_url - URL da imagem do produto
    * @param {Date} criado_em - Data de criação
    * @param {Date} atualizado_em - Data de atualização
    * @param {Date|null} deletado_em - Data de exclusão (null se ativo)
    */
-  constructor(id, nome, descricao, valor_unitario, quantidade_estoque, fornecedor_id, categoria, criado_em, atualizado_em, deletado_em) {
+  constructor(id, nome, descricao, valor_unitario, quantidade_estoque, fornecedor_id, categoria, imagem_url, criado_em, atualizado_em, deletado_em) {
     this.id = id;
     this.nome = nome;
     this.descricao = descricao;
@@ -36,6 +38,7 @@ class Produto {
     this.quantidade_estoque = quantidade_estoque;
     this.fornecedor_id = fornecedor_id;
     this.categoria = categoria;
+    this.imagem_url = imagem_url;
     this.criado_em = criado_em;
     this.atualizado_em = atualizado_em;
     this.deletado_em = deletado_em;
