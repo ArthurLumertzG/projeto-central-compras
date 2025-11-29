@@ -448,6 +448,8 @@ router.get("/", asyncHandler(lojasController.getAll.bind(lojasController)));
 router.get("/:id", asyncHandler(lojasController.getById.bind(lojasController)));
 
 // Rotas privadas (requerem autenticação)
+router.get("/minhas/lojas", authenticate, asyncHandler(lojasController.getMinhasLojas.bind(lojasController)));
+router.get("/usuario/:usuario_id", asyncHandler(lojasController.getByUsuarioId.bind(lojasController)));
 router.post("/", authenticate, asyncHandler(lojasController.create.bind(lojasController)));
 router.patch("/:id", authenticate, asyncHandler(lojasController.update.bind(lojasController)));
 router.delete("/:id", authenticate, asyncHandler(lojasController.delete.bind(lojasController)));

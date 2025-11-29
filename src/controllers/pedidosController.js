@@ -60,6 +60,21 @@ class PedidosController {
   }
 
   /**
+   * Busca pedidos do usuário autenticado
+   * @param {Object} req - Request object
+   * @param {string} req.user.id - ID do usuário autenticado (JWT middleware)
+   * @param {Object} res - Response object
+   * @returns {Promise<void>}
+   *
+   * @example
+   * GET /pedidos/meus/pedidos
+   */
+  async getMeusPedidos(req, res) {
+    const response = await this.pedidosService.getByUsuarioId(req.user.id);
+    res.status(200).json(response);
+  }
+
+  /**
    * Busca pedidos por data
    * @param {Object} req - Request object
    * @param {Object} req.query - Query parameters
@@ -80,22 +95,23 @@ class PedidosController {
   /**
    * Cria um novo pedido com seus produtos (transação atômica)
    * @param {Object} req - Request object
-   * @param {string} req.userId - ID do usuário autenticado (JWT middleware)
+   * @param {string} req.user.id - ID do usuário autenticado (JWT middleware)
    * @param {Object} req.body - Dados do pedido
-   * @param {string} req.body.loja_id - UUID da loja
    * @param {string} [req.body.descricao] - Descrição/observações (5-500 caracteres)
    * @param {string} req.body.forma_pagamento - Forma de pagamento
    * @param {number} req.body.prazo_dias - Prazo de entrega em dias (1-365)
    * @param {Array} req.body.produtos - Array de produtos [{produto_id, quantidade, valor_unitario}]
    * @param {Object} res - Response object
    * @returns {Promise<void>}
-   * @throws {AppError} 400 se validação falhar, 403 se loja não pertence ao usuário, 404 se FK inválida, 409 se estoque insuficiente
+   * @throws {AppError} 400 se validação falhar, 404 se FK inválida, 409 se estoque insuficiente
    *
    * @example
    * POST /pedidos
+   * Body: { forma_pagamento: "pix", prazo_dias: 7, produtos: [...] }
+   * O usuario_id do token JWT será usado como loja_id automaticamente
    */
   async create(req, res) {
-    const response = await this.pedidosService.create(req.body, req.userId);
+    const response = await this.pedidosService.create(req.body, req.user.id);
     res.status(201).json(response);
   }
 

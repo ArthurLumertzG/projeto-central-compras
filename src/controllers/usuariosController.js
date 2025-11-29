@@ -82,7 +82,11 @@ class UsuariosController {
     const passwordData = req.body;
     // Passa o ID do usuário autenticado para validação de segurança
     const requestUserId = req.user.id;
-    const response = await usuariosService.updatePassword(id, passwordData, requestUserId);
+    const response = await usuariosService.updatePassword(
+      id,
+      passwordData,
+      requestUserId,
+    );
     res.status(200).json(response);
   }
 

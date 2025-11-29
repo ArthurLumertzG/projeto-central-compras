@@ -70,6 +70,35 @@ class LojasController {
   }
 
   /**
+   * Busca lojas do usuário autenticado
+   * @route GET /lojas/minhas/lojas
+   * @access Private - Requer autenticação
+   * @param {Object} req - Objeto de requisição Express
+   * @param {string} req.user.id - UUID do usuário autenticado (do middleware JWT)
+   * @param {Object} res - Objeto de resposta Express
+   * @returns {Promise<void>} Lista de lojas do usuário
+   */
+  async getMinhasLojas(req, res) {
+    const lojas = await this.lojasService.getByUsuarioId(req.user.id);
+    res.status(200).json(new DefaultResponseDTO(true, lojas, "Lojas do usuário recuperadas com sucesso"));
+  }
+
+  /**
+   * Busca lojas por usuário ID
+   * @route GET /lojas/usuario/:usuario_id
+   * @access Public
+   * @param {Object} req - Objeto de requisição Express
+   * @param {string} req.params.usuario_id - UUID do usuário
+   * @param {Object} res - Objeto de resposta Express
+   * @returns {Promise<void>} Lista de lojas do usuário
+   */
+  async getByUsuarioId(req, res) {
+    const { usuario_id } = req.params;
+    const lojas = await this.lojasService.getByUsuarioId(usuario_id);
+    res.status(200).json(new DefaultResponseDTO(true, lojas, "Lojas do usuário recuperadas com sucesso"));
+  }
+
+  /**
    * Cria uma nova loja
    * @route POST /lojas
    * @access Private - Requer autenticação

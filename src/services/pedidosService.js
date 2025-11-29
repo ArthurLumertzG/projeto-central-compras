@@ -134,35 +134,25 @@ class PedidosService {
   /**
    * Cria um novo pedido com seus produtos (transação atômica)
    * @param {Object} data - Dados do pedido e produtos
-   * @param {string} requestUserId - ID do usuário autenticado (JWT)
+   * @param {string} requestUserId - ID do usuário autenticado (JWT) que será usado como loja_id
    * @returns {Promise<DefaultResponseDto>} Pedido criado com itens
-   * @throws {AppError} 400 se validação falhar, 403 se loja não pertence ao usuário, 404 se FK inválida, 409 se estoque insuficiente
+   * @throws {AppError} 400 se validação falhar, 404 se FK inválida, 409 se estoque insuficiente
    */
   async create(data, requestUserId) {
-    // 1. Validação com Joi
-    const { error, value } = createPedidoSchema.validate(data, { stripUnknown: true });
+    // 1. Adiciona o usuario_id como loja_id automaticamente
+    const pedidoData = {
+      ...data,
+      loja_id: requestUserId, // O usuário autenticado É a loja
+      usuario_id: requestUserId,
+    };
+
+    // 2. Validação com Joi
+    const { error, value } = createPedidoSchema.validate(pedidoData, { stripUnknown: true });
     if (error) {
       throw new AppError(error.details[0].message, 400);
     }
 
-    // 2. Verifica se loja existe
-    const lojaQuery = await database.query({
-      text: "SELECT id, usuario_id FROM lojas WHERE id = $1 AND deletado_em IS NULL",
-      values: [value.loja_id],
-    });
-
-    if (lojaQuery.rows.length === 0) {
-      throw new AppError("Loja não encontrada", 404);
-    }
-
-    const loja = lojaQuery.rows[0];
-
-    // 3. IDOR Protection: Verifica se a loja pertence ao usuário autenticado
-    if (requestUserId && loja.usuario_id !== requestUserId) {
-      throw new AppError("Você não tem permissão para criar pedidos nesta loja", 403);
-    }
-
-    // 4. Valida e busca dados dos produtos
+    // 3. Valida e busca dados dos produtos
     const produtosData = [];
     let valorTotalCalculado = 0;
 
@@ -196,7 +186,7 @@ class PedidosService {
       });
     }
 
-    // 5. Inicia transação
+    // 4. Inicia transação
     const client = await database.pool.connect();
 
     try {

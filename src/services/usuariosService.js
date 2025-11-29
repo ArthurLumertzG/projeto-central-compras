@@ -7,7 +7,13 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const { v4: uuidv4 } = require("uuid");
 const Joi = require("joi");
-const { createUsuarioSchema, loginSchema, updateUsuarioSchema, updatePasswordSchema, uuidSchema } = require("../validations/usuarioValidation");
+const {
+  createUsuarioSchema,
+  loginSchema,
+  updateUsuarioSchema,
+  updatePasswordSchema,
+  uuidSchema,
+} = require("../validations/usuarioValidation");
 
 dotenv.config();
 
@@ -50,13 +56,18 @@ class UsuariosService {
 
     // Verifica se email foi verificado
     if (!usuario.email_verificado) {
-      throw new AppError("Email não verificado. Verifique seu email antes de fazer login.", 403);
+      throw new AppError(
+        "Email não verificado. Verifique seu email antes de fazer login.",
+        403,
+      );
     }
 
     const jwtPayload = this.createJwtPayload(usuario);
     const token = jwt.sign(jwtPayload, jwtSecret, { expiresIn: "24h" });
 
-    return new DefaultResponseDto(true, "Login realizado com sucesso", { token });
+    return new DefaultResponseDto(true, "Login realizado com sucesso", {
+      token,
+    });
   }
 
   /**
@@ -72,7 +83,11 @@ class UsuariosService {
     // Remove senhas de todos os usuários
     const usuariosWithoutPasswords = usuarios.map(({ senha, ...rest }) => rest);
 
-    return new DefaultResponseDto(true, "Usuários encontrados com sucesso", usuariosWithoutPasswords);
+    return new DefaultResponseDto(
+      true,
+      "Usuários encontrados com sucesso",
+      usuariosWithoutPasswords,
+    );
   }
 
   /**
@@ -95,7 +110,11 @@ class UsuariosService {
 
     const { senha, ...usuarioWithoutPassword } = usuario;
 
-    return new DefaultResponseDto(true, "Usuário encontrado com sucesso", usuarioWithoutPassword);
+    return new DefaultResponseDto(
+      true,
+      "Usuário encontrado com sucesso",
+      usuarioWithoutPassword,
+    );
   }
 
   /**
@@ -116,7 +135,11 @@ class UsuariosService {
 
     const { senha, ...usuarioWithoutPassword } = usuario;
 
-    return new DefaultResponseDto(true, "Usuário encontrado com sucesso", usuarioWithoutPassword);
+    return new DefaultResponseDto(
+      true,
+      "Usuário encontrado com sucesso",
+      usuarioWithoutPassword,
+    );
   }
 
   /**
@@ -144,7 +167,10 @@ class UsuariosService {
     if (endereco_id) {
       const enderecoExists = await this.enderecosService.exists(endereco_id);
       if (!enderecoExists) {
-        throw new AppError("Endereço não encontrado. Crie o endereço primeiro antes de criar o usuário.", 404);
+        throw new AppError(
+          "Endereço não encontrado. Crie o endereço primeiro antes de criar o usuário.",
+          404,
+        );
       }
     }
 
@@ -169,7 +195,9 @@ class UsuariosService {
     const jwtPayload = this.createJwtPayload(createdUsuario);
     const token = jwt.sign(jwtPayload, jwtSecret, { expiresIn: "24h" });
 
-    return new DefaultResponseDto(true, "Usuário criado com sucesso", { token });
+    return new DefaultResponseDto(true, "Usuário criado com sucesso", {
+      token,
+    });
   }
 
   /**
@@ -202,7 +230,10 @@ class UsuariosService {
     // SEGURANÇA CRÍTICA: Usuário só pode atualizar a si mesmo
     // (Exceção: admins poderão atualizar outros - implementar middleware de autorização)
     if (id !== requestUserId) {
-      throw new AppError("Você não tem permissão para atualizar este usuário", 403);
+      throw new AppError(
+        "Você não tem permissão para atualizar este usuário",
+        403,
+      );
     }
 
     // Validação dos dados de atualização
@@ -223,9 +254,14 @@ class UsuariosService {
 
     // VALIDAÇÃO: Se está alterando endereco_id, verifica se existe
     if (value.endereco_id) {
-      const enderecoExists = await this.enderecosService.exists(value.endereco_id);
+      const enderecoExists = await this.enderecosService.exists(
+        value.endereco_id,
+      );
       if (!enderecoExists) {
-        throw new AppError("Endereço não encontrado. Crie ou use um endereço válido.", 404);
+        throw new AppError(
+          "Endereço não encontrado. Crie ou use um endereço válido.",
+          404,
+        );
       }
     }
 
@@ -239,7 +275,11 @@ class UsuariosService {
     }
 
     const { senha, ...usuarioWithoutPassword } = updatedUsuario;
-    return new DefaultResponseDto(true, "Usuário atualizado com sucesso", usuarioWithoutPassword);
+    return new DefaultResponseDto(
+      true,
+      "Usuário atualizado com sucesso",
+      usuarioWithoutPassword,
+    );
   }
 
   /**
@@ -263,7 +303,10 @@ class UsuariosService {
 
     // SEGURANÇA: Usuário só pode alterar sua própria senha
     if (id !== requestUserId) {
-      throw new AppError("Você não tem permissão para alterar a senha deste usuário", 403);
+      throw new AppError(
+        "Você não tem permissão para alterar a senha deste usuário",
+        403,
+      );
     }
 
     // Validação dos dados
@@ -323,7 +366,10 @@ class UsuariosService {
     // SEGURANÇA: Usuário só pode deletar a si mesmo
     // (Exceção: admins poderão deletar outros - implementar middleware de autorização)
     if (id !== requestUserId) {
-      throw new AppError("Você não tem permissão para deletar este usuário", 403);
+      throw new AppError(
+        "Você não tem permissão para deletar este usuário",
+        403,
+      );
     }
 
     const usuarioIsDeleted = await this.usuariosModel.delete(id);
