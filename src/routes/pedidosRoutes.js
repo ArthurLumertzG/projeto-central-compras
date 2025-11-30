@@ -277,8 +277,12 @@ module.exports = router;
  * /pedidos:
  *   get:
  *     summary: Lista todos os pedidos
+<<<<<<< HEAD
  *     description: Retorna todos os pedidos não deletados do sistema
  *     tags: [Pedidos]
+=======
+ *     tags: [Pedidos - Davi da Silva Valvassori]
+>>>>>>> main
  *     responses:
  *       200:
  *         description: Lista de pedidos retornada com sucesso
@@ -303,9 +307,14 @@ module.exports = router;
  * @swagger
  * /pedidos/status/{status}:
  *   get:
+<<<<<<< HEAD
  *     summary: Busca pedidos por status
  *     description: Retorna todos os pedidos com o status especificado
  *     tags: [Pedidos]
+=======
+ *     summary: Busca um pedido pelo ID
+ *     tags: [Pedidos - Davi da Silva Valvassori]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: status
@@ -339,8 +348,12 @@ module.exports = router;
  * /pedidos/search/date:
  *   get:
  *     summary: Busca pedidos por data
+<<<<<<< HEAD
  *     description: Retorna todos os pedidos criados na data especificada
  *     tags: [Pedidos]
+=======
+ *     tags: [Pedidos - Davi da Silva Valvassori]
+>>>>>>> main
  *     parameters:
  *       - in: query
  *         name: date
@@ -411,11 +424,16 @@ module.exports = router;
  * @swagger
  * /pedidos:
  *   post:
+<<<<<<< HEAD
  *     summary: Cria um novo pedido com seus produtos (transação atômica)
  *     description: Cria um pedido validando loja, produtos e estoque. Atualiza estoque automaticamente. Requer autenticação JWT.
  *     tags: [Pedidos]
  *     security:
  *       - bearerAuth: []
+=======
+ *     summary: Cria um novo pedido
+ *     tags: [Pedidos - Davi da Silva Valvassori]
+>>>>>>> main
  *     requestBody:
  *       required: true
  *       content:
@@ -471,10 +489,14 @@ module.exports = router;
  * /pedidos/{id}:
  *   patch:
  *     summary: Atualiza um pedido existente
+<<<<<<< HEAD
  *     description: Atualiza parcialmente os dados de um pedido. Apenas pedidos com status 'pendente' podem ser editados. Requer autenticação JWT e IDOR protection.
  *     tags: [Pedidos]
  *     security:
  *       - bearerAuth: []
+=======
+ *     tags: [Pedidos - Davi da Silva Valvassori]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id
@@ -529,11 +551,16 @@ module.exports = router;
  * @swagger
  * /pedidos/{id}:
  *   delete:
+<<<<<<< HEAD
  *     summary: Deleta um pedido (soft delete)
  *     description: Remove logicamente um pedido e seus itens. Apenas pedidos 'pendente' ou 'cancelado' podem ser deletados. Requer autenticação JWT e IDOR protection.
  *     tags: [Pedidos]
  *     security:
  *       - bearerAuth: []
+=======
+ *     summary: Remove um pedido
+ *     tags: [Pedidos - Davi da Silva Valvassori]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id

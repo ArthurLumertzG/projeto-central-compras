@@ -211,9 +211,14 @@ module.exports = router;
  * @swagger
  * /produtos:
  *   get:
+<<<<<<< HEAD
  *     summary: Lista todos os produtos ativos (não deletados)
  *     description: Retorna lista de todos os produtos disponíveis no sistema. Produtos com soft delete não são exibidos.
  *     tags: [Produtos]
+=======
+ *     summary: Lista todos os produtos
+ *     tags: [Produtos - Arthur Lumertz Guimarães]
+>>>>>>> main
  *     responses:
  *       200:
  *         description: Lista de produtos retornada com sucesso (pode ser vazia)
@@ -267,9 +272,14 @@ module.exports = router;
  * @swagger
  * /produtos/id/{id}:
  *   get:
+<<<<<<< HEAD
  *     summary: Busca um produto específico por ID
  *     description: Retorna os dados completos de um produto através do seu UUID
  *     tags: [Produtos]
+=======
+ *     summary: Busca um produto pelo ID
+ *     tags: [Produtos - Arthur Lumertz Guimarães]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id
@@ -339,9 +349,14 @@ module.exports = router;
  * @swagger
  * /produtos/nome/{nome}:
  *   get:
+<<<<<<< HEAD
  *     summary: Busca um produto por nome (case-insensitive)
  *     description: Retorna os dados de um produto através do seu nome. A busca é case-insensitive.
  *     tags: [Produtos]
+=======
+ *     summary: Busca um produto pelo nome
+ *     tags: [Produtos - Arthur Lumertz Guimarães]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: nome
@@ -413,10 +428,14 @@ module.exports = router;
  * /produtos:
  *   post:
  *     summary: Cria um novo produto
+<<<<<<< HEAD
  *     description: Cadastra um novo produto no sistema. Requer autenticação via JWT. Valida todos os campos e verifica se o nome não está duplicado.
  *     tags: [Produtos]
  *     security:
  *       - bearerAuth: []
+=======
+ *     tags: [Produtos - Arthur Lumertz Guimarães]
+>>>>>>> main
  *     requestBody:
  *       required: true
  *       description: Dados do produto a ser criado
@@ -517,11 +536,16 @@ module.exports = router;
  * @swagger
  * /produtos/{id}:
  *   patch:
+<<<<<<< HEAD
  *     summary: Atualiza parcialmente um produto existente
  *     description: Atualiza um ou mais campos de um produto. Requer autenticação via JWT. Todos os campos são opcionais, mas ao menos 1 deve ser fornecido. Campos sensíveis (id, timestamps) não podem ser alterados.
  *     tags: [Produtos]
  *     security:
  *       - bearerAuth: []
+=======
+ *     summary: Atualiza um produto existente
+ *     tags: [Produtos - Arthur Lumertz Guimarães]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id
@@ -638,11 +662,16 @@ module.exports = router;
  * @swagger
  * /produtos/{id}:
  *   delete:
+<<<<<<< HEAD
  *     summary: Remove um produto (soft delete)
  *     description: Marca um produto como deletado sem removê-lo fisicamente do banco de dados. O produto não aparecerá mais em listagens. Requer autenticação via JWT.
  *     tags: [Produtos]
  *     security:
  *       - bearerAuth: []
+=======
+ *     summary: Remove um produto
+ *     tags: [Produtos - Arthur Lumertz Guimarães]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id

@@ -186,9 +186,14 @@ module.exports = router;
  * @swagger
  * /campanhas:
  *   get:
+<<<<<<< HEAD
  *     summary: Lista todas as campanhas promocionais
  *     description: Retorna todas as campanhas não deletadas do sistema
  *     tags: [Campanhas]
+=======
+ *     summary: Lista todas as campanhas
+ *     tags: [Campanhas - Gabriel Pereira José]
+>>>>>>> main
  *     responses:
  *       200:
  *         description: Lista de campanhas retornada com sucesso
@@ -260,8 +265,12 @@ module.exports = router;
  * /campanhas/{id}:
  *   get:
  *     summary: Busca uma campanha pelo ID
+<<<<<<< HEAD
  *     description: Retorna os dados completos de uma campanha específica
  *     tags: [Campanhas]
+=======
+ *     tags: [Campanhas - Gabriel Pereira José]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id
@@ -319,11 +328,16 @@ module.exports = router;
  * @swagger
  * /campanhas:
  *   post:
+<<<<<<< HEAD
  *     summary: Cria uma nova campanha promocional
  *     description: Cria uma nova campanha com validação de dados e verificação de nome único
  *     tags: [Campanhas]
  *     security:
  *       - bearerAuth: []
+=======
+ *     summary: Cria uma nova campanha
+ *     tags: [Campanhas - Gabriel Pereira José]
+>>>>>>> main
  *     requestBody:
  *       required: true
  *       content:
@@ -396,10 +410,14 @@ module.exports = router;
  * /campanhas/{id}:
  *   patch:
  *     summary: Atualiza uma campanha existente
+<<<<<<< HEAD
  *     description: Atualiza parcialmente os dados de uma campanha com validação
  *     tags: [Campanhas]
  *     security:
  *       - bearerAuth: []
+=======
+ *     tags: [Campanhas - Gabriel Pereira José]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id
@@ -493,11 +511,16 @@ module.exports = router;
  * @swagger
  * /campanhas/{id}:
  *   delete:
+<<<<<<< HEAD
  *     summary: Deleta uma campanha (soft delete)
  *     description: Remove logicamente uma campanha do sistema sem deletar os dados permanentemente
  *     tags: [Campanhas]
  *     security:
  *       - bearerAuth: []
+=======
+ *     summary: Remove uma campanha
+ *     tags: [Campanhas - Gabriel Pereira José]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id

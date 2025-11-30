@@ -345,8 +345,12 @@ module.exports = router;
  * /usuarios/login:
  *   post:
  *     summary: Realiza login do usuário
+<<<<<<< HEAD
  *     description: Autentica o usuário com email e senha, retornando um token JWT para uso em requisições protegidas
  *     tags: [Usuários]
+=======
+ *     tags: [Usuários - Carlos Miguel Webber Model]
+>>>>>>> main
  *     requestBody:
  *       required: true
  *       content:
@@ -475,10 +479,14 @@ module.exports = router;
  * /usuarios:
  *   get:
  *     summary: Lista todos os usuários
+<<<<<<< HEAD
  *     description: Retorna uma lista de todos os usuários cadastrados (sem senhas)
  *     tags: [Usuários]
  *     security:
  *       - bearerAuth: []
+=======
+ *     tags: [Usuários - Carlos Miguel Webber Model]
+>>>>>>> main
  *     responses:
  *       200:
  *         description: Lista de usuários retornada com sucesso
@@ -526,10 +534,14 @@ module.exports = router;
  * /usuarios/{id}:
  *   get:
  *     summary: Busca um usuário pelo ID
+<<<<<<< HEAD
  *     description: Retorna os dados de um usuário específico (sem senha)
  *     tags: [Usuários]
  *     security:
  *       - bearerAuth: []
+=======
+ *     tags: [Usuários - Carlos Miguel Webber Model]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id
@@ -588,10 +600,14 @@ module.exports = router;
  * /usuarios/email/{email}:
  *   get:
  *     summary: Busca um usuário pelo email
+<<<<<<< HEAD
  *     description: Retorna os dados de um usuário específico através do seu email (sem senha)
  *     tags: [Usuários]
  *     security:
  *       - bearerAuth: []
+=======
+ *     tags: [Usuários - Carlos Miguel Webber Model]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: email
@@ -631,7 +647,7 @@ module.exports = router;
  * /usuarios:
  *   post:
  *     summary: Cria um novo usuário
- *     tags: [Usuários]
+ *     tags: [Usuários - Carlos Miguel Webber Model]
  *     requestBody:
  *       required: true
  *       content:
@@ -672,11 +688,16 @@ module.exports = router;
  * @swagger
  * /usuarios/{id}:
  *   patch:
+<<<<<<< HEAD
  *     summary: Atualiza dados do usuário
  *     description: Permite que o usuário autenticado atualize seus próprios dados (não pode atualizar outros usuários)
  *     tags: [Usuários]
  *     security:
  *       - bearerAuth: []
+=======
+ *     summary: Atualiza um usuário existente
+ *     tags: [Usuários - Carlos Miguel Webber Model]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id
@@ -765,6 +786,7 @@ module.exports = router;
 
 /**
  * @swagger
+<<<<<<< HEAD
  * /usuarios/{id}/senha:
  *   put:
  *     summary: Atualiza a senha do usuário
@@ -772,6 +794,12 @@ module.exports = router;
  *     tags: [Usuários]
  *     security:
  *       - bearerAuth: []
+=======
+ * /usuarios/{id}:
+ *   delete:
+ *     summary: Remove um usuário
+ *     tags: [Usuários - Carlos Miguel Webber Model]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id
