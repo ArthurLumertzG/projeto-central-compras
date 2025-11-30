@@ -2,66 +2,201 @@ const express = require("express");
 const router = express.Router();
 const usuariosController = require("../controllers/usuariosController");
 const asyncHandler = require("../middlewares/asyncHandler");
+const { authenticate } = require("../middlewares/authMiddleware");
 
-router.get("/", asyncHandler(usuariosController.getAll));
+// ========== Rotas Públicas (sem autenticação) ==========
+
+/**
+ * @route   POST /api/usuarios/login
+ * @desc    Login de usuário
+ * @access  Public
+ */
 router.post("/login", asyncHandler(usuariosController.login));
-router.get("/:id", asyncHandler(usuariosController.getById));
-router.get("/email/:email", asyncHandler(usuariosController.getByEmail));
-router.post("/", asyncHandler(usuariosController.create));
-router.patch("/:id", asyncHandler(usuariosController.update));
-router.delete("/:id", asyncHandler(usuariosController.delete));
+
+/**
+ * @route   POST /api/usuarios/cadastro
+ * @desc    Cadastro de novo usuário
+ * @access  Public
+ */
+router.post("/cadastro", asyncHandler(usuariosController.create));
+
+// ========== Rotas Privadas (requerem autenticação) ==========
+
+/**
+ * @route   GET /api/usuarios
+ * @desc    Lista todos os usuários
+ * @access  Private
+ */
+router.get("/", authenticate, asyncHandler(usuariosController.getAll));
+
+/**
+ * @route   GET /api/usuarios/:id
+ * @desc    Busca usuário por ID
+ * @access  Private
+ */
+router.get("/:id", authenticate, asyncHandler(usuariosController.getById));
+
+/**
+ * @route   GET /api/usuarios/email/:email
+ * @desc    Busca usuário por email
+ * @access  Private
+ */
+router.get("/email/:email", authenticate, asyncHandler(usuariosController.getByEmail));
+
+/**
+ * @route   PATCH /api/usuarios/:id
+ * @desc    Atualiza dados do usuário (apenas o próprio usuário)
+ * @access  Private
+ */
+router.patch("/:id", authenticate, asyncHandler(usuariosController.update));
+
+/**
+ * @route   PUT /api/usuarios/:id/senha
+ * @desc    Atualiza senha do usuário
+ * @access  Private
+ */
+router.put("/:id/senha", authenticate, asyncHandler(usuariosController.updatePassword));
+
+/**
+ * @route   DELETE /api/usuarios/:id
+ * @desc    Deleta usuário (soft delete)
+ * @access  Private
+ */
+router.delete("/:id", authenticate, asyncHandler(usuariosController.delete));
 
 module.exports = router;
 
 /**
  * @swagger
  * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *       description: Token JWT obtido através do login ou cadastro
  *   schemas:
- *     Usuario:
+ *     UsuarioCadastro:
  *       type: object
  *       required:
  *         - nome
+ *         - sobrenome
  *         - email
- *         - user
- *         - password
+ *         - senha
  *         - confirmedPassword
- *         - level
- *       description: Representa um usuário na central de compras.
+ *       description: Dados necessários para cadastro de um novo usuário.
  *       properties:
- *         id:
- *           type: string
- *           format: uuid
- *           description: ID único do usuário gerado automaticamente
- *           example: "a9383549-13f1-449a-9b0a-6c72fce4dcee"
  *         nome:
  *           type: string
+ *           minLength: 2
+ *           maxLength: 100
  *           description: Nome do usuário
- *           example: "Carlos Webber"
+ *           example: "João"
+ *         sobrenome:
+ *           type: string
+ *           minLength: 2
+ *           maxLength: 100
+ *           description: Sobrenome do usuário
+ *           example: "Silva"
  *         email:
  *           type: string
  *           format: email
- *           description: Email do usuário
- *           example: "usuario@teste.com"
- *         user:
- *           type: string
- *           description: Nome de usuário para login
- *           example: "carlos.webber"
- *         password:
+ *           maxLength: 255
+ *           description: Email do usuário (será convertido para lowercase)
+ *           example: "joao.silva@example.com"
+ *         senha:
  *           type: string
  *           format: password
- *           description: Senha do usuário
- *           example: "senha123"
+ *           minLength: 8
+ *           maxLength: 100
+ *           description: Senha forte (mín. 8 caracteres, deve conter maiúscula, minúscula, número e caractere especial)
+ *           example: "Senha@123"
  *         confirmedPassword:
  *           type: string
  *           format: password
- *           description: Confirmação da senha do usuário
- *           example: "senha123"
- *         level:
+ *           description: Confirmação da senha (deve ser igual ao campo senha)
+ *           example: "Senha@123"
+ *         telefone:
  *           type: string
- *           description: Nível de acesso do usuário
- *           example: "admin"
- *         status:
+ *           minLength: 10
+ *           maxLength: 20
+ *           description: Telefone no formato internacional (opcional)
+ *           example: "+5511999999999"
+ *         funcao:
  *           type: string
+<<<<<<< HEAD
+ *           maxLength: 100
+ *           description: Função/cargo do usuário (opcional)
+ *           example: "Gerente de Compras"
+ *         endereco_id:
+ *           type: string
+ *           format: uuid
+ *           description: ID do endereço do usuário (opcional)
+ *           example: "a9383549-13f1-449a-9b0a-6c72fce4dcee"
+ *     UsuarioAtualizar:
+ *       type: object
+ *       description: Dados para atualização de perfil (todos os campos são opcionais).
+ *       properties:
+ *         nome:
+ *           type: string
+ *           minLength: 2
+ *           maxLength: 100
+ *           description: Nome do usuário
+ *           example: "João Pedro"
+ *         sobrenome:
+ *           type: string
+ *           minLength: 2
+ *           maxLength: 100
+ *           description: Sobrenome do usuário
+ *           example: "Silva Santos"
+ *         email:
+ *           type: string
+ *           format: email
+ *           maxLength: 255
+ *           description: Email do usuário (marcará email_verificado como false se alterado)
+ *           example: "joao.pedro@example.com"
+ *         telefone:
+ *           type: string
+ *           minLength: 10
+ *           maxLength: 20
+ *           description: Telefone no formato internacional
+ *           example: "+5511888888888"
+ *         funcao:
+ *           type: string
+ *           maxLength: 100
+ *           description: Função/cargo do usuário
+ *           example: "Diretor de Compras"
+ *         endereco_id:
+ *           type: string
+ *           format: uuid
+ *           description: ID do endereço do usuário
+ *           example: "b1234567-89ab-cdef-0123-456789abcdef"
+ *     AtualizarSenha:
+ *       type: object
+ *       required:
+ *         - senhaAtual
+ *         - novaSenha
+ *         - confirmedPassword
+ *       description: Dados para atualização de senha.
+ *       properties:
+ *         senhaAtual:
+ *           type: string
+ *           format: password
+ *           description: Senha atual do usuário
+ *           example: "SenhaAntiga@123"
+ *         novaSenha:
+ *           type: string
+ *           format: password
+ *           minLength: 8
+ *           maxLength: 100
+ *           description: Nova senha (deve ser diferente da atual e atender requisitos de complexidade)
+ *           example: "NovaSenha@456"
+ *         confirmedPassword:
+ *           type: string
+ *           format: password
+ *           description: Confirmação da nova senha
+ *           example: "NovaSenha@456"
+=======
  *           description: Status do usuário
  *           example: "on"
  *     UsuarioInput:
@@ -106,26 +241,27 @@ module.exports = router;
  *           type: string
  *           description: Status do usuário
  *           example: "on"
+>>>>>>> main
  *     LoginCredentials:
  *       type: object
  *       required:
  *         - email
- *         - password
+ *         - senha
  *       description: Credenciais para login do usuário.
  *       properties:
  *         email:
  *           type: string
  *           format: email
  *           description: Email do usuário
- *           example: "usuario@teste.com"
- *         password:
+ *           example: "joao.silva@example.com"
+ *         senha:
  *           type: string
  *           format: password
  *           description: Senha do usuário
- *           example: "senha123"
- *     UsuarioPublic:
+ *           example: "Senha@123"
+ *     UsuarioPublico:
  *       type: object
- *       description: Representa um usuário exposto em respostas (sem campos sensíveis).
+ *       description: Dados públicos do usuário (sem campos sensíveis como senha).
  *       properties:
  *         id:
  *           type: string
@@ -135,24 +271,73 @@ module.exports = router;
  *         nome:
  *           type: string
  *           description: Nome do usuário
- *           example: "Carlos Webber"
+ *           example: "João"
+ *         sobrenome:
+ *           type: string
+ *           description: Sobrenome do usuário
+ *           example: "Silva"
  *         email:
  *           type: string
  *           format: email
  *           description: Email do usuário
- *           example: "usuario@teste.com"
- *         user:
+ *           example: "joao.silva@example.com"
+ *         email_verificado:
+ *           type: boolean
+ *           description: Indica se o email foi verificado
+ *           example: true
+ *         telefone:
  *           type: string
- *           description: Nome de usuário
- *           example: "carlos.webber"
- *         level:
+ *           description: Telefone do usuário
+ *           example: "+5511999999999"
+ *         funcao:
  *           type: string
- *           description: Nível de acesso do usuário
- *           example: "admin"
- *         status:
+ *           description: Função/cargo do usuário
+ *           example: "Gerente de Compras"
+ *         endereco_id:
  *           type: string
- *           description: Status do usuário
- *           example: "on"
+ *           format: uuid
+ *           description: ID do endereço do usuário
+ *           example: "a9383549-13f1-449a-9b0a-6c72fce4dcee"
+ *         criado_em:
+ *           type: string
+ *           format: date-time
+ *           description: Data de criação do usuário
+ *           example: "2025-10-18T10:30:00.000Z"
+ *         atualizado_em:
+ *           type: string
+ *           format: date-time
+ *           description: Data da última atualização
+ *           example: "2025-10-18T15:45:00.000Z"
+ *     TokenResponse:
+ *       type: object
+ *       properties:
+ *         token:
+ *           type: string
+ *           description: Token JWT para autenticação
+ *           example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOTM4MzU0OS0xM2YxLTQ0OWEtOWIwYS02YzcyZmNlNGRjZWUiLCJub21lIjoiSm_Do28iLCJzb2JyZW5vbWUiOiJTaWx2YSIsImVtYWlsIjoiam9hby5zaWx2YUBleGFtcGxlLmNvbSIsImZ1bmNhbyI6IkdlcmVudGUgZGUgQ29tcHJhcyIsImVtYWlsX3ZlcmlmaWNhZG8iOnRydWUsImlhdCI6MTY5NzYzMjgwMCwiZXhwIjoxNjk3NzE5MjAwfQ.abc123def456"
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: false
+ *         message:
+ *           type: string
+ *           example: "Mensagem de erro"
+ *         data:
+ *           type: null
+ *           example: null
+ *     SuccessResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: true
+ *         message:
+ *           type: string
+ *           example: "Operação realizada com sucesso"
+ *         data:
+ *           type: object
  */
 
 /**
@@ -160,7 +345,12 @@ module.exports = router;
  * /usuarios/login:
  *   post:
  *     summary: Realiza login do usuário
+<<<<<<< HEAD
+ *     description: Autentica o usuário com email e senha, retornando um token JWT para uso em requisições protegidas
+ *     tags: [Usuários]
+=======
  *     tags: [Usuários - Carlos Miguel Webber Model]
+>>>>>>> main
  *     requestBody:
  *       required: true
  *       content:
@@ -182,14 +372,61 @@ module.exports = router;
  *                   type: string
  *                   example: "Login realizado com sucesso"
  *                 data:
- *                   type: object
- *                   properties:
- *                     token:
- *                       type: string
- *                       description: JWT Token
- *                       example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOTM4MzU0OS0xM2YxLTQ0OWEtOWIwYS02YzcyZmNlNGRjZWUiLCJlbWFpbCI6InVzdWFyaW9AdGVzdGUuY29tIiwibGV2ZWwiOiJhZG1pbiIsInN0YXR1cyI6Im9uIiwiaWF0IjoxNjk1NjYzNjAwLCJleHAiOjE2OTU2NjcyMDB9.abcdefghijklmnopqrstuvwxyz123456"
+ *                   $ref: '#/components/schemas/TokenResponse'
+ *       400:
+ *         description: Dados inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               emailInvalido:
+ *                 value:
+ *                   success: false
+ *                   message: "Email inválido"
+ *                   data: null
  *       401:
- *         description: Usuário ou senha inválidos
+ *         description: Credenciais inválidas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               credenciaisInvalidas:
+ *                 value:
+ *                   success: false
+ *                   message: "Credenciais inválidas"
+ *                   data: null
+ *       403:
+ *         description: Email não verificado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               emailNaoVerificado:
+ *                 value:
+ *                   success: false
+ *                   message: "Email não verificado. Verifique seu email antes de fazer login."
+ *                   data: null
+ */
+
+/**
+ * @swagger
+ * /usuarios/cadastro:
+ *   post:
+ *     summary: Cadastra um novo usuário
+ *     description: Cria um novo usuário no sistema e retorna um token JWT para autenticação imediata
+ *     tags: [Usuários]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UsuarioCadastro'
+ *     responses:
+ *       201:
+ *         description: Usuário criado com sucesso
  *         content:
  *           application/json:
  *             schema:
@@ -197,10 +434,44 @@ module.exports = router;
  *               properties:
  *                 success:
  *                   type: boolean
- *                   example: false
+ *                   example: true
  *                 message:
  *                   type: string
- *                   example: "Usuário ou senha inválidos"
+ *                   example: "Usuário criado com sucesso"
+ *                 data:
+ *                   $ref: '#/components/schemas/TokenResponse'
+ *       400:
+ *         description: Dados inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               senhaFraca:
+ *                 value:
+ *                   success: false
+ *                   message: "Senha deve ter pelo menos 8 caracteres"
+ *                   data: null
+ *               senhasNaoCoincidem:
+ *                 value:
+ *                   success: false
+ *                   message: "As senhas não coincidem"
+ *                   data: null
+ *               campoObrigatorio:
+ *                 value:
+ *                   success: false
+ *                   message: "Nome é obrigatório"
+ *                   data: null
+ *       409:
+ *         description: Já existe um usuário com este email
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: "Já existe um usuário com este email"
+ *               data: null
  */
 
 /**
@@ -208,7 +479,14 @@ module.exports = router;
  * /usuarios:
  *   get:
  *     summary: Lista todos os usuários
+<<<<<<< HEAD
+ *     description: Retorna uma lista de todos os usuários cadastrados (sem senhas)
+ *     tags: [Usuários]
+ *     security:
+ *       - bearerAuth: []
+=======
  *     tags: [Usuários - Carlos Miguel Webber Model]
+>>>>>>> main
  *     responses:
  *       200:
  *         description: Lista de usuários retornada com sucesso
@@ -226,7 +504,29 @@ module.exports = router;
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/UsuarioPublic'
+ *                     $ref: '#/components/schemas/UsuarioPublico'
+ *       401:
+ *         description: Token não fornecido ou inválido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               tokenNaoFornecido:
+ *                 value:
+ *                   success: false
+ *                   message: "Token não fornecido"
+ *                   data: null
+ *               tokenInvalido:
+ *                 value:
+ *                   success: false
+ *                   message: "Token inválido"
+ *                   data: null
+ *               tokenExpirado:
+ *                 value:
+ *                   success: false
+ *                   message: "Token expirado"
+ *                   data: null
  */
 
 /**
@@ -234,14 +534,23 @@ module.exports = router;
  * /usuarios/{id}:
  *   get:
  *     summary: Busca um usuário pelo ID
+<<<<<<< HEAD
+ *     description: Retorna os dados de um usuário específico (sem senha)
+ *     tags: [Usuários]
+ *     security:
+ *       - bearerAuth: []
+=======
  *     tags: [Usuários - Carlos Miguel Webber Model]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: ID do usuário
+ *           format: uuid
+ *         description: ID do usuário (formato UUID)
+ *         example: "a9383549-13f1-449a-9b0a-6c72fce4dcee"
  *     responses:
  *       200:
  *         description: Usuário encontrado com sucesso
@@ -257,9 +566,33 @@ module.exports = router;
  *                   type: string
  *                   example: "Usuário encontrado com sucesso"
  *                 data:
- *                   $ref: '#/components/schemas/UsuarioPublic'
+ *                   $ref: '#/components/schemas/UsuarioPublico'
+ *       400:
+ *         description: ID inválido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: "ID inválido"
+ *               data: null
+ *       401:
+ *         description: Não autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       404:
  *         description: Usuário não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: "Usuário não encontrado"
+ *               data: null
  */
 
 /**
@@ -267,14 +600,23 @@ module.exports = router;
  * /usuarios/email/{email}:
  *   get:
  *     summary: Busca um usuário pelo email
+<<<<<<< HEAD
+ *     description: Retorna os dados de um usuário específico através do seu email (sem senha)
+ *     tags: [Usuários]
+ *     security:
+ *       - bearerAuth: []
+=======
  *     tags: [Usuários - Carlos Miguel Webber Model]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: email
  *         required: true
  *         schema:
  *           type: string
+ *           format: email
  *         description: Email do usuário
+ *         example: "joao.silva@example.com"
  *     responses:
  *       200:
  *         description: Usuário encontrado com sucesso
@@ -290,6 +632,11 @@ module.exports = router;
  *                   type: string
  *                   example: "Usuário encontrado com sucesso"
  *                 data:
+<<<<<<< HEAD
+ *                   $ref: '#/components/schemas/UsuarioPublico'
+ *       400:
+ *         description: Email inválido
+=======
  *                   $ref: '#/components/schemas/UsuarioPublic'
  *       404:
  *         description: Usuário não encontrado
@@ -310,49 +657,66 @@ module.exports = router;
  *     responses:
  *       201:
  *         description: Usuário criado com sucesso
+>>>>>>> main
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Usuário criado com sucesso"
- *                 data:
- *                   type: object
- *                   properties:
- *                     token:
- *                       type: string
- *                       description: JWT Token
- *                       example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
- *       400:
- *         description: Dados inválidos
- *       409:
- *         description: Já existe um usuário com este email
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: "Email inválido"
+ *               data: null
+ *       401:
+ *         description: Não autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Usuário não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: "Usuário não encontrado"
+ *               data: null
  */
 
 /**
  * @swagger
  * /usuarios/{id}:
  *   patch:
+<<<<<<< HEAD
+ *     summary: Atualiza dados do usuário
+ *     description: Permite que o usuário autenticado atualize seus próprios dados (não pode atualizar outros usuários)
+ *     tags: [Usuários]
+ *     security:
+ *       - bearerAuth: []
+=======
  *     summary: Atualiza um usuário existente
  *     tags: [Usuários - Carlos Miguel Webber Model]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: ID do usuário
+ *           format: uuid
+ *         description: ID do usuário a ser atualizado (deve ser o mesmo do token JWT)
+ *         example: "a9383549-13f1-449a-9b0a-6c72fce4dcee"
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
+<<<<<<< HEAD
+ *             $ref: '#/components/schemas/UsuarioAtualizar'
+=======
  *             $ref: '#/components/schemas/UsuarioInput'
+>>>>>>> main
  *     responses:
  *       200:
  *         description: Usuário atualizado com sucesso
@@ -368,27 +732,184 @@ module.exports = router;
  *                   type: string
  *                   example: "Usuário atualizado com sucesso"
  *                 data:
- *                   $ref: '#/components/schemas/UsuarioPublic'
+ *                   $ref: '#/components/schemas/UsuarioPublico'
+ *       400:
+ *         description: Dados inválidos ou pelo menos um campo deve ser fornecido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               campoInvalido:
+ *                 value:
+ *                   success: false
+ *                   message: "Email inválido"
+ *                   data: null
+ *               nenhumCampo:
+ *                 value:
+ *                   success: false
+ *                   message: "Pelo menos um campo deve ser informado para atualização"
+ *                   data: null
+ *       401:
+ *         description: Não autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: Sem permissão para atualizar este usuário
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: "Você não tem permissão para atualizar este usuário"
+ *               data: null
  *       404:
  *         description: Usuário não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       409:
+ *         description: Email já está em uso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: "Este email já está em uso"
+ *               data: null
  */
 
 /**
  * @swagger
+<<<<<<< HEAD
+ * /usuarios/{id}/senha:
+ *   put:
+ *     summary: Atualiza a senha do usuário
+ *     description: Permite que o usuário autenticado altere sua própria senha (requer senha atual)
+ *     tags: [Usuários]
+ *     security:
+ *       - bearerAuth: []
+=======
  * /usuarios/{id}:
  *   delete:
  *     summary: Remove um usuário
  *     tags: [Usuários - Carlos Miguel Webber Model]
+>>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: ID do usuário
+ *           format: uuid
+ *         description: ID do usuário (deve ser o mesmo do token JWT)
+ *         example: "a9383549-13f1-449a-9b0a-6c72fce4dcee"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/AtualizarSenha'
  *     responses:
  *       200:
- *         description: Usuário removido com sucesso
+ *         description: Senha atualizada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Senha atualizada com sucesso"
+ *                 data:
+ *                   type: null
+ *                   example: null
+ *       400:
+ *         description: Dados inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               senhaFraca:
+ *                 value:
+ *                   success: false
+ *                   message: "Nova senha deve ter pelo menos 8 caracteres"
+ *                   data: null
+ *               senhasNaoCoincidem:
+ *                 value:
+ *                   success: false
+ *                   message: "As senhas não coincidem"
+ *                   data: null
+ *               mesmasenha:
+ *                 value:
+ *                   success: false
+ *                   message: "Nova senha deve ser diferente da senha atual"
+ *                   data: null
+ *       401:
+ *         description: Não autenticado ou senha atual incorreta
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               naoAutenticado:
+ *                 value:
+ *                   success: false
+ *                   message: "Usuário não autenticado"
+ *                   data: null
+ *               senhaIncorreta:
+ *                 value:
+ *                   success: false
+ *                   message: "Senha atual incorreta"
+ *                   data: null
+ *       403:
+ *         description: Sem permissão para alterar senha deste usuário
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: "Você não tem permissão para alterar a senha deste usuário"
+ *               data: null
+ *       404:
+ *         description: Usuário não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+
+/**
+ * @swagger
+ * /usuarios/{id}:
+ *   delete:
+ *     summary: Remove um usuário (soft delete)
+ *     description: Permite que o usuário autenticado delete sua própria conta. O usuário não é removido fisicamente do banco, apenas marcado como deletado.
+ *     tags: [Usuários]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID do usuário a ser deletado (deve ser o mesmo do token JWT)
+ *         example: "a9383549-13f1-449a-9b0a-6c72fce4dcee"
+ *     responses:
+ *       200:
+ *         description: Usuário deletado com sucesso
  *         content:
  *           application/json:
  *             schema:
@@ -403,6 +924,54 @@ module.exports = router;
  *                 data:
  *                   type: null
  *                   example: null
+ *       400:
+ *         description: ID inválido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: "ID inválido"
+ *               data: null
+ *       401:
+ *         description: Não autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: "Usuário não autenticado"
+ *               data: null
+ *       403:
+ *         description: Sem permissão para deletar este usuário
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: "Você não tem permissão para deletar este usuário"
+ *               data: null
  *       404:
  *         description: Usuário não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: "Usuário não encontrado"
+ *               data: null
+ *       500:
+ *         description: Erro ao deletar usuário
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: "Erro ao deletar usuário"
+ *               data: null
  */

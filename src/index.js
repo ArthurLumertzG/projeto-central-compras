@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const errorHandler = require("./middlewares/errorHandler.js");
 const AppError = require("./errors/AppError.js");
@@ -10,9 +11,11 @@ const port = 3000;
 const fornecedoresRoutes = require("./routes/fornecedoresRoutes.js");
 const produtosRoutes = require("./routes/produtosRoutes.js");
 const usuariosRoutes = require("./routes/usuariosRoutes.js");
-const storeRoutes = require("./routes/storeRoutes.js");
+const enderecosRoutes = require("./routes/enderecosRoutes.js");
+const lojasRoutes = require("./routes/lojasRoutes.js");
 const campanhaRoutes = require("./routes/campanhaRoutes.js");
 const pedidosRoutes = require("./routes/pedidosRoutes.js");
+const lojasFornecedorRoutes = require("./routes/lojaFornecedorRoutes.js");
 
 const swaggerOptions = {
   definition: {
@@ -40,6 +43,12 @@ const swaggerOptions = {
 const swaggerSpecs = swaggerJSDoc(swaggerOptions);
 app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpecs));
 
+app.use(
+  cors({
+    origin: "http://localhost:3001",
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -49,7 +58,9 @@ app.get("/", (req, res) => {
 app.use("/fornecedores", fornecedoresRoutes);
 app.use("/produtos", produtosRoutes);
 app.use("/usuarios", usuariosRoutes);
-app.use("/stores", storeRoutes);
+app.use("/enderecos", enderecosRoutes);
+app.use("/lojas", lojasRoutes);
+app.use("/loja-fornecedor", lojasFornecedorRoutes);
 app.use("/campanhas", campanhaRoutes);
 app.use("/pedidos", pedidosRoutes);
 

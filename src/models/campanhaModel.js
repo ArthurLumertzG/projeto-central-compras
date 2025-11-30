@@ -1,80 +1,162 @@
-const fs = require("fs").promises;
-const path = require("path");
+const database = require("../../db/database");
 
-const dataFile = path.join(__dirname, "../../db/campanhas.json");
-
+/**
+ * Model responsável pelas operações de banco de dados da tabela campanhaspromocionais
+ * @class CampanhasModel
+ */
 class CampanhasModel {
   constructor() {
-    this.file = dataFile;
+    this.tableName = "campanhaspromocionais";
   }
 
+  /**
+   * Busca todas as campanhas não deletadas
+   * @returns {Promise<Array>} Lista de campanhas
+   * @throws {Error} Erro ao buscar campanhas
+   */
   async select() {
-    let fileContent;
     try {
-      fileContent = await fs.readFile(this.file, "utf8");
-    } catch (err) {
-      if (err.code === "ENOENT") {
-        await fs.writeFile(this.file, "[]", "utf8");
-        return [];
-      }
-      throw err;
-    }
-
-    if (!fileContent.trim()) {
-      return [];
-    }
-
-    try {
-      return JSON.parse(fileContent);
-    } catch (err) {
-      console.warn("Arquivo JSON inválido. Resetando para [].");
-      await fs.writeFile(this.file, "[]", "utf8");
-      return [];
+      const query = {
+        text: `SELECT * FROM ${this.tableName} WHERE deletado_em IS NULL ORDER BY criado_em DESC`,
+        values: [],
+      };
+      const result = await database.query(query);
+      return result.rows;
+    } catch (error) {
+      console.error("Erro ao buscar campanhas:", error);
+      throw error;
     }
   }
 
+  /**
+   * Busca uma campanha por ID
+   * @param {string} id - UUID da campanha
+   * @returns {Promise<Object|null>} Campanha encontrada ou null
+   * @throws {Error} Erro ao buscar campanha
+   */
   async selectById(id) {
-    const campanhas = await this.select();
-    return campanhas.find((campanha) => campanha.id === id);
+    try {
+      const query = {
+        text: `SELECT * FROM ${this.tableName} WHERE id = $1 AND deletado_em IS NULL`,
+        values: [id],
+      };
+      const result = await database.query(query);
+      return result.rows[0] || null;
+    } catch (error) {
+      console.error("Erro ao buscar campanha por ID:", error);
+      throw error;
+    }
   }
 
+<<<<<<< HEAD
+  /**
+   * Busca uma campanha por nome (case-sensitive)
+   * @param {string} nome - Nome da campanha
+   * @returns {Promise<Object|null>} Campanha encontrada ou null
+   * @throws {Error} Erro ao buscar campanha
+   */
+=======
+>>>>>>> main
   async selectByNome(nome) {
-    const campanhas = await this.select();
-    return campanhas.find((campanha) => campanha.nome === nome);
+    try {
+      const query = {
+        text: `SELECT * FROM ${this.tableName} WHERE nome = $1 AND deletado_em IS NULL`,
+        values: [nome],
+      };
+      const result = await database.query(query);
+      return result.rows[0] || null;
+    } catch (error) {
+      console.error("Erro ao buscar campanha por nome:", error);
+      throw error;
+    }
   }
 
+  /**
+   * Busca campanhas por status
+   * @param {string} status - Status da campanha (ativa, inativa, expirada)
+   * @returns {Promise<Array>} Lista de campanhas com o status especificado
+   * @throws {Error} Erro ao buscar campanhas
+   */
+  async selectByStatus(status) {
+    try {
+      const query = {
+        text: `SELECT * FROM ${this.tableName} WHERE status = $1 AND deletado_em IS NULL ORDER BY criado_em DESC`,
+        values: [status],
+      };
+      const result = await database.query(query);
+      return result.rows;
+    } catch (error) {
+      console.error("Erro ao buscar campanhas por status:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Cria uma nova campanha no banco de dados
+   * @param {Object} campanha - Dados da campanha
+   * @returns {Promise<Object>} Campanha criada
+   * @throws {Error} Erro ao criar campanha
+   */
   async create(campanha) {
-    const campanhas = await this.select();
-    campanhas.push(campanha);
-    const json = JSON.stringify(campanhas, null, 2);
-    await fs.writeFile(this.file, json, "utf8");
-    return campanha;
+    try {
+      const query = {
+        text: `INSERT INTO ${this.tableName} (id, nome, descricao, valor_min, quantidade_min, desconto_porcentagem, status, criado_em, atualizado_em) 
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+               RETURNING *`,
+        values: [campanha.id, campanha.nome, campanha.descricao, campanha.valor_min, campanha.quantidade_min, campanha.desconto_porcentagem, campanha.status, campanha.criado_em, campanha.atualizado_em],
+      };
+      const result = await database.query(query);
+      return result.rows[0];
+    } catch (error) {
+      console.error("Erro ao criar campanha:", error);
+      throw error;
+    }
   }
 
+  /**
+   * Atualiza uma campanha existente
+   * @param {string} id - UUID da campanha
+   * @param {Object} campanha - Dados para atualizar
+   * @returns {Promise<Object|null>} Campanha atualizada ou null
+   * @throws {Error} Erro ao atualizar campanha
+   */
   async update(id, campanha) {
-    const campanhas = await this.select();
-    const updatedCampanhaIndex = campanhas.findIndex((c) => c.id === id);
+    try {
+      const fields = Object.keys(campanha);
+      const setClause = fields.map((field, index) => `"${field}" = $${index + 2}`).join(", ");
+      const values = [id, ...Object.values(campanha)];
 
-    if (updatedCampanhaIndex === -1) return null;
+      const query = {
+        text: `UPDATE ${this.tableName} SET ${setClause} WHERE id = $1 AND deletado_em IS NULL RETURNING *`,
+        values: values,
+      };
 
-    campanhas[updatedCampanhaIndex] = {
-      ...campanhas[updatedCampanhaIndex],
-      ...campanha,
-    };
-
-    await fs.writeFile(this.file, JSON.stringify(campanhas, null, 2), "utf8");
-    return campanhas[updatedCampanhaIndex];
+      const result = await database.query(query);
+      return result.rows[0] || null;
+    } catch (error) {
+      console.error("Erro ao atualizar campanha:", error);
+      throw error;
+    }
   }
 
+  /**
+   * Deleta uma campanha (soft delete)
+   * @param {string} id - UUID da campanha
+   * @returns {Promise<boolean>} true se deletou, false caso contrário
+   * @throws {Error} Erro ao deletar campanha
+   */
   async delete(id) {
-    const campanhas = await this.select();
-    const deletedCampanhaIndex = campanhas.findIndex((c) => c.id === id);
-
-    if (deletedCampanhaIndex === -1) return null;
-
-    campanhas.splice(deletedCampanhaIndex, 1);
-    await fs.writeFile(this.file, JSON.stringify(campanhas, null, 2), "utf8");
-    return true;
+    try {
+      const query = {
+        text: `UPDATE ${this.tableName} SET deletado_em = NOW() WHERE id = $1 AND deletado_em IS NULL`,
+        values: [id],
+      };
+      const result = await database.query(query);
+      return result.rowCount > 0;
+    } catch (error) {
+      console.error("Erro ao deletar campanha:", error);
+      throw error;
+    }
   }
 }
 

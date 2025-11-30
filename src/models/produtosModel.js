@@ -1,81 +1,99 @@
-const fs = require("fs").promises;
-const path = require("path");
-
-const dataFile = path.join(__dirname, "../../db/produtos.json");
+const database = require("../../db/database");
 
 class ProdutosModel {
   constructor() {
-    this.file = dataFile;
+    this.tableName = "produtos";
   }
 
   async select() {
-    let fileContent;
     try {
-      fileContent = await fs.readFile(this.file, "utf8");
-    } catch (err) {
-      if (err.code === "ENOENT") {
-        await fs.writeFile(this.file, "[]", "utf8");
-        return [];
-      }
-      throw err;
-    }
-
-    if (!fileContent.trim()) {
-      return [];
-    }
-
-    try {
-      return JSON.parse(fileContent);
-    } catch (err) {
-      console.warn("Arquivo JSON inválido. Resetando para [].");
-      await fs.writeFile(this.file, "[]", "utf8");
-      return [];
+      const query = {
+        text: `SELECT * FROM ${this.tableName} WHERE deletado_em IS NULL ORDER BY nome ASC`,
+        values: [],
+      };
+      const result = await database.query(query);
+      return result.rows;
+    } catch (error) {
+      console.error("Erro ao buscar produtos:", error);
+      throw error;
     }
   }
 
   async selectById(id) {
-    const produtos = await this.select();
-    return produtos.find((produto) => produto.id === id);
+    try {
+      const query = {
+        text: `SELECT * FROM ${this.tableName} WHERE id = $1 AND deletado_em IS NULL`,
+        values: [id],
+      };
+      const result = await database.query(query);
+      return result.rows[0] || null;
+    } catch (error) {
+      console.error("Erro ao buscar produto por ID:", error);
+      throw error;
+    }
   }
 
   async selectByName(nome) {
-    const produtos = await this.select();
-
-    return produtos.find((produto) => produto?.nome?.trim()?.toLowerCase() === nome?.trim()?.toLowerCase()) || null;
+    try {
+      const query = {
+        text: `SELECT * FROM ${this.tableName} WHERE LOWER(nome) = LOWER($1) AND deletado_em IS NULL`,
+        values: [nome],
+      };
+      const result = await database.query(query);
+      return result.rows[0] || null;
+    } catch (error) {
+      console.error("Erro ao buscar produto por nome:", error);
+      throw error;
+    }
   }
 
   async create(produto) {
-    const produtos = await this.select();
-    produtos.push(produto);
-    const json = JSON.stringify(produtos, null, 2);
-    await fs.writeFile(this.file, json, "utf8");
-    return produto;
+    try {
+      const query = {
+        text: `INSERT INTO ${this.tableName} (id, nome, descricao, valor_unitario, quantidade_estoque, fornecedor_id, categoria, imagem_url, criado_em, atualizado_em) 
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+               RETURNING *`,
+        values: [produto.id, produto.nome, produto.descricao, produto.valor_unitario, produto.quantidade_estoque, produto.fornecedor_id, produto.categoria, produto.imagem_url, produto.criado_em, produto.atualizado_em],
+      };
+      const result = await database.query(query);
+      return result.rows[0];
+    } catch (error) {
+      console.error("Erro ao criar produto:", error);
+      throw error;
+    }
   }
 
   async update(id, produto) {
-    const produtos = await this.select();
-    const updatedProdutoIndex = produtos.findIndex((produto) => produto.id === id);
+    try {
+      const fields = Object.keys(produto);
+      const setClause = fields.map((field, index) => `"${field}" = $${index + 2}`).join(", ");
+      const values = [id, ...Object.values(produto)];
 
-    if (updatedProdutoIndex === -1) return null;
+      const query = {
+        text: `UPDATE ${this.tableName} SET ${setClause} WHERE id = $1 AND deletado_em IS NULL RETURNING *`,
+        values: values,
+      };
 
-    produtos[updatedProdutoIndex] = {
-      ...produtos[updatedProdutoIndex],
-      ...produto,
-    };
-
-    await fs.writeFile(this.file, JSON.stringify(produtos, null, 2), "utf8");
-    return produtos[updatedProdutoIndex];
+      const result = await database.query(query);
+      return result.rows[0] || null;
+    } catch (error) {
+      console.error("Erro ao atualizar produto:", error);
+      throw error;
+    }
   }
 
   async delete(id) {
-    const produtos = await this.select();
-    const deletedProdutoIndex = produtos.findIndex((produto) => produto.id === id);
-
-    if (deletedProdutoIndex === -1) return null;
-
-    produtos.splice(deletedProdutoIndex, 1);
-    await fs.writeFile(this.file, JSON.stringify(produtos, null, 2), "utf8");
-    return true;
+    try {
+      const query = {
+        text: `UPDATE ${this.tableName} SET deletado_em = NOW() WHERE id = $1 AND deletado_em IS NULL`,
+        values: [id],
+      };
+      const result = await database.query(query);
+      return result.rowCount > 0;
+    } catch (error) {
+      console.error("Erro ao deletar produto:", error);
+      throw error;
+    }
   }
 }
 
