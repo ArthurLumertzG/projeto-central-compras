@@ -93,58 +93,15 @@ router.delete("/:id", authenticate, asyncHandler(fornecedoresController.delete.b
  *           example: "2024-01-01T10:00:00.000Z"
  *         atualizado_em:
  *           type: string
-<<<<<<< HEAD
  *           format: date-time
  *           description: Data da última atualização
  *           example: "2024-01-15T14:30:00.000Z"
  *
-=======
- *           description: Status do fornecedor
- *           example: "on"
- *     FornecedorInput:
- *       type: object
- *       required:
- *         - nome
- *         - email
- *         - telefone
- *       description: Schema para criação e atualização de fornecedor (sem ID).
- *       properties:
- *         nome:
- *           type: string
- *           description: Nome do fornecedor
- *           example: "Carlos Webber"
- *         categoria:
- *           type: string
- *           description: Categoria do fornecedor
- *           example: "Computadores"
- *         email:
- *           type: string
- *           format: email
- *           description: Email do fornecedor
- *           example: "teste@teste.com"
- *         telefone:
- *           type: string
- *           description: Telefone do fornecedor
- *           example: "51999999"
- *         status:
- *           type: string
- *           description: Status do fornecedor
- *           example: "on"
- */
-
-/**
- * @swagger
->>>>>>> main
  * /fornecedores:
  *   get:
-<<<<<<< HEAD
  *     summary: Lista todos os fornecedores ativos
  *     description: Retorna todos os fornecedores cadastrados que não foram deletados
  *     tags: [Fornecedores]
-=======
- *     summary: Lista todos os fornecedores
- *     tags: [Fornecedores - Todos]
->>>>>>> main
  *     responses:
  *       200:
  *         description: Lista de fornecedores recuperada com sucesso
@@ -159,7 +116,6 @@ router.delete("/:id", authenticate, asyncHandler(fornecedoresController.delete.b
  *                 data:
  *                   type: array
  *                   items:
-<<<<<<< HEAD
  *                     $ref: '#/components/schemas/FornecedorCompleto'
  *                 message:
  *                   type: string
@@ -173,93 +129,12 @@ router.delete("/:id", authenticate, asyncHandler(fornecedoresController.delete.b
  *     tags: [Fornecedores]
  *     security:
  *       - bearerAuth: []
-=======
- *                     $ref: '#/components/schemas/Fornecedor'
- */
-
-/**
- * @swagger
- * /fornecedores/{id}:
- *   get:
- *     summary: Busca um fornecedor pelo ID
- *     tags: [Fornecedores - Todos]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID do fornecedor
- *     responses:
- *       200:
- *         description: Fornecedor encontrado com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Fornecedor encontrado com sucesso"
- *                 data:
- *                   $ref: '#/components/schemas/Fornecedor'
- *       404:
- *         description: Fornecedor não encontrado
- */
-
-/**
- * @swagger
- * /fornecedores/email/{email}:
- *   get:
- *     summary: Busca um fornecedor pelo email
- *     tags: [Fornecedores - Todos]
- *     parameters:
- *       - in: path
- *         name: email
- *         required: true
- *         schema:
- *           type: string
- *         description: Email do fornecedor
- *     responses:
- *       200:
- *         description: Fornecedor encontrado com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Fornecedor encontrado com sucesso"
- *                 data:
- *                   $ref: '#/components/schemas/Fornecedor'
- *       404:
- *         description: Fornecedor não encontrado
- */
-
-/**
- * @swagger
- * /fornecedores:
- *   post:
- *     summary: Cria um novo fornecedor
- *     tags: [Fornecedores - Todos]
->>>>>>> main
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
-<<<<<<< HEAD
  *             $ref: '#/components/schemas/FornecedorCadastro'
-=======
- *             $ref: '#/components/schemas/FornecedorInput'
->>>>>>> main
  *     responses:
  *       201:
  *         description: Fornecedor criado com sucesso
@@ -273,15 +148,9 @@ router.delete("/:id", authenticate, asyncHandler(fornecedoresController.delete.b
  *         description: CNPJ já cadastrado
  *
  * /fornecedores/{id}:
-<<<<<<< HEAD
  *   get:
  *     summary: Busca fornecedor por ID
  *     tags: [Fornecedores]
-=======
- *   patch:
- *     summary: Atualiza um fornecedor existente
- *     tags: [Fornecedores - Todos]
->>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id
@@ -315,11 +184,7 @@ router.delete("/:id", authenticate, asyncHandler(fornecedoresController.delete.b
  *       content:
  *         application/json:
  *           schema:
-<<<<<<< HEAD
  *             $ref: '#/components/schemas/FornecedorAtualizar'
-=======
- *             $ref: '#/components/schemas/FornecedorInput'
->>>>>>> main
  *     responses:
  *       200:
  *         description: Fornecedor atualizado
@@ -333,15 +198,10 @@ router.delete("/:id", authenticate, asyncHandler(fornecedoresController.delete.b
  *         description: CNPJ já cadastrado
  *
  *   delete:
-<<<<<<< HEAD
  *     summary: Deleta fornecedor (soft delete)
  *     tags: [Fornecedores]
  *     security:
  *       - bearerAuth: []
-=======
- *     summary: Remove um fornecedor
- *     tags: [Fornecedores - Todos]
->>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id

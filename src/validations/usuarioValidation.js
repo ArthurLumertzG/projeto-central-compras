@@ -156,7 +156,7 @@ const updatePasswordSchema = Joi.object({
       "any.required": "Nova senha é obrigatória",
     }),
 
-  confirmedPassword: Joi.string().valid(Joi.ref("novaSenha")).required().messages({
+  confirmarNovaSenha: Joi.string().valid(Joi.ref("novaSenha")).required().messages({
     "any.only": "As senhas não coincidem",
     "any.required": "Confirmação de senha é obrigatória",
   }),

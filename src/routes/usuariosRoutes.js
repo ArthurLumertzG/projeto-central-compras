@@ -124,7 +124,6 @@ module.exports = router;
  *           example: "+5511999999999"
  *         funcao:
  *           type: string
-<<<<<<< HEAD
  *           maxLength: 100
  *           description: Função/cargo do usuário (opcional)
  *           example: "Gerente de Compras"
@@ -196,52 +195,6 @@ module.exports = router;
  *           format: password
  *           description: Confirmação da nova senha
  *           example: "NovaSenha@456"
-=======
- *           description: Status do usuário
- *           example: "on"
- *     UsuarioInput:
- *       type: object
- *       required:
- *         - nome
- *         - email
- *         - user
- *         - password
- *         - confirmedPassword
- *         - level
- *       description: Schema para criação e atualização de usuário (sem ID).
- *       properties:
- *         nome:
- *           type: string
- *           description: Nome do usuário
- *           example: "Carlos Webber"
- *         email:
- *           type: string
- *           format: email
- *           description: Email do usuário
- *           example: "usuario@teste.com"
- *         user:
- *           type: string
- *           description: Nome de usuário para login
- *           example: "carlos.webber"
- *         password:
- *           type: string
- *           format: password
- *           description: Senha do usuário
- *           example: "senha123"
- *         confirmedPassword:
- *           type: string
- *           format: password
- *           description: Confirmação da senha do usuário
- *           example: "senha123"
- *         level:
- *           type: string
- *           description: Nível de acesso do usuário
- *           example: "admin"
- *         status:
- *           type: string
- *           description: Status do usuário
- *           example: "on"
->>>>>>> main
  *     LoginCredentials:
  *       type: object
  *       required:
@@ -345,12 +298,8 @@ module.exports = router;
  * /usuarios/login:
  *   post:
  *     summary: Realiza login do usuário
-<<<<<<< HEAD
  *     description: Autentica o usuário com email e senha, retornando um token JWT para uso em requisições protegidas
  *     tags: [Usuários]
-=======
- *     tags: [Usuários - Carlos Miguel Webber Model]
->>>>>>> main
  *     requestBody:
  *       required: true
  *       content:
@@ -479,14 +428,10 @@ module.exports = router;
  * /usuarios:
  *   get:
  *     summary: Lista todos os usuários
-<<<<<<< HEAD
  *     description: Retorna uma lista de todos os usuários cadastrados (sem senhas)
  *     tags: [Usuários]
  *     security:
  *       - bearerAuth: []
-=======
- *     tags: [Usuários - Carlos Miguel Webber Model]
->>>>>>> main
  *     responses:
  *       200:
  *         description: Lista de usuários retornada com sucesso
@@ -534,14 +479,10 @@ module.exports = router;
  * /usuarios/{id}:
  *   get:
  *     summary: Busca um usuário pelo ID
-<<<<<<< HEAD
  *     description: Retorna os dados de um usuário específico (sem senha)
  *     tags: [Usuários]
  *     security:
  *       - bearerAuth: []
-=======
- *     tags: [Usuários - Carlos Miguel Webber Model]
->>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id
@@ -600,14 +541,10 @@ module.exports = router;
  * /usuarios/email/{email}:
  *   get:
  *     summary: Busca um usuário pelo email
-<<<<<<< HEAD
  *     description: Retorna os dados de um usuário específico através do seu email (sem senha)
  *     tags: [Usuários]
  *     security:
  *       - bearerAuth: []
-=======
- *     tags: [Usuários - Carlos Miguel Webber Model]
->>>>>>> main
  *     parameters:
  *       - in: path
  *         name: email
@@ -632,32 +569,9 @@ module.exports = router;
  *                   type: string
  *                   example: "Usuário encontrado com sucesso"
  *                 data:
-<<<<<<< HEAD
  *                   $ref: '#/components/schemas/UsuarioPublico'
  *       400:
  *         description: Email inválido
-=======
- *                   $ref: '#/components/schemas/UsuarioPublic'
- *       404:
- *         description: Usuário não encontrado
- */
-
-/**
- * @swagger
- * /usuarios:
- *   post:
- *     summary: Cria um novo usuário
- *     tags: [Usuários - Carlos Miguel Webber Model]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UsuarioInput'
- *     responses:
- *       201:
- *         description: Usuário criado com sucesso
->>>>>>> main
  *         content:
  *           application/json:
  *             schema:
@@ -688,16 +602,11 @@ module.exports = router;
  * @swagger
  * /usuarios/{id}:
  *   patch:
-<<<<<<< HEAD
  *     summary: Atualiza dados do usuário
  *     description: Permite que o usuário autenticado atualize seus próprios dados (não pode atualizar outros usuários)
  *     tags: [Usuários]
  *     security:
  *       - bearerAuth: []
-=======
- *     summary: Atualiza um usuário existente
- *     tags: [Usuários - Carlos Miguel Webber Model]
->>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id
@@ -712,11 +621,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
-<<<<<<< HEAD
  *             $ref: '#/components/schemas/UsuarioAtualizar'
-=======
- *             $ref: '#/components/schemas/UsuarioInput'
->>>>>>> main
  *     responses:
  *       200:
  *         description: Usuário atualizado com sucesso
@@ -786,7 +691,6 @@ module.exports = router;
 
 /**
  * @swagger
-<<<<<<< HEAD
  * /usuarios/{id}/senha:
  *   put:
  *     summary: Atualiza a senha do usuário
@@ -794,12 +698,6 @@ module.exports = router;
  *     tags: [Usuários]
  *     security:
  *       - bearerAuth: []
-=======
- * /usuarios/{id}:
- *   delete:
- *     summary: Remove um usuário
- *     tags: [Usuários - Carlos Miguel Webber Model]
->>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id

@@ -129,7 +129,6 @@ module.exports = router;
  *           type: number
  *           description: Percentual de desconto
  *           example: 20
-<<<<<<< HEAD
  *         status:
  *           type: string
  *           enum: [ativa, inativa, expirada]
@@ -145,55 +144,15 @@ module.exports = router;
  *           format: date-time
  *           description: Data da última atualização
  *           example: "2024-10-15T14:30:00.000Z"
-=======
- *     CampanhaInput:
- *       type: object
- *       required:
- *         - nome
- *         - supplier_id
- *         - start_date
- *         - end_date
- *         - discount_percentage
- *       description: Schema para criação e atualização de campanha (sem ID).
- *       properties:
- *         nome:
- *           type: string
- *           description: Nome da campanha
- *           example: "Black Friday"
- *         supplier_id:
- *           type: string
- *           format: uuid
- *           description: ID do fornecedor vinculado
- *           example: "7a6cc1282c5f6ec0235acd2bfa780145aa2a67fd"
- *         start_date:
- *           type: string
- *           format: date-time
- *           description: Data de início da campanha
- *           example: "2023-11-01 00:00:00"
- *         end_date:
- *           type: string
- *           format: date-time
- *           description: Data de término da campanha
- *           example: "2023-11-30 23:59:59"
- *         discount_percentage:
- *           type: number
- *           description: Percentual de desconto
- *           example: 20
->>>>>>> main
  */
 
 /**
  * @swagger
  * /campanhas:
  *   get:
-<<<<<<< HEAD
  *     summary: Lista todas as campanhas promocionais
  *     description: Retorna todas as campanhas não deletadas do sistema
  *     tags: [Campanhas]
-=======
- *     summary: Lista todas as campanhas
- *     tags: [Campanhas - Gabriel Pereira José]
->>>>>>> main
  *     responses:
  *       200:
  *         description: Lista de campanhas retornada com sucesso
@@ -265,12 +224,8 @@ module.exports = router;
  * /campanhas/{id}:
  *   get:
  *     summary: Busca uma campanha pelo ID
-<<<<<<< HEAD
  *     description: Retorna os dados completos de uma campanha específica
  *     tags: [Campanhas]
-=======
- *     tags: [Campanhas - Gabriel Pereira José]
->>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id
@@ -328,26 +283,17 @@ module.exports = router;
  * @swagger
  * /campanhas:
  *   post:
-<<<<<<< HEAD
  *     summary: Cria uma nova campanha promocional
  *     description: Cria uma nova campanha com validação de dados e verificação de nome único
  *     tags: [Campanhas]
  *     security:
  *       - bearerAuth: []
-=======
- *     summary: Cria uma nova campanha
- *     tags: [Campanhas - Gabriel Pereira José]
->>>>>>> main
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
-<<<<<<< HEAD
  *             $ref: '#/components/schemas/CampanhaCadastro'
-=======
- *             $ref: '#/components/schemas/CampanhaInput'
->>>>>>> main
  *     responses:
  *       201:
  *         description: Campanha criada com sucesso
@@ -410,14 +356,10 @@ module.exports = router;
  * /campanhas/{id}:
  *   patch:
  *     summary: Atualiza uma campanha existente
-<<<<<<< HEAD
  *     description: Atualiza parcialmente os dados de uma campanha com validação
  *     tags: [Campanhas]
  *     security:
  *       - bearerAuth: []
-=======
- *     tags: [Campanhas - Gabriel Pereira José]
->>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id
@@ -432,11 +374,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
-<<<<<<< HEAD
  *             $ref: '#/components/schemas/CampanhaAtualizar'
-=======
- *             $ref: '#/components/schemas/CampanhaInput'
->>>>>>> main
  *     responses:
  *       200:
  *         description: Campanha atualizada com sucesso
@@ -511,16 +449,11 @@ module.exports = router;
  * @swagger
  * /campanhas/{id}:
  *   delete:
-<<<<<<< HEAD
  *     summary: Deleta uma campanha (soft delete)
  *     description: Remove logicamente uma campanha do sistema sem deletar os dados permanentemente
  *     tags: [Campanhas]
  *     security:
  *       - bearerAuth: []
-=======
- *     summary: Remove uma campanha
- *     tags: [Campanhas - Gabriel Pereira José]
->>>>>>> main
  *     parameters:
  *       - in: path
  *         name: id

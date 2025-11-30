@@ -35,8 +35,8 @@ class LojasController {
    * }
    */
   async getAll(req, res) {
-    const lojas = await this.lojasService.getAll();
-    res.status(200).json(new DefaultResponseDTO(true, lojas, "Lojas recuperadas com sucesso"));
+    const lojas = await lojasService.getAll();
+    res.status(200).json(new DefaultResponseDTO(true, "Lojas recuperadas com sucesso", lojas));
   }
 
   /**
@@ -65,8 +65,8 @@ class LojasController {
    */
   async getById(req, res) {
     const { id } = req.params;
-    const loja = await this.lojasService.getById(id);
-    res.status(200).json(new DefaultResponseDTO(true, loja, "Loja recuperada com sucesso"));
+    const loja = await lojasService.getById(id);
+    res.status(200).json(new DefaultResponseDTO(true, "Loja recuperada com sucesso", loja));
   }
 
   /**
@@ -80,7 +80,7 @@ class LojasController {
    */
   async getMinhasLojas(req, res) {
     const lojas = await this.lojasService.getByUsuarioId(req.user.id);
-    res.status(200).json(new DefaultResponseDTO(true, lojas, "Lojas do usuário recuperadas com sucesso"));
+    res.status(200).json(new DefaultResponseDTO(true, "Lojas do usuário recuperadas com sucesso", lojas));
   }
 
   /**
@@ -95,7 +95,7 @@ class LojasController {
   async getByUsuarioId(req, res) {
     const { usuario_id } = req.params;
     const lojas = await this.lojasService.getByUsuarioId(usuario_id);
-    res.status(200).json(new DefaultResponseDTO(true, lojas, "Lojas do usuário recuperadas com sucesso"));
+    res.status(200).json(new DefaultResponseDTO(true, "Lojas do usuário recuperadas com sucesso", lojas));
   }
 
   /**
@@ -136,7 +136,7 @@ class LojasController {
    */
   async create(req, res) {
     const loja = await this.lojasService.create(req.body);
-    res.status(201).json(new DefaultResponseDTO(true, loja, "Loja criada com sucesso"));
+    res.status(201).json(new DefaultResponseDTO(true, "Loja criada com sucesso", loja));
   }
 
   /**
@@ -176,7 +176,7 @@ class LojasController {
   async update(req, res) {
     const { id } = req.params;
     const loja = await this.lojasService.update(id, req.body, req.userId);
-    res.status(200).json(new DefaultResponseDTO(true, loja, "Loja atualizada com sucesso"));
+    res.status(200).json(new DefaultResponseDTO(true, "Loja atualizada com sucesso", loja));
   }
 
   /**

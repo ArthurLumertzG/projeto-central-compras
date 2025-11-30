@@ -15,7 +15,6 @@ const enderecosRoutes = require("./routes/enderecosRoutes.js");
 const lojasRoutes = require("./routes/lojasRoutes.js");
 const campanhaRoutes = require("./routes/campanhaRoutes.js");
 const pedidosRoutes = require("./routes/pedidosRoutes.js");
-const lojasFornecedorRoutes = require("./routes/lojaFornecedorRoutes.js");
 
 const swaggerOptions = {
   definition: {
@@ -60,7 +59,6 @@ app.use("/produtos", produtosRoutes);
 app.use("/usuarios", usuariosRoutes);
 app.use("/enderecos", enderecosRoutes);
 app.use("/lojas", lojasRoutes);
-app.use("/loja-fornecedor", lojasFornecedorRoutes);
 app.use("/campanhas", campanhaRoutes);
 app.use("/pedidos", pedidosRoutes);
 

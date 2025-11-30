@@ -19,8 +19,8 @@ class FornecedoresController {
    * @returns {Promise<void>} Lista de fornecedores
    */
   async getAll(req, res) {
-    const fornecedores = await this.fornecedoresService.getAll();
-    res.status(200).json(new DefaultResponseDTO(true, fornecedores, "Fornecedores recuperados com sucesso"));
+    const fornecedores = await fornecedoresService.getAll();
+    res.status(200).json(new DefaultResponseDTO(true, "Fornecedores recuperados com sucesso", fornecedores));
   }
 
   /**
@@ -36,7 +36,7 @@ class FornecedoresController {
   async getById(req, res) {
     const { id } = req.params;
     const fornecedor = await this.fornecedoresService.getById(id);
-    res.status(200).json(new DefaultResponseDTO(true, fornecedor, "Fornecedor recuperado com sucesso"));
+    res.status(200).json(new DefaultResponseDTO(true, "Fornecedor recuperado com sucesso", fornecedor));
   }
 
   /**
@@ -52,7 +52,7 @@ class FornecedoresController {
   async getByCnpj(req, res) {
     const { cnpj } = req.params;
     const fornecedor = await this.fornecedoresService.getByCnpj(cnpj);
-    res.status(200).json(new DefaultResponseDTO(true, fornecedor, "Fornecedor recuperado com sucesso"));
+    res.status(200).json(new DefaultResponseDTO(true, "Fornecedor recuperado com sucesso", fornecedor));
   }
 
   /**
@@ -69,8 +69,8 @@ class FornecedoresController {
    * @throws {AppError} 400 se dados inválidos, 404 se usuário não existe, 409 se CNPJ duplicado
    */
   async create(req, res) {
-    const fornecedor = await this.fornecedoresService.create(req.body);
-    res.status(201).json(new DefaultResponseDTO(true, fornecedor, "Fornecedor criado com sucesso"));
+    const fornecedor = await fornecedoresService.create(req.body);
+    res.status(201).json(new DefaultResponseDTO(true, "Fornecedor criado com sucesso", fornecedor));
   }
 
   /**
@@ -91,7 +91,7 @@ class FornecedoresController {
   async update(req, res) {
     const { id } = req.params;
     const fornecedor = await this.fornecedoresService.update(id, req.body, req.userId);
-    res.status(200).json(new DefaultResponseDTO(true, fornecedor, "Fornecedor atualizado com sucesso"));
+    res.status(200).json(new DefaultResponseDTO(true, "Fornecedor atualizado com sucesso", fornecedor));
   }
 
   /**
