@@ -17,7 +17,21 @@ class PedidosModel {
   async select() {
     try {
       const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE deletado_em IS NULL ORDER BY criado_em DESC`,
+        text: `
+          SELECT 
+            p.*,
+            json_build_object(
+              'id', l.id,
+              'nome', l.nome,
+              'cnpj', l.cnpj,
+              'usuario_id', l.usuario_id,
+              'endereco_id', l.endereco_id
+            ) as loja
+          FROM ${this.tableName} p
+          LEFT JOIN lojas l ON p.loja_id = l.id
+          WHERE p.deletado_em IS NULL 
+          ORDER BY p.criado_em DESC
+        `,
         values: [],
       };
       const result = await database.query(query);
@@ -37,7 +51,20 @@ class PedidosModel {
   async selectById(id) {
     try {
       const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE id = $1 AND deletado_em IS NULL`,
+        text: `
+          SELECT 
+            p.*,
+            json_build_object(
+              'id', l.id,
+              'nome', l.nome,
+              'cnpj', l.cnpj,
+              'usuario_id', l.usuario_id,
+              'endereco_id', l.endereco_id
+            ) as loja
+          FROM ${this.tableName} p
+          LEFT JOIN lojas l ON p.loja_id = l.id
+          WHERE p.id = $1 AND p.deletado_em IS NULL
+        `,
         values: [id],
       };
       const result = await database.query(query);
@@ -57,7 +84,21 @@ class PedidosModel {
   async selectByUsuarioId(usuario_id) {
     try {
       const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE usuario_id = $1 AND deletado_em IS NULL ORDER BY criado_em DESC`,
+        text: `
+          SELECT 
+            p.*,
+            json_build_object(
+              'id', l.id,
+              'nome', l.nome,
+              'cnpj', l.cnpj,
+              'usuario_id', l.usuario_id,
+              'endereco_id', l.endereco_id
+            ) as loja
+          FROM ${this.tableName} p
+          LEFT JOIN lojas l ON p.loja_id = l.id
+          WHERE p.usuario_id = $1 AND p.deletado_em IS NULL 
+          ORDER BY p.criado_em DESC
+        `,
         values: [usuario_id],
       };
       const result = await database.query(query);
@@ -77,7 +118,21 @@ class PedidosModel {
   async selectByLojaId(loja_id) {
     try {
       const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE loja_id = $1 AND deletado_em IS NULL ORDER BY criado_em DESC`,
+        text: `
+          SELECT 
+            p.*,
+            json_build_object(
+              'id', l.id,
+              'nome', l.nome,
+              'cnpj', l.cnpj,
+              'usuario_id', l.usuario_id,
+              'endereco_id', l.endereco_id
+            ) as loja
+          FROM ${this.tableName} p
+          LEFT JOIN lojas l ON p.loja_id = l.id
+          WHERE p.loja_id = $1 AND p.deletado_em IS NULL 
+          ORDER BY p.criado_em DESC
+        `,
         values: [loja_id],
       };
       const result = await database.query(query);
@@ -97,7 +152,21 @@ class PedidosModel {
   async selectByStatus(status) {
     try {
       const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE status = $1 AND deletado_em IS NULL ORDER BY criado_em DESC`,
+        text: `
+          SELECT 
+            p.*,
+            json_build_object(
+              'id', l.id,
+              'nome', l.nome,
+              'cnpj', l.cnpj,
+              'usuario_id', l.usuario_id,
+              'endereco_id', l.endereco_id
+            ) as loja
+          FROM ${this.tableName} p
+          LEFT JOIN lojas l ON p.loja_id = l.id
+          WHERE p.status = $1 AND p.deletado_em IS NULL 
+          ORDER BY p.criado_em DESC
+        `,
         values: [status],
       };
       const result = await database.query(query);
@@ -117,7 +186,21 @@ class PedidosModel {
   async selectByDate(date) {
     try {
       const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE DATE(criado_em) = $1 AND deletado_em IS NULL ORDER BY criado_em DESC`,
+        text: `
+          SELECT 
+            p.*,
+            json_build_object(
+              'id', l.id,
+              'nome', l.nome,
+              'cnpj', l.cnpj,
+              'usuario_id', l.usuario_id,
+              'endereco_id', l.endereco_id
+            ) as loja
+          FROM ${this.tableName} p
+          LEFT JOIN lojas l ON p.loja_id = l.id
+          WHERE DATE(p.criado_em) = $1 AND p.deletado_em IS NULL 
+          ORDER BY p.criado_em DESC
+        `,
         values: [date],
       };
       const result = await database.query(query);
