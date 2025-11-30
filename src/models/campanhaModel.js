@@ -48,15 +48,13 @@ class CampanhasModel {
     }
   }
 
-<<<<<<< HEAD
   /**
    * Busca uma campanha por nome (case-sensitive)
    * @param {string} nome - Nome da campanha
    * @returns {Promise<Object|null>} Campanha encontrada ou null
    * @throws {Error} Erro ao buscar campanha
    */
-=======
->>>>>>> main
+
   async selectByNome(nome) {
     try {
       const query = {
