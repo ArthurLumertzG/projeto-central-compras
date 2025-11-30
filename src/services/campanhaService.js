@@ -48,6 +48,7 @@ class CampanhasService {
     return new DefaultResponseDto(true, "Campanha encontrada com sucesso", campanha);
   }
 
+<<<<<<< HEAD
   /**
    * Busca campanhas por status
    * @param {string} status - Status da campanha (ativa, inativa, expirada)
@@ -90,6 +91,10 @@ class CampanhasService {
     }
 
     // 3. Gera UUID e timestamps
+=======
+  async create(campanha) {
+    const newId = uuidv4();
+>>>>>>> main
     const newCampanha = {
       id: uuidv4(),
       ...value,

@@ -61,6 +61,7 @@ module.exports = router;
  *           example: "a9383549-13f1-449a-9b0a-6c72fce4dcee"
  *         categoria:
  *           type: string
+<<<<<<< HEAD
  *           minLength: 2
  *           maxLength: 100
  *           description: Categoria do produto
@@ -163,6 +164,47 @@ module.exports = router;
  *       scheme: bearer
  *       bearerFormat: JWT
  *       description: Token JWT obtido no login (POST /usuarios/login)
+=======
+ *           description: Status do produto
+ *           example: "ativo"
+ *     ProdutoInput:
+ *       type: object
+ *       required:
+ *         - nome
+ *         - descricao
+ *         - preco
+ *         - estoque
+ *         - fornecedor_id
+ *         - status
+ *       description: Schema para criação e atualização de produto (sem ID).
+ *       properties:
+ *         nome:
+ *           type: string
+ *           description: Nome do produto
+ *           example: "Notebook Gamer"
+ *         descricao:
+ *           type: string
+ *           description: Descrição detalhada do produto
+ *           example: "Notebook com processador i7, 16GB RAM, 512GB SSD"
+ *         preco:
+ *           type: number
+ *           format: float
+ *           description: Preço do produto
+ *           example: 4599.90
+ *         estoque:
+ *           type: integer
+ *           description: Quantidade em estoque
+ *           example: 25
+ *         fornecedor_id:
+ *           type: string
+ *           format: uuid
+ *           description: ID do fornecedor associado ao produto
+ *           example: "a9383549-13f1-449a-9b0a-6c72fce4dcee"
+ *         status:
+ *           type: string
+ *           description: Status do produto
+ *           example: "ativo"
+>>>>>>> main
  */
 
 /**
@@ -381,6 +423,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
+<<<<<<< HEAD
  *             $ref: '#/components/schemas/ProdutoCadastro'
  *           example:
  *             nome: "Notebook Gamer Dell G15"
@@ -389,6 +432,9 @@ module.exports = router;
  *             quantidade_estoque: 15
  *             fornecedor_id: "a9383549-13f1-449a-9b0a-6c72fce4dcee"
  *             categoria: "Informática"
+=======
+ *             $ref: '#/components/schemas/ProdutoInput'
+>>>>>>> main
  *     responses:
  *       201:
  *         description: Produto criado com sucesso
@@ -491,6 +537,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
+<<<<<<< HEAD
  *             $ref: '#/components/schemas/ProdutoAtualizar'
  *           examples:
  *             atualizar_preco_estoque:
@@ -502,6 +549,9 @@ module.exports = router;
  *               summary: Atualizar apenas descrição
  *               value:
  *                 descricao: "Notebook gamer atualizado com 32GB RAM"
+=======
+ *             $ref: '#/components/schemas/ProdutoInput'
+>>>>>>> main
  *     responses:
  *       200:
  *         description: Produto atualizado com sucesso

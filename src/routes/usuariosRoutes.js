@@ -124,6 +124,7 @@ module.exports = router;
  *           example: "+5511999999999"
  *         funcao:
  *           type: string
+<<<<<<< HEAD
  *           maxLength: 100
  *           description: Função/cargo do usuário (opcional)
  *           example: "Gerente de Compras"
@@ -195,6 +196,52 @@ module.exports = router;
  *           format: password
  *           description: Confirmação da nova senha
  *           example: "NovaSenha@456"
+=======
+ *           description: Status do usuário
+ *           example: "on"
+ *     UsuarioInput:
+ *       type: object
+ *       required:
+ *         - nome
+ *         - email
+ *         - user
+ *         - password
+ *         - confirmedPassword
+ *         - level
+ *       description: Schema para criação e atualização de usuário (sem ID).
+ *       properties:
+ *         nome:
+ *           type: string
+ *           description: Nome do usuário
+ *           example: "Carlos Webber"
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: Email do usuário
+ *           example: "usuario@teste.com"
+ *         user:
+ *           type: string
+ *           description: Nome de usuário para login
+ *           example: "carlos.webber"
+ *         password:
+ *           type: string
+ *           format: password
+ *           description: Senha do usuário
+ *           example: "senha123"
+ *         confirmedPassword:
+ *           type: string
+ *           format: password
+ *           description: Confirmação da senha do usuário
+ *           example: "senha123"
+ *         level:
+ *           type: string
+ *           description: Nível de acesso do usuário
+ *           example: "admin"
+ *         status:
+ *           type: string
+ *           description: Status do usuário
+ *           example: "on"
+>>>>>>> main
  *     LoginCredentials:
  *       type: object
  *       required:
@@ -569,9 +616,32 @@ module.exports = router;
  *                   type: string
  *                   example: "Usuário encontrado com sucesso"
  *                 data:
+<<<<<<< HEAD
  *                   $ref: '#/components/schemas/UsuarioPublico'
  *       400:
  *         description: Email inválido
+=======
+ *                   $ref: '#/components/schemas/UsuarioPublic'
+ *       404:
+ *         description: Usuário não encontrado
+ */
+
+/**
+ * @swagger
+ * /usuarios:
+ *   post:
+ *     summary: Cria um novo usuário
+ *     tags: [Usuários]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UsuarioInput'
+ *     responses:
+ *       201:
+ *         description: Usuário criado com sucesso
+>>>>>>> main
  *         content:
  *           application/json:
  *             schema:
@@ -621,7 +691,11 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
+<<<<<<< HEAD
  *             $ref: '#/components/schemas/UsuarioAtualizar'
+=======
+ *             $ref: '#/components/schemas/UsuarioInput'
+>>>>>>> main
  *     responses:
  *       200:
  *         description: Usuário atualizado com sucesso

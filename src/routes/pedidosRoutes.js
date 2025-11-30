@@ -198,7 +198,78 @@ module.exports = router;
  *                 example: 10
  *               valor_unitario:
  *                 type: number
+<<<<<<< HEAD
  *                 example: 15.50
+=======
+ *                 format: float
+ *                 example: 150.00
+ *         total_amount:
+ *           type: number
+ *           format: float
+ *           description: Valor total do pedido
+ *           example: 300.00
+ *         status:
+ *           type: string
+ *           description: Status do pedido
+ *           enum: [Pending, Shipped, Delivered]
+ *           example: "Pending"
+ *         date:
+ *           type: string
+ *           format: date-time
+ *           description: Data do pedido
+ *           example: "2023-08-15T16:00:00Z"
+ *     PedidoInput:
+ *       type: object
+ *       required:
+ *         - store_id
+ *         - item
+ *         - total_amount
+ *         - status
+ *         - date
+ *       description: Schema para criação e atualização de pedido (sem ID).
+ *       properties:
+ *         store_id:
+ *           type: string
+ *           format: uuid
+ *           description: ID da loja que realizou o pedido
+ *           example: "7a6cc1282c5f6ec0235acd2bfa780145aa2a67fd"
+ *         item:
+ *           type: array
+ *           description: Lista de itens do pedido
+ *           items:
+ *             type: object
+ *             properties:
+ *               product_id:
+ *                 type: string
+ *                 format: uuid
+ *                 example: "9b8a7c6d-5e4f-3210-1234-abcdef987654"
+ *               quantity:
+ *                 type: integer
+ *                 example: 2
+ *               campaign_id:
+ *                 type: string
+ *                 format: uuid
+ *                 example: "3d2c1b0a-9f8e-7654-3210-fedcba987654"
+ *               unit_price:
+ *                 type: number
+ *                 format: float
+ *                 example: 150.00
+ *         total_amount:
+ *           type: number
+ *           format: float
+ *           description: Valor total do pedido
+ *           example: 300.00
+ *         status:
+ *           type: string
+ *           description: Status do pedido
+ *           enum: [Pending, Shipped, Delivered]
+ *           example: "Pending"
+ *         date:
+ *           type: string
+ *           format: date-time
+ *           description: Data do pedido
+ *           example: "2023-08-15T16:00:00Z"
+>>>>>>> main
  */
 
 /**
@@ -350,6 +421,7 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
+<<<<<<< HEAD
  *             $ref: '#/components/schemas/PedidoCadastro'
  *           example:
  *             loja_id: "7a6cc128-2c5f-6ec0-235a-cd2bfa780145"
@@ -363,6 +435,9 @@ module.exports = router;
  *               - produto_id: "1a2b3c4d-5e6f-7890-abcd-ef1234567890"
  *                 quantidade: 5
  *                 valor_unitario: 25.00
+=======
+ *             $ref: '#/components/schemas/PedidoInput'
+>>>>>>> main
  *     responses:
  *       201:
  *         description: Pedido criado com sucesso (com valor total calculado)
@@ -414,10 +489,14 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
+<<<<<<< HEAD
  *             $ref: '#/components/schemas/PedidoAtualizar'
  *           example:
  *             status: "enviado"
  *             descricao: "Pedido confirmado - saiu para entrega"
+=======
+ *             $ref: '#/components/schemas/PedidoInput'
+>>>>>>> main
  *     responses:
  *       200:
  *         description: Pedido atualizado com sucesso
