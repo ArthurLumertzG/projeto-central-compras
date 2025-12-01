@@ -349,6 +349,23 @@ class PedidosService {
 
     return new DefaultResponseDto(true, "Pedido deletado com sucesso", null);
   }
+
+  /**
+   * Busca pedidos de um fornecedor específico
+   * @param {string} fornecedorId - UUID do fornecedor
+   * @returns {Promise<DefaultResponseDto>} Lista de pedidos do fornecedor
+   * @throws {AppError} 400 se ID inválido
+   */
+  async getByFornecedor(fornecedorId) {
+    // Valida UUID
+    const { error } = uuidSchema.validate(fornecedorId);
+    if (error) {
+      throw new AppError("ID do fornecedor inválido", 400);
+    }
+
+    const pedidos = await this.pedidosModel.selectByFornecedor(fornecedorId);
+    return new DefaultResponseDto(true, "Pedidos recuperados com sucesso", pedidos);
+  }
 }
 
 module.exports = PedidosService;

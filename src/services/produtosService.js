@@ -193,6 +193,24 @@ class ProdutosService {
 
     return new DefaultResponseDto(true, "Produto deletado com sucesso", null);
   }
+
+  /**
+   * Busca produtos de um fornecedor específico
+   *
+   * @param {string} fornecedorId - UUID do fornecedor
+   * @returns {Promise<DefaultResponseDto>} Lista de produtos do fornecedor
+   * @throws {AppError} 400 se ID inválido
+   */
+  async getByFornecedor(fornecedorId) {
+    // Validação do UUID
+    const { error } = uuidSchema.validate(fornecedorId);
+    if (error) {
+      throw new AppError("ID do fornecedor inválido", 400);
+    }
+
+    const produtos = await this.produtosModel.selectByFornecedor(fornecedorId);
+    return new DefaultResponseDto(true, "Produtos recuperados com sucesso", produtos);
+  }
 }
 
 module.exports = ProdutosService;

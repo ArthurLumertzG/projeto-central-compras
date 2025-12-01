@@ -278,6 +278,38 @@ class PedidosModel {
       throw error;
     }
   }
+
+  /**
+   * Busca pedidos de um fornecedor específico
+   * @param {string} fornecedorId - UUID do fornecedor
+   * @returns {Promise<Array>} Lista de pedidos do fornecedor
+   * @throws {Error} Erro ao buscar pedidos
+   */
+  async selectByFornecedor(fornecedorId) {
+    try {
+      const query = {
+        text: `
+          SELECT 
+            p.*,
+            json_build_object(
+              'id', l.id,
+              'nome', l.nome,
+              'cnpj', l.cnpj
+            ) as loja
+          FROM ${this.tableName} p
+          LEFT JOIN lojas l ON p.loja_id = l.id
+          WHERE p.fornecedor_id = $1 AND p.deletado_em IS NULL 
+          ORDER BY p.criado_em DESC
+        `,
+        values: [fornecedorId],
+      };
+      const result = await database.query(query);
+      return result.rows;
+    } catch (error) {
+      console.error("Erro ao buscar pedidos por fornecedor:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = PedidosModel;

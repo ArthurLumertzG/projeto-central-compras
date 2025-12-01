@@ -32,10 +32,6 @@ const createFornecedorSchema = Joi.object({
   usuario_id: Joi.string().uuid().optional().messages({
     "string.guid": "ID do usuário deve ser um UUID válido",
   }),
-
-  endereco_id: Joi.string().uuid().optional().allow(null).messages({
-    "string.guid": "ID do endereço deve ser um UUID válido",
-  }),
 });
 
 /**
@@ -67,10 +63,6 @@ const updateFornecedorSchema = Joi.object({
 
   usuario_id: Joi.string().uuid().optional().messages({
     "string.guid": "ID do usuário deve ser um UUID válido",
-  }),
-
-  endereco_id: Joi.string().uuid().optional().allow(null).messages({
-    "string.guid": "ID do endereço deve ser um UUID válido",
   }),
 
   // Bloqueia campos sensíveis

@@ -95,6 +95,20 @@ class ProdutosModel {
       throw error;
     }
   }
+
+  async selectByFornecedor(fornecedorId) {
+    try {
+      const query = {
+        text: `SELECT * FROM ${this.tableName} WHERE fornecedor_id = $1 AND deletado_em IS NULL ORDER BY nome ASC`,
+        values: [fornecedorId],
+      };
+      const result = await database.query(query);
+      return result.rows;
+    } catch (error) {
+      console.error("Erro ao buscar produtos por fornecedor:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = ProdutosModel;

@@ -10,12 +10,11 @@ class Fornecedor {
    * @param {string|null} nome_fantasia - Nome fantasia do fornecedor
    * @param {string|null} descricao - Descrição do fornecedor (2-500 caracteres)
    * @param {string|null} usuario_id - UUID do usuário responsável
-   * @param {string|null} endereco_id - UUID do endereço
    * @param {Date} criado_em - Data de criação
    * @param {Date} atualizado_em - Data da última atualização
    * @param {Date|null} deletado_em - Data de exclusão (soft delete)
    */
-  constructor(id, cnpj, razao_social, nome_fantasia, descricao, usuario_id, endereco_id, criado_em, atualizado_em, deletado_em) {
+  constructor(id, cnpj, razao_social, nome_fantasia, descricao, usuario_id, criado_em, atualizado_em, deletado_em) {
     /** @type {string} UUID único do fornecedor */
     this.id = id;
 
@@ -33,9 +32,6 @@ class Fornecedor {
 
     /** @type {string|null} UUID do usuário responsável */
     this.usuario_id = usuario_id;
-
-    /** @type {string|null} UUID do endereço */
-    this.endereco_id = endereco_id;
 
     /** @type {Date} Data de criação */
     this.criado_em = criado_em;
@@ -59,7 +55,6 @@ class Fornecedor {
       nome_fantasia: this.nome_fantasia,
       descricao: this.descricao,
       usuario_id: this.usuario_id,
-      endereco_id: this.endereco_id,
       criado_em: this.criado_em,
       atualizado_em: this.atualizado_em,
     };

@@ -45,6 +45,10 @@ const authenticate = (req, res, next) => {
       email_verificado: decoded.email_verificado,
     };
 
+    // Adiciona também diretamente no req para fácil acesso
+    req.userId = decoded.sub;
+    req.userFuncao = decoded.funcao;
+
     return next();
   } catch (error) {
     // Se for um AppError, repassa; senão, cria um novo

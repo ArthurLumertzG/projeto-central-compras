@@ -34,8 +34,8 @@ const createCampanhaSchema = Joi.object({
     "any.required": "Desconto é obrigatório",
   }),
 
-  status: Joi.string().valid("ativa", "inativa", "expirada").default("ativa").messages({
-    "any.only": "Status deve ser: ativa, inativa ou expirada",
+  status: Joi.string().valid("ativo", "inativo").default("ativo").messages({
+    "any.only": "Status deve ser: ativo ou inativo",
   }),
 });
 
@@ -70,8 +70,8 @@ const updateCampanhaSchema = Joi.object({
     "number.base": "Desconto deve ser um número",
   }),
 
-  status: Joi.string().valid("ativa", "inativa", "expirada").messages({
-    "any.only": "Status deve ser: ativa, inativa ou expirada",
+  status: Joi.string().valid("ativo", "inativo").messages({
+    "any.only": "Status deve ser: ativo ou inativo",
   }),
 
   // Bloqueia campos que não devem ser atualizados

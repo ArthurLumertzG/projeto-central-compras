@@ -93,7 +93,7 @@ class CampanhasService {
     const newCampanha = {
       id: uuidv4(),
       ...value,
-      status: value.status || "ativa",
+      status: value.status || "ativo",
       criado_em: new Date(),
       atualizado_em: new Date(),
     };

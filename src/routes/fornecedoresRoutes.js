@@ -2,6 +2,7 @@ const express = require("express");
 const FornecedoresController = require("../controllers/fornecedoresController");
 const asyncHandler = require("../middlewares/asyncHandler");
 const { authenticate } = require("../middlewares/authMiddleware");
+const { supplierAuth } = require("../middlewares/supplierAuthMiddleware");
 
 const router = express.Router();
 const fornecedoresController = new FornecedoresController();
@@ -11,7 +12,25 @@ router.get("/", asyncHandler(fornecedoresController.getAll.bind(fornecedoresCont
 router.get("/:id", asyncHandler(fornecedoresController.getById.bind(fornecedoresController)));
 router.get("/cnpj/:cnpj", asyncHandler(fornecedoresController.getByCnpj.bind(fornecedoresController)));
 
-// Rotas privadas (requerem autenticação)
+// Rotas de fornecedor autenticado (requerem auth + supplierAuth)
+router.get("/me/profile", authenticate, supplierAuth, asyncHandler(fornecedoresController.getMyProfile.bind(fornecedoresController)));
+router.patch("/me/profile", authenticate, supplierAuth, asyncHandler(fornecedoresController.updateMyProfile.bind(fornecedoresController)));
+
+// Rotas de estatísticas do fornecedor
+router.get("/me/statistics", authenticate, supplierAuth, asyncHandler(fornecedoresController.getMyStatistics.bind(fornecedoresController)));
+
+// Rotas de produtos do fornecedor autenticado
+router.get("/me/produtos", authenticate, supplierAuth, asyncHandler(fornecedoresController.getMyProducts.bind(fornecedoresController)));
+router.post("/me/produtos", authenticate, supplierAuth, asyncHandler(fornecedoresController.createMyProduct.bind(fornecedoresController)));
+router.patch("/me/produtos/:id", authenticate, supplierAuth, asyncHandler(fornecedoresController.updateMyProduct.bind(fornecedoresController)));
+router.delete("/me/produtos/:id", authenticate, supplierAuth, asyncHandler(fornecedoresController.deleteMyProduct.bind(fornecedoresController)));
+
+// Rotas de pedidos do fornecedor autenticado
+router.get("/me/pedidos", authenticate, supplierAuth, asyncHandler(fornecedoresController.getMyOrders.bind(fornecedoresController)));
+router.get("/me/pedidos/:id", authenticate, supplierAuth, asyncHandler(fornecedoresController.getMyOrderById.bind(fornecedoresController)));
+router.patch("/me/pedidos/:id/status", authenticate, supplierAuth, asyncHandler(fornecedoresController.updateMyOrderStatus.bind(fornecedoresController)));
+
+// Rotas privadas gerais (requerem autenticação)
 router.post("/", authenticate, asyncHandler(fornecedoresController.create.bind(fornecedoresController)));
 router.patch("/:id", authenticate, asyncHandler(fornecedoresController.update.bind(fornecedoresController)));
 router.delete("/:id", authenticate, asyncHandler(fornecedoresController.delete.bind(fornecedoresController)));

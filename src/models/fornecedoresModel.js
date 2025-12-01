@@ -77,8 +77,8 @@ class FornecedoresModel {
   async create(fornecedor) {
     try {
       const query = {
-        text: `INSERT INTO ${this.tableName} (id, cnpj, razao_social, nome_fantasia, descricao, usuario_id, endereco_id, criado_em, atualizado_em) 
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+        text: `INSERT INTO ${this.tableName} (id, cnpj, razao_social, nome_fantasia, descricao, usuario_id, criado_em, atualizado_em) 
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
                RETURNING *`,
         values: [
           fornecedor.id,
@@ -87,7 +87,6 @@ class FornecedoresModel {
           fornecedor.nome_fantasia || null,
           fornecedor.descricao || null,
           fornecedor.usuario_id || null,
-          fornecedor.endereco_id || null,
           fornecedor.criado_em,
           fornecedor.atualizado_em,
         ],
