@@ -19,7 +19,7 @@ class FornecedoresController {
    * @returns {Promise<void>} Lista de fornecedores
    */
   async getAll(req, res) {
-    const fornecedores = await fornecedoresService.getAll();
+    const fornecedores = await this.fornecedoresService.getAll();
     res.status(200).json(new DefaultResponseDTO(true, "Fornecedores recuperados com sucesso", fornecedores));
   }
 
@@ -62,14 +62,17 @@ class FornecedoresController {
    * @param {Object} req - Objeto de requisição Express
    * @param {Object} req.body - Dados do fornecedor
    * @param {string} req.body.cnpj - CNPJ do fornecedor (14 dígitos)
-   * @param {string} req.body.descricao - Descrição do fornecedor (2-500 caracteres)
-   * @param {string} req.body.usuario_id - UUID do usuário responsável
+   * @param {string} [req.body.razao_social] - Razão social do fornecedor
+   * @param {string} [req.body.nome_fantasia] - Nome fantasia do fornecedor
+   * @param {string} [req.body.descricao] - Descrição do fornecedor (2-500 caracteres)
+   * @param {string} [req.body.usuario_id] - UUID do usuário responsável
+   * @param {string} [req.body.endereco_id] - UUID do endereço
    * @param {Object} res - Objeto de resposta Express
    * @returns {Promise<void>} Fornecedor criado
-   * @throws {AppError} 400 se dados inválidos, 404 se usuário não existe, 409 se CNPJ duplicado
+   * @throws {AppError} 400 se dados inválidos, 404 se usuário/endereço não existe, 409 se CNPJ duplicado
    */
   async create(req, res) {
-    const fornecedor = await fornecedoresService.create(req.body);
+    const fornecedor = await this.fornecedoresService.create(req.body);
     res.status(201).json(new DefaultResponseDTO(true, "Fornecedor criado com sucesso", fornecedor));
   }
 
@@ -82,11 +85,14 @@ class FornecedoresController {
    * @param {string} req.userId - UUID do usuário autenticado (do middleware)
    * @param {Object} req.body - Dados para atualização (todos opcionais, mínimo 1 campo)
    * @param {string} [req.body.cnpj] - CNPJ do fornecedor (14 dígitos)
+   * @param {string} [req.body.razao_social] - Razão social do fornecedor
+   * @param {string} [req.body.nome_fantasia] - Nome fantasia do fornecedor
    * @param {string} [req.body.descricao] - Descrição do fornecedor (2-500 caracteres)
    * @param {string} [req.body.usuario_id] - UUID do usuário responsável
+   * @param {string} [req.body.endereco_id] - UUID do endereço
    * @param {Object} res - Objeto de resposta Express
    * @returns {Promise<void>} Fornecedor atualizado
-   * @throws {AppError} 400 se dados inválidos, 403 se tentar atualizar fornecedor de outro usuário, 404 se fornecedor/usuário não existe, 409 se CNPJ duplicado
+   * @throws {AppError} 400 se dados inválidos, 403 se tentar atualizar fornecedor de outro usuário, 404 se fornecedor/usuário/endereço não existe, 409 se CNPJ duplicado
    */
   async update(req, res) {
     const { id } = req.params;

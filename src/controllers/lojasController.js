@@ -35,7 +35,7 @@ class LojasController {
    * }
    */
   async getAll(req, res) {
-    const lojas = await lojasService.getAll();
+    const lojas = await this.lojasService.getAll();
     res.status(200).json(new DefaultResponseDTO(true, "Lojas recuperadas com sucesso", lojas));
   }
 

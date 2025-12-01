@@ -6,24 +6,36 @@ class Fornecedor {
   /**
    * @param {string} id - UUID único do fornecedor
    * @param {string} cnpj - CNPJ do fornecedor (14 dígitos)
-   * @param {string} descricao - Descrição do fornecedor (2-500 caracteres)
-   * @param {string} usuario_id - UUID do usuário responsável
+   * @param {string|null} razao_social - Razão social do fornecedor
+   * @param {string|null} nome_fantasia - Nome fantasia do fornecedor
+   * @param {string|null} descricao - Descrição do fornecedor (2-500 caracteres)
+   * @param {string|null} usuario_id - UUID do usuário responsável
+   * @param {string|null} endereco_id - UUID do endereço
    * @param {Date} criado_em - Data de criação
    * @param {Date} atualizado_em - Data da última atualização
    * @param {Date|null} deletado_em - Data de exclusão (soft delete)
    */
-  constructor(id, cnpj, descricao, usuario_id, criado_em, atualizado_em, deletado_em) {
+  constructor(id, cnpj, razao_social, nome_fantasia, descricao, usuario_id, endereco_id, criado_em, atualizado_em, deletado_em) {
     /** @type {string} UUID único do fornecedor */
     this.id = id;
 
     /** @type {string} CNPJ do fornecedor (14 dígitos) */
     this.cnpj = cnpj;
 
-    /** @type {string} Descrição do fornecedor */
+    /** @type {string|null} Razão social do fornecedor */
+    this.razao_social = razao_social;
+
+    /** @type {string|null} Nome fantasia do fornecedor */
+    this.nome_fantasia = nome_fantasia;
+
+    /** @type {string|null} Descrição do fornecedor */
     this.descricao = descricao;
 
-    /** @type {string} UUID do usuário responsável */
+    /** @type {string|null} UUID do usuário responsável */
     this.usuario_id = usuario_id;
+
+    /** @type {string|null} UUID do endereço */
+    this.endereco_id = endereco_id;
 
     /** @type {Date} Data de criação */
     this.criado_em = criado_em;
@@ -43,8 +55,11 @@ class Fornecedor {
     return {
       id: this.id,
       cnpj: this.cnpj,
+      razao_social: this.razao_social,
+      nome_fantasia: this.nome_fantasia,
       descricao: this.descricao,
       usuario_id: this.usuario_id,
+      endereco_id: this.endereco_id,
       criado_em: this.criado_em,
       atualizado_em: this.atualizado_em,
     };

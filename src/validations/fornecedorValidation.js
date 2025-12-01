@@ -14,17 +14,27 @@ const createFornecedorSchema = Joi.object({
       "any.required": "CNPJ é obrigatório",
     }),
 
-  descricao: Joi.string().trim().min(2).max(500).required().messages({
-    "string.empty": "Descrição é obrigatória",
-    "string.min": "Descrição deve ter no mínimo 2 caracteres",
-    "string.max": "Descrição deve ter no máximo 500 caracteres",
-    "any.required": "Descrição é obrigatória",
+  razao_social: Joi.string().trim().min(2).max(255).optional().messages({
+    "string.min": "Razão social deve ter no mínimo 2 caracteres",
+    "string.max": "Razão social deve ter no máximo 255 caracteres",
   }),
 
-  usuario_id: Joi.string().uuid().required().messages({
-    "string.empty": "ID do usuário é obrigatório",
+  nome_fantasia: Joi.string().trim().min(2).max(255).optional().messages({
+    "string.min": "Nome fantasia deve ter no mínimo 2 caracteres",
+    "string.max": "Nome fantasia deve ter no máximo 255 caracteres",
+  }),
+
+  descricao: Joi.string().trim().min(2).max(500).optional().messages({
+    "string.min": "Descrição deve ter no mínimo 2 caracteres",
+    "string.max": "Descrição deve ter no máximo 500 caracteres",
+  }),
+
+  usuario_id: Joi.string().uuid().optional().messages({
     "string.guid": "ID do usuário deve ser um UUID válido",
-    "any.required": "ID do usuário é obrigatório",
+  }),
+
+  endereco_id: Joi.string().uuid().optional().allow(null).messages({
+    "string.guid": "ID do endereço deve ser um UUID válido",
   }),
 });
 
@@ -40,6 +50,16 @@ const updateFornecedorSchema = Joi.object({
       "string.pattern.base": "CNPJ inválido. Deve conter exatamente 14 dígitos",
     }),
 
+  razao_social: Joi.string().trim().min(2).max(255).optional().messages({
+    "string.min": "Razão social deve ter no mínimo 2 caracteres",
+    "string.max": "Razão social deve ter no máximo 255 caracteres",
+  }),
+
+  nome_fantasia: Joi.string().trim().min(2).max(255).optional().messages({
+    "string.min": "Nome fantasia deve ter no mínimo 2 caracteres",
+    "string.max": "Nome fantasia deve ter no máximo 255 caracteres",
+  }),
+
   descricao: Joi.string().trim().min(2).max(500).optional().messages({
     "string.min": "Descrição deve ter no mínimo 2 caracteres",
     "string.max": "Descrição deve ter no máximo 500 caracteres",
@@ -47,6 +67,10 @@ const updateFornecedorSchema = Joi.object({
 
   usuario_id: Joi.string().uuid().optional().messages({
     "string.guid": "ID do usuário deve ser um UUID válido",
+  }),
+
+  endereco_id: Joi.string().uuid().optional().allow(null).messages({
+    "string.guid": "ID do endereço deve ser um UUID válido",
   }),
 
   // Bloqueia campos sensíveis

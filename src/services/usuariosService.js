@@ -128,7 +128,6 @@ class UsuariosService {
    */
   async create(usuarioData) {
     // Validação completa com Joi
-    usuarioData.funcao = "usuario";
     const { error, value } = createUsuarioSchema.validate(usuarioData);
     if (error) {
       throw new AppError(error.details[0].message, 400);
@@ -160,7 +159,7 @@ class UsuariosService {
       email,
       senha: hashedPassword,
       endereco_id: endereco_id || null,
-      email_verificado: false, // Por padrão, email não verificado
+      email_verificado: true, // Por padrão, email verificado
       criado_em: new Date(),
       atualizado_em: new Date(),
     };

@@ -22,7 +22,18 @@ class FornecedoresService {
   async getAll() {
     const fornecedores = await this.fornecedoresModel.select();
     return fornecedores.map((fornecedorData) => {
-      const fornecedor = new Fornecedor(fornecedorData.id, fornecedorData.cnpj, fornecedorData.descricao, fornecedorData.usuario_id, fornecedorData.criado_em, fornecedorData.atualizado_em, fornecedorData.deletado_em);
+      const fornecedor = new Fornecedor(
+        fornecedorData.id,
+        fornecedorData.cnpj,
+        fornecedorData.razao_social,
+        fornecedorData.nome_fantasia,
+        fornecedorData.descricao,
+        fornecedorData.usuario_id,
+        fornecedorData.endereco_id,
+        fornecedorData.criado_em,
+        fornecedorData.atualizado_em,
+        fornecedorData.deletado_em
+      );
       return fornecedor.toPublic();
     });
   }
@@ -45,7 +56,18 @@ class FornecedoresService {
       throw new AppError("Fornecedor não encontrado", 404);
     }
 
-    const fornecedor = new Fornecedor(fornecedorData.id, fornecedorData.cnpj, fornecedorData.descricao, fornecedorData.usuario_id, fornecedorData.criado_em, fornecedorData.atualizado_em, fornecedorData.deletado_em);
+    const fornecedor = new Fornecedor(
+      fornecedorData.id,
+      fornecedorData.cnpj,
+      fornecedorData.razao_social,
+      fornecedorData.nome_fantasia,
+      fornecedorData.descricao,
+      fornecedorData.usuario_id,
+      fornecedorData.endereco_id,
+      fornecedorData.criado_em,
+      fornecedorData.atualizado_em,
+      fornecedorData.deletado_em
+    );
 
     return fornecedor.toPublic();
   }
@@ -65,7 +87,18 @@ class FornecedoresService {
 
     const fornecedores = await this.fornecedoresModel.selectByUsuarioId(usuario_id);
     return fornecedores.map((fornecedorData) => {
-      const fornecedor = new Fornecedor(fornecedorData.id, fornecedorData.cnpj, fornecedorData.descricao, fornecedorData.usuario_id, fornecedorData.criado_em, fornecedorData.atualizado_em, fornecedorData.deletado_em);
+      const fornecedor = new Fornecedor(
+        fornecedorData.id,
+        fornecedorData.cnpj,
+        fornecedorData.razao_social,
+        fornecedorData.nome_fantasia,
+        fornecedorData.descricao,
+        fornecedorData.usuario_id,
+        fornecedorData.endereco_id,
+        fornecedorData.criado_em,
+        fornecedorData.atualizado_em,
+        fornecedorData.deletado_em
+      );
       return fornecedor.toPublic();
     });
   }
@@ -88,7 +121,18 @@ class FornecedoresService {
       throw new AppError("Fornecedor não encontrado", 404);
     }
 
-    const fornecedor = new Fornecedor(fornecedorData.id, fornecedorData.cnpj, fornecedorData.descricao, fornecedorData.usuario_id, fornecedorData.criado_em, fornecedorData.atualizado_em, fornecedorData.deletado_em);
+    const fornecedor = new Fornecedor(
+      fornecedorData.id,
+      fornecedorData.cnpj,
+      fornecedorData.razao_social,
+      fornecedorData.nome_fantasia,
+      fornecedorData.descricao,
+      fornecedorData.usuario_id,
+      fornecedorData.endereco_id,
+      fornecedorData.criado_em,
+      fornecedorData.atualizado_em,
+      fornecedorData.deletado_em
+    );
 
     return fornecedor.toPublic();
   }
@@ -111,31 +155,58 @@ class FornecedoresService {
       throw new AppError(`Erro de validação: ${errors.join(", ")}`, 400);
     }
 
-    // 2. Verifica se usuário existe
-    const { default: UsuariosModel } = await import("../models/usuariosModel.js");
-    const usuariosModel = new UsuariosModel();
-    const usuarioExists = await usuariosModel.selectById(value.usuario_id);
+    // 2. Verifica se usuário existe (apenas se fornecido)
+    if (value.usuario_id) {
+      const { default: UsuariosModel } = await import("../models/usuariosModel.js");
+      const usuariosModel = new UsuariosModel();
+      const usuarioExists = await usuariosModel.selectById(value.usuario_id);
 
-    if (!usuarioExists) {
-      throw new AppError("Usuário não encontrado. Use um usuário válido.", 404);
+      if (!usuarioExists) {
+        throw new AppError("Usuário não encontrado. Use um usuário válido.", 404);
+      }
     }
 
-    // 3. Verifica se CNPJ já existe
+    // 3. Verifica se endereço existe (apenas se fornecido)
+    if (value.endereco_id) {
+      const { default: EnderecosModel } = await import("../models/enderecosModel.js");
+      const enderecosModel = new EnderecosModel();
+      const enderecoExists = await enderecosModel.selectById(value.endereco_id);
+
+      if (!enderecoExists) {
+        throw new AppError("Endereço não encontrado. Use um endereço válido.", 404);
+      }
+    }
+
+    // 4. Verifica se CNPJ já existe
     const cnpjExists = await this.fornecedoresModel.selectByCnpj(value.cnpj);
     if (cnpjExists) {
       throw new AppError("Já existe um fornecedor cadastrado com este CNPJ", 409);
     }
 
-    // 4. Cria entidade com timestamps
-    const fornecedor = new Fornecedor(uuidv4(), value.cnpj, value.descricao, value.usuario_id, new Date(), new Date(), null);
+    // 5. Cria entidade com timestamps
+    const fornecedor = new Fornecedor(
+      uuidv4(),
+      value.cnpj,
+      value.razao_social || null,
+      value.nome_fantasia || null,
+      value.descricao || null,
+      value.usuario_id || null,
+      value.endereco_id || null,
+      new Date(),
+      new Date(),
+      null
+    );
 
-    // 5. Salva no banco
+    // 6. Salva no banco
     const fornecedorData = await this.fornecedoresModel.create(fornecedor);
     const fornecedorCreated = new Fornecedor(
       fornecedorData.id,
       fornecedorData.cnpj,
+      fornecedorData.razao_social,
+      fornecedorData.nome_fantasia,
       fornecedorData.descricao,
       fornecedorData.usuario_id,
+      fornecedorData.endereco_id,
       fornecedorData.criado_em,
       fornecedorData.atualizado_em,
       fornecedorData.deletado_em

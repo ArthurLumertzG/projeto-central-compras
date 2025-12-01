@@ -50,10 +50,22 @@ class UsuariosModel {
   async create(usuario) {
     try {
       const query = {
-        text: `INSERT INTO ${this.tableName} (id, nome, sobrenome, senha, email, telefone, funcao, endereco_id, criado_em, atualizado_em) 
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+        text: `INSERT INTO ${this.tableName} (id, nome, sobrenome, senha, email, telefone, funcao, endereco_id, criado_em, atualizado_em, email_verificado) 
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
                RETURNING *`,
-        values: [usuario.id, usuario.nome, usuario.sobrenome, usuario.senha, usuario.email, usuario.telefone, usuario.funcao, usuario.endereco_id || null, usuario.criado_em, usuario.atualizado_em],
+        values: [
+          usuario.id,
+          usuario.nome,
+          usuario.sobrenome,
+          usuario.senha,
+          usuario.email,
+          usuario.telefone,
+          usuario.funcao,
+          usuario.endereco_id || null,
+          usuario.criado_em,
+          usuario.atualizado_em,
+          usuario.email_verificado,
+        ],
       };
       const result = await database.query(query);
       return result.rows[0];
