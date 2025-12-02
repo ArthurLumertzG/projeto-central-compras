@@ -4,14 +4,12 @@ const enderecosController = require("../controllers/enderecosController");
 const asyncHandler = require("../middlewares/asyncHandler");
 const { authenticate } = require("../middlewares/authMiddleware");
 
-// Rotas públicas (necessário para criar endereço antes de criar usuário)
 router.get("/", asyncHandler(enderecosController.getAll));
 router.get("/:id", asyncHandler(enderecosController.getById));
 router.get("/cep/:cep", asyncHandler(enderecosController.getByCep));
 router.get("/cidade/:cidade/estado/:estado", asyncHandler(enderecosController.getByCidadeEstado));
-router.post("/", asyncHandler(enderecosController.create)); // Público para permitir cadastro
+router.post("/", asyncHandler(enderecosController.create));
 
-// Rotas privadas (com autenticação)
 router.patch("/:id", authenticate, asyncHandler(enderecosController.update));
 router.delete("/:id", authenticate, asyncHandler(enderecosController.delete));
 

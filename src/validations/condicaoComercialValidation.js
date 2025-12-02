@@ -1,11 +1,7 @@
 const Joi = require("joi");
 
-// Lista de UFs válidas do Brasil
 const UFS_VALIDAS = ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"];
 
-/**
- * Schema de validação para criação de condição comercial
- */
 const createCondicaoComercialSchema = Joi.object({
   uf: Joi.string()
     .uppercase()
@@ -37,9 +33,6 @@ const createCondicaoComercialSchema = Joi.object({
   }),
 });
 
-/**
- * Schema de validação para atualização de condição comercial
- */
 const updateCondicaoComercialSchema = Joi.object({
   cashback_porcentagem: Joi.number().min(0).max(100).precision(2).messages({
     "number.min": "Cashback deve ser no mínimo 0%",
@@ -57,7 +50,6 @@ const updateCondicaoComercialSchema = Joi.object({
     "number.base": "Variação unitário deve ser um número",
   }),
 
-  // Bloqueia campos que não devem ser atualizados
   id: Joi.forbidden(),
   uf: Joi.forbidden(),
   fornecedor_id: Joi.forbidden(),

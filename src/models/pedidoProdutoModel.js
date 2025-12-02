@@ -1,21 +1,10 @@
 const database = require("../../db/database");
 
-/**
- * Model responsável pelas operações de banco de dados da tabela pedidoproduto
- * Tabela associativa entre pedidos e produtos
- * @class PedidoProdutoModel
- */
 class PedidoProdutoModel {
   constructor() {
     this.tableName = "pedidoproduto";
   }
 
-  /**
-   * Busca todos os itens de um pedido específico
-   * @param {string} pedido_id - UUID do pedido
-   * @returns {Promise<Array>} Lista de itens do pedido
-   * @throws {Error} Erro ao buscar itens
-   */
   async selectByPedidoId(pedido_id) {
     try {
       const query = {
@@ -36,12 +25,6 @@ class PedidoProdutoModel {
     }
   }
 
-  /**
-   * Busca um item específico por ID
-   * @param {string} id - UUID do item
-   * @returns {Promise<Object|null>} Item encontrado ou null
-   * @throws {Error} Erro ao buscar item
-   */
   async selectById(id) {
     try {
       const query = {
@@ -56,12 +39,6 @@ class PedidoProdutoModel {
     }
   }
 
-  /**
-   * Cria um novo item no pedido
-   * @param {Object} item - Dados do item
-   * @returns {Promise<Object>} Item criado
-   * @throws {Error} Erro ao criar item
-   */
   async create(item) {
     try {
       const query = {
@@ -81,19 +58,12 @@ class PedidoProdutoModel {
     }
   }
 
-  /**
-   * Cria múltiplos itens de uma vez (bulk insert)
-   * @param {Array<Object>} items - Array de itens para inserir
-   * @returns {Promise<Array>} Itens criados
-   * @throws {Error} Erro ao criar itens
-   */
   async createMany(items) {
     try {
       if (!items || items.length === 0) {
         return [];
       }
 
-      // Constrói a query dinamicamente para múltiplos inserts
       const values = [];
       const placeholders = items
         .map((item, index) => {
@@ -121,13 +91,6 @@ class PedidoProdutoModel {
     }
   }
 
-  /**
-   * Atualiza um item do pedido
-   * @param {string} id - UUID do item
-   * @param {Object} data - Dados para atualizar
-   * @returns {Promise<Object|null>} Item atualizado ou null
-   * @throws {Error} Erro ao atualizar item
-   */
   async update(id, data) {
     try {
       const fields = Object.keys(data);
@@ -147,12 +110,6 @@ class PedidoProdutoModel {
     }
   }
 
-  /**
-   * Deleta um item (soft delete)
-   * @param {string} id - UUID do item
-   * @returns {Promise<boolean>} true se deletou, false caso contrário
-   * @throws {Error} Erro ao deletar item
-   */
   async delete(id) {
     try {
       const query = {
@@ -167,12 +124,6 @@ class PedidoProdutoModel {
     }
   }
 
-  /**
-   * Deleta todos os itens de um pedido (soft delete)
-   * @param {string} pedido_id - UUID do pedido
-   * @returns {Promise<boolean>} true se deletou, false caso contrário
-   * @throws {Error} Erro ao deletar itens
-   */
   async deleteByPedidoId(pedido_id) {
     try {
       const query = {

@@ -1,19 +1,10 @@
 const database = require("../../db/database");
 
-/**
- * Model responsável pelas operações de banco de dados da tabela campanhaspromocionais
- * @class CampanhasModel
- */
 class CampanhasModel {
   constructor() {
     this.tableName = "campanhaspromocionais";
   }
 
-  /**
-   * Busca todas as campanhas não deletadas
-   * @returns {Promise<Array>} Lista de campanhas
-   * @throws {Error} Erro ao buscar campanhas
-   */
   async select() {
     try {
       const query = {
@@ -28,12 +19,6 @@ class CampanhasModel {
     }
   }
 
-  /**
-   * Busca todas as campanhas de um fornecedor específico
-   * @param {string} fornecedor_id - UUID do fornecedor
-   * @returns {Promise<Array>} Lista de campanhas do fornecedor
-   * @throws {Error} Erro ao buscar campanhas
-   */
   async selectByFornecedor(fornecedor_id) {
     try {
       const query = {
@@ -48,12 +33,6 @@ class CampanhasModel {
     }
   }
 
-  /**
-   * Busca uma campanha por ID
-   * @param {string} id - UUID da campanha
-   * @returns {Promise<Object|null>} Campanha encontrada ou null
-   * @throws {Error} Erro ao buscar campanha
-   */
   async selectById(id) {
     try {
       const query = {
@@ -67,13 +46,6 @@ class CampanhasModel {
       throw error;
     }
   }
-
-  /**
-   * Busca uma campanha por nome (case-sensitive)
-   * @param {string} nome - Nome da campanha
-   * @returns {Promise<Object|null>} Campanha encontrada ou null
-   * @throws {Error} Erro ao buscar campanha
-   */
 
   async selectByNome(nome) {
     try {
@@ -89,12 +61,6 @@ class CampanhasModel {
     }
   }
 
-  /**
-   * Busca campanhas por status
-   * @param {string} status - Status da campanha (ativa, inativa, expirada)
-   * @returns {Promise<Array>} Lista de campanhas com o status especificado
-   * @throws {Error} Erro ao buscar campanhas
-   */
   async selectByStatus(status) {
     try {
       const query = {
@@ -109,12 +75,6 @@ class CampanhasModel {
     }
   }
 
-  /**
-   * Cria uma nova campanha no banco de dados
-   * @param {Object} campanha - Dados da campanha
-   * @returns {Promise<Object>} Campanha criada
-   * @throws {Error} Erro ao criar campanha
-   */
   async create(campanha) {
     try {
       const query = {
@@ -142,13 +102,6 @@ class CampanhasModel {
     }
   }
 
-  /**
-   * Atualiza uma campanha existente
-   * @param {string} id - UUID da campanha
-   * @param {Object} campanha - Dados para atualizar
-   * @returns {Promise<Object|null>} Campanha atualizada ou null
-   * @throws {Error} Erro ao atualizar campanha
-   */
   async update(id, campanha) {
     try {
       const fields = Object.keys(campanha);
@@ -168,12 +121,6 @@ class CampanhasModel {
     }
   }
 
-  /**
-   * Deleta uma campanha (soft delete)
-   * @param {string} id - UUID da campanha
-   * @returns {Promise<boolean>} true se deletou, false caso contrário
-   * @throws {Error} Erro ao deletar campanha
-   */
   async delete(id) {
     try {
       const query = {

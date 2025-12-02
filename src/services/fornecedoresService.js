@@ -1,27 +1,22 @@
 const { v4: uuidv4 } = require("uuid");
 const FornecedoresModel = require("../models/fornecedoresModel");
+const ProdutosService = require("./produtosService");
+const PedidosService = require("./pedidosService");
 const Fornecedor = require("../entities/fornecedor");
 const AppError = require("../errors/AppError");
+const DefaultResponseDto = require("../dtos/defaultResponse.dto");
 const { createFornecedorSchema, updateFornecedorSchema, uuidSchema, cnpjSchema } = require("../validations/fornecedorValidation");
 
-/**
- * @class FornecedoresService
- * @description Service responsável pela lógica de negócio de fornecedores
- * Implementa validações com Joi, foreign keys e regras de negócio
- */
 class FornecedoresService {
   constructor() {
     this.fornecedoresModel = new FornecedoresModel();
+    this.produtosService = new ProdutosService();
+    this.pedidosService = new PedidosService();
   }
 
-  /**
-   * Retorna todos os fornecedores ativos
-   * @returns {Promise<Array<Object>>} Lista de fornecedores no formato público
-   * @throws {AppError} Se ocorrer erro na busca
-   */
   async getAll() {
     const fornecedores = await this.fornecedoresModel.select();
-    return fornecedores.map((fornecedorData) => {
+    const data = fornecedores.map((fornecedorData) => {
       const fornecedor = new Fornecedor(
         fornecedorData.id,
         fornecedorData.cnpj,
@@ -35,16 +30,10 @@ class FornecedoresService {
       );
       return fornecedor.toPublic();
     });
+    return new DefaultResponseDto(true, "Fornecedores recuperados com sucesso", data);
   }
 
-  /**
-   * Busca um fornecedor por ID
-   * @param {string} id - UUID do fornecedor
-   * @returns {Promise<Object>} Fornecedor no formato público
-   * @throws {AppError} 400 se ID inválido, 404 se não encontrado
-   */
   async getById(id) {
-    // Valida UUID
     const { error: uuidError } = uuidSchema.validate(id);
     if (uuidError) {
       throw new AppError("ID do fornecedor inválido", 400);
@@ -67,17 +56,10 @@ class FornecedoresService {
       fornecedorData.deletado_em
     );
 
-    return fornecedor.toPublic();
+    return new DefaultResponseDto(true, "Fornecedor recuperado com sucesso", fornecedor.toPublic());
   }
 
-  /**
-   * Busca fornecedores por usuário responsável
-   * @param {string} usuario_id - UUID do usuário
-   * @returns {Promise<Array<Object>>} Lista de fornecedores do usuário
-   * @throws {AppError} 400 se ID inválido
-   */
   async getByUsuarioId(usuario_id) {
-    // Valida UUID
     const { error: uuidError } = uuidSchema.validate(usuario_id);
     if (uuidError) {
       throw new AppError("ID do usuário inválido", 400);
@@ -100,14 +82,7 @@ class FornecedoresService {
     });
   }
 
-  /**
-   * Busca um fornecedor por CNPJ
-   * @param {string} cnpj - CNPJ do fornecedor (14 dígitos)
-   * @returns {Promise<Object>} Fornecedor no formato público
-   * @throws {AppError} 400 se CNPJ inválido, 404 se não encontrado
-   */
   async getByCnpj(cnpj) {
-    // Valida CNPJ
     const { error: cnpjError } = cnpjSchema.validate(cnpj);
     if (cnpjError) {
       throw new AppError("CNPJ inválido. Deve conter exatamente 14 dígitos", 400);
@@ -130,17 +105,10 @@ class FornecedoresService {
       fornecedorData.deletado_em
     );
 
-    return fornecedor.toPublic();
+    return new DefaultResponseDto(true, "Fornecedor recuperado com sucesso", fornecedor.toPublic());
   }
 
-  /**
-   * Cria um novo fornecedor com validações completas
-   * @param {Object} data - Dados do fornecedor (cnpj, descricao, usuario_id)
-   * @returns {Promise<Object>} Fornecedor criado no formato público
-   * @throws {AppError} 400 se dados inválidos, 404 se usuário não existe, 409 se CNPJ duplicado
-   */
   async create(data) {
-    // 1. Validação com Joi
     const { error, value } = createFornecedorSchema.validate(data, {
       abortEarly: false,
       stripUnknown: true,
@@ -151,7 +119,6 @@ class FornecedoresService {
       throw new AppError(`Erro de validação: ${errors.join(", ")}`, 400);
     }
 
-    // 2. Verifica se usuário existe (apenas se fornecido)
     if (value.usuario_id) {
       const { default: UsuariosModel } = await import("../models/usuariosModel.js");
       const usuariosModel = new UsuariosModel();
@@ -162,16 +129,13 @@ class FornecedoresService {
       }
     }
 
-    // 3. Verifica se CNPJ já existe
     const cnpjExists = await this.fornecedoresModel.selectByCnpj(value.cnpj);
     if (cnpjExists) {
       throw new AppError("Já existe um fornecedor cadastrado com este CNPJ", 409);
     }
 
-    // 4. Cria entidade com timestamps
     const fornecedor = new Fornecedor(uuidv4(), value.cnpj, value.razao_social || null, value.nome_fantasia || null, value.descricao || null, value.usuario_id || null, new Date(), new Date(), null);
 
-    // 5. Salva no banco
     const fornecedorData = await this.fornecedoresModel.create(fornecedor);
     const fornecedorCreated = new Fornecedor(
       fornecedorData.id,
@@ -188,33 +152,21 @@ class FornecedoresService {
     return fornecedorCreated.toPublic();
   }
 
-  /**
-   * Atualiza um fornecedor existente
-   * @param {string} id - UUID do fornecedor
-   * @param {Object} data - Dados para atualização (cnpj, descricao, usuario_id)
-   * @param {string} requestUserId - UUID do usuário autenticado fazendo a requisição
-   * @returns {Promise<Object>} Fornecedor atualizado no formato público
-   * @throws {AppError} 400 se dados inválidos, 403 se tentar atualizar fornecedor de outro usuário, 404 se fornecedor/usuário não existe, 409 se CNPJ duplicado
-   */
   async update(id, data, requestUserId) {
-    // 1. Valida UUID
     const { error: uuidError } = uuidSchema.validate(id);
     if (uuidError) {
       throw new AppError("ID do fornecedor inválido", 400);
     }
 
-    // 2. Verifica se fornecedor existe
     const fornecedorExists = await this.fornecedoresModel.selectById(id);
     if (!fornecedorExists) {
       throw new AppError("Fornecedor não encontrado", 404);
     }
 
-    // 3. VERIFICAÇÃO DE SEGURANÇA: Usuário só pode atualizar seus próprios fornecedores
     if (requestUserId && fornecedorExists.usuario_id !== requestUserId) {
       throw new AppError("Você não tem permissão para atualizar este fornecedor", 403);
     }
 
-    // 4. Validação com Joi
     const { error, value } = updateFornecedorSchema.validate(data, {
       abortEarly: false,
       stripUnknown: true,
@@ -225,12 +177,10 @@ class FornecedoresService {
       throw new AppError(`Erro de validação: ${errors.join(", ")}`, 400);
     }
 
-    // 5. Verifica se há campos para atualizar
     if (Object.keys(value).length === 0) {
       throw new AppError("Nenhum campo para atualizar foi fornecido", 400);
     }
 
-    // 6. Verifica se usuário existe (se fornecido)
     if (value.usuario_id) {
       const { default: UsuariosModel } = await import("../models/usuariosModel.js");
       const usuariosModel = new UsuariosModel();
@@ -241,7 +191,6 @@ class FornecedoresService {
       }
     }
 
-    // 7. Verifica se CNPJ já existe (se fornecido e diferente do atual)
     if (value.cnpj && value.cnpj !== fornecedorExists.cnpj) {
       const cnpjExists = await this.fornecedoresModel.selectByCnpj(value.cnpj);
       if (cnpjExists && cnpjExists.id !== id) {
@@ -249,10 +198,8 @@ class FornecedoresService {
       }
     }
 
-    // 8. Adiciona timestamp de atualização
     value.atualizado_em = new Date();
 
-    // 9. Atualiza no banco
     const fornecedorData = await this.fornecedoresModel.update(id, value);
     if (!fornecedorData) {
       throw new AppError("Erro ao atualizar fornecedor", 500);
@@ -270,52 +217,177 @@ class FornecedoresService {
       fornecedorData.deletado_em
     );
 
-    return fornecedorUpdated.toPublic();
+    return new DefaultResponseDto(true, "Fornecedor atualizado com sucesso", fornecedorUpdated.toPublic());
   }
 
-  /**
-   * Deleta um fornecedor (soft delete)
-   * @param {string} id - UUID do fornecedor
-   * @param {string} requestUserId - UUID do usuário autenticado fazendo a requisição
-   * @returns {Promise<void>}
-   * @throws {AppError} 400 se ID inválido, 403 se tentar deletar fornecedor de outro usuário, 404 se não encontrado
-   */
   async delete(id, requestUserId) {
-    // 1. Valida UUID
     const { error: uuidError } = uuidSchema.validate(id);
     if (uuidError) {
       throw new AppError("ID do fornecedor inválido", 400);
     }
 
-    // 2. Verifica se fornecedor existe
     const fornecedorExists = await this.fornecedoresModel.selectById(id);
     if (!fornecedorExists) {
       throw new AppError("Fornecedor não encontrado", 404);
     }
 
-    // 3. VERIFICAÇÃO DE SEGURANÇA: Usuário só pode deletar seus próprios fornecedores
     if (requestUserId && fornecedorExists.usuario_id !== requestUserId) {
       throw new AppError("Você não tem permissão para deletar este fornecedor", 403);
     }
 
-    // 4. Deleta (soft delete)
     const deleted = await this.fornecedoresModel.delete(id);
     if (!deleted) {
       throw new AppError("Erro ao deletar fornecedor", 500);
     }
+    return new DefaultResponseDto(true, "Fornecedor deletado com sucesso", null);
   }
 
-  /**
-   * Verifica se um fornecedor existe pelo ID
-   * @param {string} id - UUID do fornecedor
-   * @returns {Promise<boolean>} true se existe, false caso contrário
-   */
   async exists(id) {
     const { error } = uuidSchema.validate(id);
     if (error) return false;
 
     const fornecedor = await this.fornecedoresModel.selectById(id);
     return !!fornecedor;
+  }
+
+  async getMyProfile(requestUserId) {
+    const fornecedores = await this.getByUsuarioId(requestUserId);
+    if (!fornecedores || fornecedores.length === 0) {
+      throw new AppError("Fornecedor não encontrado para este usuário", 404);
+    }
+    return new DefaultResponseDto(true, "Perfil recuperado com sucesso", fornecedores[0]);
+  }
+
+  async updateMyProfile(requestUserId, data) {
+    const fornecedores = await this.getByUsuarioId(requestUserId);
+    if (!fornecedores || fornecedores.length === 0) {
+      throw new AppError("Fornecedor não encontrado para este usuário", 404);
+    }
+    const fornecedorId = fornecedores[0].id;
+    const fornecedor = await this.update(fornecedorId, data, requestUserId);
+    return new DefaultResponseDto(true, "Perfil atualizado com sucesso", fornecedor);
+  }
+
+  async getMyProducts(requestUserId) {
+    const fornecedores = await this.getByUsuarioId(requestUserId);
+    if (!fornecedores || fornecedores.length === 0) {
+      throw new AppError("Fornecedor não encontrado para este usuário", 404);
+    }
+    const fornecedorId = fornecedores[0].id;
+    return await this.produtosService.getByFornecedor(fornecedorId);
+  }
+
+  async createMyProduct(requestUserId, data) {
+    const fornecedores = await this.getByUsuarioId(requestUserId);
+    if (!fornecedores || fornecedores.length === 0) {
+      throw new AppError("Fornecedor não encontrado para este usuário", 404);
+    }
+    const fornecedorId = fornecedores[0].id;
+    const produtoData = { ...data, fornecedor_id: fornecedorId };
+    return await this.produtosService.create(produtoData);
+  }
+
+  async updateMyProduct(requestUserId, id, data) {
+    const fornecedores = await this.getByUsuarioId(requestUserId);
+    if (!fornecedores || fornecedores.length === 0) {
+      throw new AppError("Fornecedor não encontrado para este usuário", 404);
+    }
+    const fornecedorId = fornecedores[0].id;
+
+    const produto = await this.produtosService.getById(id);
+    if (produto.data.fornecedor_id !== fornecedorId) {
+      throw new AppError("Você não tem permissão para editar este produto", 403);
+    }
+
+    return await this.produtosService.update(id, data);
+  }
+
+  async deleteMyProduct(requestUserId, id) {
+    const fornecedores = await this.getByUsuarioId(requestUserId);
+    if (!fornecedores || fornecedores.length === 0) {
+      throw new AppError("Fornecedor não encontrado para este usuário", 404);
+    }
+    const fornecedorId = fornecedores[0].id;
+
+    const produto = await this.produtosService.getById(id);
+    if (produto.data.fornecedor_id !== fornecedorId) {
+      throw new AppError("Você não tem permissão para deletar este produto", 403);
+    }
+
+    return await this.produtosService.delete(id);
+  }
+
+  async getMyOrders(requestUserId) {
+    const fornecedores = await this.getByUsuarioId(requestUserId);
+    if (!fornecedores || fornecedores.length === 0) {
+      throw new AppError("Fornecedor não encontrado para este usuário", 404);
+    }
+    const fornecedorId = fornecedores[0].id;
+    return await this.pedidosService.getByFornecedor(fornecedorId);
+  }
+
+  async getMyOrderById(requestUserId, id) {
+    const fornecedores = await this.getByUsuarioId(requestUserId);
+    if (!fornecedores || fornecedores.length === 0) {
+      throw new AppError("Fornecedor não encontrado para este usuário", 404);
+    }
+    const fornecedorId = fornecedores[0].id;
+
+    const pedido = await this.pedidosService.getById(id);
+    if (pedido.data.fornecedor_id !== fornecedorId) {
+      throw new AppError("Você não tem permissão para visualizar este pedido", 403);
+    }
+
+    return pedido;
+  }
+
+  async updateMyOrderStatus(requestUserId, id, status) {
+    const fornecedores = await this.getByUsuarioId(requestUserId);
+    if (!fornecedores || fornecedores.length === 0) {
+      throw new AppError("Fornecedor não encontrado para este usuário", 404);
+    }
+    const fornecedorId = fornecedores[0].id;
+
+    const pedido = await this.pedidosService.getById(id);
+    if (pedido.data.fornecedor_id !== fornecedorId) {
+      throw new AppError("Você não tem permissão para atualizar este pedido", 403);
+    }
+
+    return await this.pedidosService.update(id, { status }, requestUserId);
+  }
+
+  async getMyStatistics(requestUserId) {
+    const fornecedores = await this.getByUsuarioId(requestUserId);
+    if (!fornecedores || fornecedores.length === 0) {
+      throw new AppError("Fornecedor não encontrado para este usuário", 404);
+    }
+    const fornecedorId = fornecedores[0].id;
+
+    const produtosResult = await this.produtosService.getByFornecedor(fornecedorId);
+    const totalProducts = produtosResult.data.length;
+
+    const pedidosResult = await this.pedidosService.getByFornecedor(fornecedorId);
+    const pedidos = pedidosResult.data;
+    const totalOrders = pedidos.length;
+    const pendingOrders = pedidos.filter((p) => p.status === "pendente").length;
+
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthlyRevenue = pedidos
+      .filter((p) => {
+        const createdAt = new Date(p.criado_em);
+        return createdAt >= firstDayOfMonth && ["entregue", "enviado"].includes(p.status);
+      })
+      .reduce((sum, p) => sum + parseFloat(p.valor_total), 0);
+
+    const statistics = {
+      totalProducts,
+      totalOrders,
+      pendingOrders,
+      monthlyRevenue,
+    };
+
+    return new DefaultResponseDto(true, "Estatísticas recuperadas com sucesso", statistics);
   }
 }
 

@@ -1,8 +1,5 @@
 const Joi = require("joi");
 
-/**
- * Schema de validação para criação de fornecedor
- */
 const createFornecedorSchema = Joi.object({
   cnpj: Joi.string()
     .trim()
@@ -34,9 +31,6 @@ const createFornecedorSchema = Joi.object({
   }),
 });
 
-/**
- * Schema de validação para atualização de fornecedor
- */
 const updateFornecedorSchema = Joi.object({
   cnpj: Joi.string()
     .trim()
@@ -65,7 +59,6 @@ const updateFornecedorSchema = Joi.object({
     "string.guid": "ID do usuário deve ser um UUID válido",
   }),
 
-  // Bloqueia campos sensíveis
   id: Joi.forbidden(),
   criado_em: Joi.forbidden(),
   atualizado_em: Joi.forbidden(),
@@ -76,17 +69,11 @@ const updateFornecedorSchema = Joi.object({
     "object.min": "Pelo menos um campo deve ser fornecido para atualização",
   });
 
-/**
- * Schema de validação para UUID
- */
 const uuidSchema = Joi.string().uuid().required().messages({
   "string.guid": "ID inválido. Deve ser um UUID válido",
   "any.required": "ID é obrigatório",
 });
 
-/**
- * Schema de validação para CNPJ
- */
 const cnpjSchema = Joi.string()
   .trim()
   .pattern(/^\d{14}$/)

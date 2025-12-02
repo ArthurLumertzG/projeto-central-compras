@@ -4,64 +4,13 @@ const usuariosController = require("../controllers/usuariosController");
 const asyncHandler = require("../middlewares/asyncHandler");
 const { authenticate } = require("../middlewares/authMiddleware");
 
-// ========== Rotas Públicas (sem autenticação) ==========
-
-/**
- * @route   POST /api/usuarios/login
- * @desc    Login de usuário
- * @access  Public
- */
 router.post("/login", asyncHandler(usuariosController.login));
-
-/**
- * @route   POST /api/usuarios/cadastro
- * @desc    Cadastro de novo usuário
- * @access  Public
- */
 router.post("/cadastro", asyncHandler(usuariosController.create));
-
-// ========== Rotas Privadas (requerem autenticação) ==========
-
-/**
- * @route   GET /api/usuarios
- * @desc    Lista todos os usuários
- * @access  Private
- */
 router.get("/", authenticate, asyncHandler(usuariosController.getAll));
-
-/**
- * @route   GET /api/usuarios/:id
- * @desc    Busca usuário por ID
- * @access  Private
- */
 router.get("/:id", authenticate, asyncHandler(usuariosController.getById));
-
-/**
- * @route   GET /api/usuarios/email/:email
- * @desc    Busca usuário por email
- * @access  Private
- */
 router.get("/email/:email", authenticate, asyncHandler(usuariosController.getByEmail));
-
-/**
- * @route   PATCH /api/usuarios/:id
- * @desc    Atualiza dados do usuário (apenas o próprio usuário)
- * @access  Private
- */
 router.patch("/:id", authenticate, asyncHandler(usuariosController.update));
-
-/**
- * @route   PUT /api/usuarios/:id/senha
- * @desc    Atualiza senha do usuário
- * @access  Private
- */
 router.put("/:id/senha", authenticate, asyncHandler(usuariosController.updatePassword));
-
-/**
- * @route   DELETE /api/usuarios/:id
- * @desc    Deleta usuário (soft delete)
- * @access  Private
- */
 router.delete("/:id", authenticate, asyncHandler(usuariosController.delete));
 
 module.exports = router;

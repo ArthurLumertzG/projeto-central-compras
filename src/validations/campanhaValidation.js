@@ -1,8 +1,5 @@
 const Joi = require("joi");
 
-/**
- * Schema de validação para criação de campanha promocional
- */
 const createCampanhaSchema = Joi.object({
   nome: Joi.string().trim().min(3).max(100).required().messages({
     "string.empty": "Nome é obrigatório",
@@ -39,9 +36,6 @@ const createCampanhaSchema = Joi.object({
   }),
 });
 
-/**
- * Schema de validação para atualização de campanha promocional
- */
 const updateCampanhaSchema = Joi.object({
   nome: Joi.string().trim().min(3).max(100).messages({
     "string.min": "Nome deve ter no mínimo 3 caracteres",
@@ -74,7 +68,6 @@ const updateCampanhaSchema = Joi.object({
     "any.only": "Status deve ser: ativo ou inativo",
   }),
 
-  // Bloqueia campos que não devem ser atualizados
   id: Joi.forbidden(),
   criado_em: Joi.forbidden(),
   atualizado_em: Joi.forbidden(),
@@ -85,19 +78,13 @@ const updateCampanhaSchema = Joi.object({
     "object.min": "Pelo menos um campo deve ser informado para atualização",
   });
 
-/**
- * Schema de validação para UUID
- */
 const uuidSchema = Joi.string().uuid().required().messages({
   "string.guid": "ID inválido",
   "any.required": "ID é obrigatório",
 });
 
-/**
- * Schema de validação para status
- */
-const statusSchema = Joi.string().valid("ativa", "inativa", "expirada").required().messages({
-  "any.only": "Status deve ser: ativa, inativa ou expirada",
+const statusSchema = Joi.string().valid("ativo", "inativo").required().messages({
+  "any.only": "Status deve ser: ativo ou inativo",
   "any.required": "Status é obrigatório",
 });
 

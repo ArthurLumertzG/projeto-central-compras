@@ -4,7 +4,6 @@ const condicaoComercialController = require("../controllers/condicaoComercialCon
 const asyncHandler = require("../middlewares/asyncHandler");
 const { authenticate } = require("../middlewares/authMiddleware");
 
-// Todas as rotas de condições comerciais requerem autenticação
 router.get("/", authenticate, asyncHandler(condicaoComercialController.getAll.bind(condicaoComercialController)));
 router.get("/:id", authenticate, asyncHandler(condicaoComercialController.getById.bind(condicaoComercialController)));
 router.post("/", authenticate, asyncHandler(condicaoComercialController.create.bind(condicaoComercialController)));

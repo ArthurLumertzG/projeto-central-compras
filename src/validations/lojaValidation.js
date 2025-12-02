@@ -1,9 +1,5 @@
 const Joi = require("joi");
 
-/**
- * Schema de validação para criação de loja
- * Todos os campos obrigatórios
- */
 const createLojaSchema = Joi.object({
   nome: Joi.string().trim().min(2).max(200).required().messages({
     "string.empty": "Nome é obrigatório",
@@ -33,11 +29,6 @@ const createLojaSchema = Joi.object({
   }),
 });
 
-/**
- * Schema de validação para atualização de loja
- * Todos os campos opcionais, mas ao menos 1 obrigatório
- * Campos sensíveis são bloqueados
- */
 const updateLojaSchema = Joi.object({
   nome: Joi.string().trim().min(2).max(200).messages({
     "string.min": "Nome deve ter no mínimo 2 caracteres",
@@ -59,7 +50,6 @@ const updateLojaSchema = Joi.object({
     "string.guid": "ID do endereço deve ser um UUID válido",
   }),
 
-  // Campos bloqueados - não podem ser atualizados diretamente
   id: Joi.forbidden(),
   criado_em: Joi.forbidden(),
   atualizado_em: Joi.forbidden(),
@@ -70,20 +60,12 @@ const updateLojaSchema = Joi.object({
     "object.min": "Pelo menos um campo deve ser fornecido para atualização",
   });
 
-/**
- * Schema de validação para UUID
- * Usado para validar IDs em parâmetros de rota
- */
 const uuidSchema = Joi.string().uuid().required().messages({
   "string.empty": "ID é obrigatório",
   "string.guid": "ID deve ser um UUID válido",
   "any.required": "ID é obrigatório",
 });
 
-/**
- * Schema de validação para CNPJ
- * Usado para busca por CNPJ
- */
 const cnpjSchema = Joi.string()
   .trim()
   .pattern(/^\d{14}$/)

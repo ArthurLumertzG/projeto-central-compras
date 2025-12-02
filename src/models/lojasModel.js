@@ -1,19 +1,10 @@
 const database = require("../../db/database");
 
-/**
- * @class LojasModel
- * @description Model responsável pelas operações de banco de dados da tabela lojas
- * Implementa soft delete e queries parametrizadas
- */
 class LojasModel {
   constructor() {
     this.tableName = "lojas";
   }
 
-  /**
-   * Retorna todas as lojas ativas (não deletadas)
-   * @returns {Promise<Array>} Lista de lojas ordenadas por nome
-   */
   async select() {
     try {
       const query = {
@@ -28,11 +19,6 @@ class LojasModel {
     }
   }
 
-  /**
-   * Busca uma loja por ID
-   * @param {string} id - UUID da loja
-   * @returns {Promise<Object|null>} Loja encontrada ou null
-   */
   async selectById(id) {
     try {
       const query = {
@@ -47,11 +33,6 @@ class LojasModel {
     }
   }
 
-  /**
-   * Busca uma loja por CNPJ
-   * @param {string} cnpj - CNPJ da loja (14 dígitos)
-   * @returns {Promise<Object|null>} Loja encontrada ou null
-   */
   async selectByCnpj(cnpj) {
     try {
       const query = {
@@ -66,11 +47,6 @@ class LojasModel {
     }
   }
 
-  /**
-   * Busca lojas por usuário responsável
-   * @param {string} usuario_id - UUID do usuário
-   * @returns {Promise<Array>} Lista de lojas do usuário
-   */
   async selectByUsuarioId(usuario_id) {
     try {
       const query = {
@@ -88,11 +64,6 @@ class LojasModel {
     }
   }
 
-  /**
-   * Cria uma nova loja
-   * @param {Object} loja - Dados da loja
-   * @returns {Promise<Object>} Loja criada
-   */
   async create(loja) {
     try {
       const query = {
@@ -110,12 +81,6 @@ class LojasModel {
     }
   }
 
-  /**
-   * Atualiza uma loja existente
-   * @param {string} id - UUID da loja
-   * @param {Object} loja - Dados para atualização
-   * @returns {Promise<Object|null>} Loja atualizada ou null se não encontrada
-   */
   async update(id, loja) {
     try {
       const fields = Object.keys(loja);
@@ -138,11 +103,6 @@ class LojasModel {
     }
   }
 
-  /**
-   * Deleta uma loja (soft delete)
-   * @param {string} id - UUID da loja
-   * @returns {Promise<boolean>} true se deletado com sucesso, false se não encontrado
-   */
   async delete(id) {
     try {
       const query = {

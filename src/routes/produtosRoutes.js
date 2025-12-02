@@ -4,12 +4,10 @@ const produtosController = require("../controllers/produtosController");
 const asyncHandler = require("../middlewares/asyncHandler");
 const { authenticate } = require("../middlewares/authMiddleware");
 
-// Rotas públicas (sem autenticação)
 router.get("/", asyncHandler(produtosController.getAll));
 router.get("/id/:id", asyncHandler(produtosController.getById));
 router.get("/nome/:nome", asyncHandler(produtosController.getByName));
 
-// Rotas privadas (com autenticação)
 router.post("/", authenticate, asyncHandler(produtosController.create));
 router.patch("/:id", authenticate, asyncHandler(produtosController.update));
 router.delete("/:id", authenticate, asyncHandler(produtosController.delete));

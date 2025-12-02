@@ -1,19 +1,10 @@
 const database = require("../../db/database");
 
-/**
- * Model responsável pelas operações de banco de dados da tabela pedidos
- * @class PedidosModel
- */
 class PedidosModel {
   constructor() {
     this.tableName = "pedidos";
   }
 
-  /**
-   * Busca todos os pedidos não deletados
-   * @returns {Promise<Array>} Lista de pedidos
-   * @throws {Error} Erro ao buscar pedidos
-   */
   async select() {
     try {
       const query = {
@@ -42,12 +33,6 @@ class PedidosModel {
     }
   }
 
-  /**
-   * Busca um pedido por ID
-   * @param {string} id - UUID do pedido
-   * @returns {Promise<Object|null>} Pedido encontrado ou null
-   * @throws {Error} Erro ao buscar pedido
-   */
   async selectById(id) {
     try {
       const query = {
@@ -75,12 +60,6 @@ class PedidosModel {
     }
   }
 
-  /**
-   * Busca pedidos por usuário
-   * @param {string} usuario_id - UUID do usuário
-   * @returns {Promise<Array>} Lista de pedidos do usuário
-   * @throws {Error} Erro ao buscar pedidos
-   */
   async selectByUsuarioId(usuario_id) {
     try {
       const query = {
@@ -109,12 +88,6 @@ class PedidosModel {
     }
   }
 
-  /**
-   * Busca pedidos por loja
-   * @param {string} loja_id - UUID da loja
-   * @returns {Promise<Array>} Lista de pedidos da loja
-   * @throws {Error} Erro ao buscar pedidos
-   */
   async selectByLojaId(loja_id) {
     try {
       const query = {
@@ -143,12 +116,6 @@ class PedidosModel {
     }
   }
 
-  /**
-   * Busca pedidos por status
-   * @param {string} status - Status do pedido
-   * @returns {Promise<Array>} Lista de pedidos com o status especificado
-   * @throws {Error} Erro ao buscar pedidos
-   */
   async selectByStatus(status) {
     try {
       const query = {
@@ -177,12 +144,6 @@ class PedidosModel {
     }
   }
 
-  /**
-   * Busca pedidos por data (apenas a data, sem hora)
-   * @param {string} date - Data no formato YYYY-MM-DD
-   * @returns {Promise<Array>} Lista de pedidos da data especificada
-   * @throws {Error} Erro ao buscar pedidos
-   */
   async selectByDate(date) {
     try {
       const query = {
@@ -211,12 +172,6 @@ class PedidosModel {
     }
   }
 
-  /**
-   * Cria um novo pedido no banco de dados
-   * @param {Object} pedido - Dados do pedido
-   * @returns {Promise<Object>} Pedido criado
-   * @throws {Error} Erro ao criar pedido
-   */
   async create(pedido) {
     try {
       const query = {
@@ -233,13 +188,6 @@ class PedidosModel {
     }
   }
 
-  /**
-   * Atualiza um pedido existente
-   * @param {string} id - UUID do pedido
-   * @param {Object} pedido - Dados para atualizar
-   * @returns {Promise<Object|null>} Pedido atualizado ou null
-   * @throws {Error} Erro ao atualizar pedido
-   */
   async update(id, pedido) {
     try {
       const fields = Object.keys(pedido);
@@ -259,12 +207,6 @@ class PedidosModel {
     }
   }
 
-  /**
-   * Deleta um pedido (soft delete)
-   * @param {string} id - UUID do pedido
-   * @returns {Promise<boolean>} true se deletou, false caso contrário
-   * @throws {Error} Erro ao deletar pedido
-   */
   async delete(id) {
     try {
       const query = {
@@ -279,12 +221,6 @@ class PedidosModel {
     }
   }
 
-  /**
-   * Busca pedidos de um fornecedor específico
-   * @param {string} fornecedorId - UUID do fornecedor
-   * @returns {Promise<Array>} Lista de pedidos do fornecedor
-   * @throws {Error} Erro ao buscar pedidos
-   */
   async selectByFornecedor(fornecedorId) {
     try {
       const query = {

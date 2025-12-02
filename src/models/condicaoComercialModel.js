@@ -1,20 +1,10 @@
 const database = require("../../db/database");
 
-/**
- * Model responsável pelas operações de banco de dados da tabela condicoescomerciais
- * @class CondicaoComercialModel
- */
 class CondicaoComercialModel {
   constructor() {
     this.tableName = "condicoescomerciais";
   }
 
-  /**
-   * Busca todas as condições comerciais de um fornecedor não deletadas
-   * @param {string} fornecedor_id - UUID do fornecedor
-   * @returns {Promise<Array>} Lista de condições comerciais
-   * @throws {Error} Erro ao buscar condições comerciais
-   */
   async selectByFornecedor(fornecedor_id) {
     try {
       const query = {
@@ -29,12 +19,6 @@ class CondicaoComercialModel {
     }
   }
 
-  /**
-   * Busca uma condição comercial por ID
-   * @param {string} id - UUID da condição comercial
-   * @returns {Promise<Object|null>} Condição comercial encontrada ou null
-   * @throws {Error} Erro ao buscar condição comercial
-   */
   async selectById(id) {
     try {
       const query = {
@@ -49,13 +33,6 @@ class CondicaoComercialModel {
     }
   }
 
-  /**
-   * Busca uma condição comercial por UF e fornecedor
-   * @param {string} uf - UF do estado
-   * @param {string} fornecedor_id - UUID do fornecedor
-   * @returns {Promise<Object|null>} Condição comercial encontrada ou null
-   * @throws {Error} Erro ao buscar condição comercial
-   */
   async selectByUfAndFornecedor(uf, fornecedor_id) {
     try {
       const query = {
@@ -70,12 +47,6 @@ class CondicaoComercialModel {
     }
   }
 
-  /**
-   * Cria uma nova condição comercial no banco de dados
-   * @param {Object} condicao - Dados da condição comercial
-   * @returns {Promise<Object>} Condição comercial criada
-   * @throws {Error} Erro ao criar condição comercial
-   */
   async create(condicao) {
     try {
       const query = {
@@ -92,13 +63,6 @@ class CondicaoComercialModel {
     }
   }
 
-  /**
-   * Atualiza uma condição comercial existente
-   * @param {string} id - UUID da condição comercial
-   * @param {Object} updates - Campos a serem atualizados
-   * @returns {Promise<Object>} Condição comercial atualizada
-   * @throws {Error} Erro ao atualizar condição comercial
-   */
   async update(id, updates) {
     try {
       const fields = [];
@@ -137,12 +101,6 @@ class CondicaoComercialModel {
     }
   }
 
-  /**
-   * Realiza soft delete de uma condição comercial
-   * @param {string} id - UUID da condição comercial
-   * @returns {Promise<Object>} Condição comercial deletada
-   * @throws {Error} Erro ao deletar condição comercial
-   */
   async softDelete(id) {
     try {
       const query = {

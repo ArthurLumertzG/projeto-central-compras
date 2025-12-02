@@ -1,8 +1,5 @@
 const Joi = require("joi");
 
-/**
- * Schema para validação de item do pedido
- */
 const itemPedidoSchema = Joi.object({
   produto_id: Joi.string().uuid().required().messages({
     "string.guid": "ID do produto inválido",
@@ -23,9 +20,6 @@ const itemPedidoSchema = Joi.object({
   }),
 });
 
-/**
- * Schema de validação para criação de pedido
- */
 const createPedidoSchema = Joi.object({
   descricao: Joi.string().trim().min(5).max(500).allow(null, "").messages({
     "string.min": "Descrição deve ter no mínimo 5 caracteres",
@@ -49,7 +43,6 @@ const createPedidoSchema = Joi.object({
     "any.required": "Prazo em dias é obrigatório",
   }),
 
-  // Array de produtos do pedido
   produtos: Joi.array().items(itemPedidoSchema).min(1).required().messages({
     "array.base": "Produtos deve ser um array",
     "array.min": "Pedido deve conter pelo menos 1 produto",
@@ -57,9 +50,6 @@ const createPedidoSchema = Joi.object({
   }),
 });
 
-/**
- * Schema de validação para atualização de pedido
- */
 const updatePedidoSchema = Joi.object({
   descricao: Joi.string().trim().min(5).max(500).allow(null, "").messages({
     "string.min": "Descrição deve ter no mínimo 5 caracteres",
@@ -80,7 +70,6 @@ const updatePedidoSchema = Joi.object({
     "number.max": "Prazo deve ser no máximo 365 dias",
   }),
 
-  // Bloqueia campos que não devem ser atualizados
   id: Joi.forbidden(),
   usuario_id: Joi.forbidden(),
   loja_id: Joi.forbidden(),
@@ -95,25 +84,16 @@ const updatePedidoSchema = Joi.object({
     "object.min": "Pelo menos um campo deve ser informado para atualização",
   });
 
-/**
- * Schema de validação para UUID
- */
 const uuidSchema = Joi.string().uuid().required().messages({
   "string.guid": "ID inválido",
   "any.required": "ID é obrigatório",
 });
 
-/**
- * Schema de validação para status
- */
 const statusSchema = Joi.string().valid("pendente", "enviado", "entregue", "cancelado").required().messages({
   "any.only": "Status deve ser: pendente, enviado, entregue ou cancelado",
   "any.required": "Status é obrigatório",
 });
 
-/**
- * Schema de validação para data (formato YYYY-MM-DD)
- */
 const dateSchema = Joi.string()
   .pattern(/^\d{4}-\d{2}-\d{2}$/)
   .required()

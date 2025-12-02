@@ -1,9 +1,5 @@
 const Joi = require("joi");
 
-/**
- * Schema de validação para criação de produto
- * Todos os campos obrigatórios devem ser fornecidos
- */
 const createProdutoSchema = Joi.object({
   nome: Joi.string().min(2).max(200).required().messages({
     "string.empty": "Nome é obrigatório",
@@ -50,11 +46,6 @@ const createProdutoSchema = Joi.object({
   }),
 });
 
-/**
- * Schema de validação para atualização de produto
- * Pelo menos um campo deve ser fornecido para atualização
- * Campos sensíveis (id, timestamps) são bloqueados
- */
 const updateProdutoSchema = Joi.object({
   nome: Joi.string().min(2).max(200).messages({
     "string.min": "Nome deve ter no mínimo 2 caracteres",
@@ -90,7 +81,6 @@ const updateProdutoSchema = Joi.object({
     "string.uri": "URL da imagem deve ser uma URL válida",
   }),
 
-  // Campos bloqueados - não podem ser atualizados diretamente
   id: Joi.forbidden(),
   criado_em: Joi.forbidden(),
   atualizado_em: Joi.forbidden(),
@@ -101,20 +91,12 @@ const updateProdutoSchema = Joi.object({
     "object.min": "Pelo menos um campo deve ser fornecido para atualização",
   });
 
-/**
- * Schema de validação para UUID
- * Usado para validar IDs em parâmetros de rota
- */
 const uuidSchema = Joi.string().uuid().required().messages({
   "string.empty": "ID é obrigatório",
   "string.guid": "ID deve ser um UUID válido",
   "any.required": "ID é obrigatório",
 });
 
-/**
- * Schema de validação para nome de produto
- * Usado para busca por nome
- */
 const nomeSchema = Joi.string().min(1).max(200).required().messages({
   "string.empty": "Nome é obrigatório",
   "string.min": "Nome deve ter no mínimo 1 caractere",

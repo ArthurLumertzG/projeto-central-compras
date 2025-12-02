@@ -1,19 +1,10 @@
 const database = require("../../db/database");
 
-/**
- * @class EnderecosModel
- * @description Model responsável pelas operações de banco de dados da tabela enderecos
- * Implementa soft delete e queries parametrizadas
- */
 class EnderecosModel {
   constructor() {
     this.tableName = "enderecos";
   }
 
-  /**
-   * Retorna todos os endereços ativos (não deletados)
-   * @returns {Promise<Array>} Lista de endereços
-   */
   async select() {
     try {
       const query = {
@@ -28,11 +19,6 @@ class EnderecosModel {
     }
   }
 
-  /**
-   * Busca um endereço por ID
-   * @param {string} id - UUID do endereço
-   * @returns {Promise<Object|null>} Endereço encontrado ou null
-   */
   async selectById(id) {
     try {
       const query = {
@@ -47,14 +33,8 @@ class EnderecosModel {
     }
   }
 
-  /**
-   * Busca endereços por CEP
-   * @param {string} cep - CEP (com ou sem hífen)
-   * @returns {Promise<Array>} Lista de endereços com o CEP informado
-   */
   async selectByCep(cep) {
     try {
-      // Remove hífen do CEP para busca
       const cepSemFormatacao = cep.replace("-", "");
 
       const query = {
@@ -72,12 +52,6 @@ class EnderecosModel {
     }
   }
 
-  /**
-   * Busca endereços por cidade e estado
-   * @param {string} cidade - Nome da cidade
-   * @param {string} estado - Sigla do estado (2 caracteres)
-   * @returns {Promise<Array>} Lista de endereços
-   */
   async selectByCidadeEstado(cidade, estado) {
     try {
       const query = {
@@ -96,11 +70,6 @@ class EnderecosModel {
     }
   }
 
-  /**
-   * Cria um novo endereço
-   * @param {Object} endereco - Dados do endereço
-   * @returns {Promise<Object>} Endereço criado
-   */
   async create(endereco) {
     try {
       const query = {
@@ -118,12 +87,6 @@ class EnderecosModel {
     }
   }
 
-  /**
-   * Atualiza um endereço existente
-   * @param {string} id - UUID do endereço
-   * @param {Object} endereco - Dados para atualização
-   * @returns {Promise<Object|null>} Endereço atualizado ou null se não encontrado
-   */
   async update(id, endereco) {
     try {
       const fields = Object.keys(endereco);
@@ -146,11 +109,6 @@ class EnderecosModel {
     }
   }
 
-  /**
-   * Deleta um endereço (soft delete)
-   * @param {string} id - UUID do endereço
-   * @returns {Promise<boolean>} true se deletado com sucesso, false se não encontrado
-   */
   async delete(id) {
     try {
       const query = {
@@ -167,11 +125,6 @@ class EnderecosModel {
     }
   }
 
-  /**
-   * Verifica se um endereço existe e está ativo
-   * @param {string} id - UUID do endereço
-   * @returns {Promise<boolean>} true se existe, false caso contrário
-   */
   async exists(id) {
     try {
       const query = {

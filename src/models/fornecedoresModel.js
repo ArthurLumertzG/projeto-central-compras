@@ -33,11 +33,6 @@ class FornecedoresModel {
     }
   }
 
-  /**
-   * Busca um fornecedor por CNPJ
-   * @param {string} cnpj - CNPJ do fornecedor (14 dígitos)
-   * @returns {Promise<Object|null>} Fornecedor encontrado ou null
-   */
   async selectByCnpj(cnpj) {
     try {
       const query = {
@@ -52,11 +47,6 @@ class FornecedoresModel {
     }
   }
 
-  /**
-   * Busca fornecedores por usuário responsável
-   * @param {string} usuario_id - UUID do usuário
-   * @returns {Promise<Array>} Lista de fornecedores do usuário
-   */
   async selectByUsuarioId(usuario_id) {
     try {
       const query = {

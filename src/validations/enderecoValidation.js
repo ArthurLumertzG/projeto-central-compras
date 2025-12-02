@@ -1,9 +1,5 @@
 const Joi = require("joi");
 
-/**
- * Schema de validação para criação de endereço
- * Todos os campos obrigatórios exceto complemento
- */
 const createEnderecoSchema = Joi.object({
   estado: Joi.string()
     .trim()
@@ -60,10 +56,6 @@ const createEnderecoSchema = Joi.object({
     }),
 });
 
-/**
- * Schema de validação para atualização de endereço
- * Todos os campos opcionais, mas ao menos 1 obrigatório
- */
 const updateEnderecoSchema = Joi.object({
   estado: Joi.string()
     .trim()
@@ -105,7 +97,6 @@ const updateEnderecoSchema = Joi.object({
       "string.pattern.base": "CEP inválido. Use o formato 12345-678 ou 12345678",
     }),
 
-  // Campos bloqueados - não podem ser atualizados diretamente
   id: Joi.forbidden(),
   criado_em: Joi.forbidden(),
   atualizado_em: Joi.forbidden(),
@@ -116,20 +107,12 @@ const updateEnderecoSchema = Joi.object({
     "object.min": "Pelo menos um campo deve ser fornecido para atualização",
   });
 
-/**
- * Schema de validação para UUID
- * Usado para validar IDs em parâmetros de rota
- */
 const uuidSchema = Joi.string().uuid().required().messages({
   "string.empty": "ID é obrigatório",
   "string.guid": "ID deve ser um UUID válido",
   "any.required": "ID é obrigatório",
 });
 
-/**
- * Schema de validação para CEP
- * Usado para busca por CEP
- */
 const cepSchema = Joi.string()
   .trim()
   .pattern(/^\d{5}-?\d{3}$/)

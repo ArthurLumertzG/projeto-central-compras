@@ -1,6 +1,5 @@
 const Joi = require("joi");
 
-// Schema para criação de usuário (cadastro)
 const createUsuarioSchema = Joi.object({
   nome: Joi.string().trim().min(2).max(100).required().messages({
     "string.empty": "Nome é obrigatório",
@@ -70,7 +69,6 @@ const createUsuarioSchema = Joi.object({
   }),
 }).options({ stripUnknown: true });
 
-// Schema para login
 const loginSchema = Joi.object({
   email: Joi.string().trim().lowercase().email().required().messages({
     "string.empty": "Email é obrigatório",
@@ -84,7 +82,6 @@ const loginSchema = Joi.object({
   }),
 }).options({ stripUnknown: true });
 
-// Schema para atualização de usuário (permite campos opcionais)
 const updateUsuarioSchema = Joi.object({
   nome: Joi.string().trim().min(2).max(100).messages({
     "string.min": "Nome deve ter pelo menos 2 caracteres",
@@ -134,7 +131,6 @@ const updateUsuarioSchema = Joi.object({
   })
   .options({ stripUnknown: true });
 
-// Schema para atualização de senha
 const updatePasswordSchema = Joi.object({
   senhaAtual: Joi.string().required().messages({
     "string.empty": "Senha atual é obrigatória",
@@ -162,7 +158,6 @@ const updatePasswordSchema = Joi.object({
   }),
 }).options({ stripUnknown: true });
 
-// Schema para validação de UUID
 const uuidSchema = Joi.string().uuid().required().messages({
   "string.guid": "ID inválido",
   "any.required": "ID é obrigatório",
