@@ -32,11 +32,6 @@ const createPedidoSchema = Joi.object({
     "string.max": "Descrição deve ter no máximo 500 caracteres",
   }),
 
-  loja_id: Joi.string().uuid().required().messages({
-    "string.guid": "ID da loja inválido",
-    "any.required": "ID da loja é obrigatório",
-  }),
-
   status: Joi.string().valid("pendente", "enviado", "entregue", "cancelado").default("pendente").messages({
     "any.only": "Status deve ser: pendente, enviado, entregue ou cancelado",
   }),

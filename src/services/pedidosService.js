@@ -1,9 +1,10 @@
 const PedidosModel = require("../models/pedidosModel");
 const PedidoProdutoModel = require("../models/pedidoProdutoModel");
+const ProdutosModel = require("../models/produtosModel");
+const LojasModel = require("../models/lojasModel");
 const AppError = require("../errors/AppError");
 const DefaultResponseDto = require("../dtos/defaultResponse.dto");
 const { v4: uuidv4 } = require("uuid");
-const database = require("../../db/database");
 const { createPedidoSchema, updatePedidoSchema, uuidSchema, statusSchema, dateSchema } = require("../validations/pedidoValidation");
 
 /**
@@ -15,6 +16,8 @@ class PedidosService {
   constructor() {
     this.pedidosModel = new PedidosModel();
     this.pedidoProdutoModel = new PedidoProdutoModel();
+    this.produtosModel = new ProdutosModel();
+    this.lojasModel = new LojasModel();
   }
 
   /**
@@ -139,14 +142,20 @@ class PedidosService {
    * @throws {AppError} 400 se validação falhar, 404 se FK inválida, 409 se estoque insuficiente
    */
   async create(data, requestUserId) {
-    // 1. Adiciona o usuario_id como loja_id automaticamente
+    // 1. Busca a loja do usuário logado
+    const loja = await this.lojasModel.selectByUsuarioId(requestUserId);
+    if (!loja) {
+      throw new AppError("Loja não encontrada para o usuário logado", 404);
+    }
+
+    // 2. Adiciona o loja_id correto
     const pedidoData = {
       ...data,
-      loja_id: requestUserId, // O usuário autenticado É a loja
+      loja_id: loja.id, // ID da loja, não do usuário
       usuario_id: requestUserId,
     };
 
-    // 2. Validação com Joi
+    // 3. Validação com Joi
     const { error, value } = createPedidoSchema.validate(pedidoData, { stripUnknown: true });
     if (error) {
       throw new AppError(error.details[0].message, 400);
@@ -157,17 +166,12 @@ class PedidosService {
     let valorTotalCalculado = 0;
 
     for (const item of value.produtos) {
-      // Busca produto
-      const produtoQuery = await database.query({
-        text: "SELECT id, nome, valor_unitario, quantidade_estoque FROM produtos WHERE id = $1 AND deletado_em IS NULL",
-        values: [item.produto_id],
-      });
+      // Busca produto usando o model
+      const produto = await this.produtosModel.selectById(item.produto_id);
 
-      if (produtoQuery.rows.length === 0) {
+      if (!produto) {
         throw new AppError(`Produto com ID ${item.produto_id} não encontrado`, 404);
       }
-
-      const produto = produtoQuery.rows[0];
 
       // Valida estoque
       if (produto.quantidade_estoque < item.quantidade) {
@@ -186,75 +190,55 @@ class PedidosService {
       });
     }
 
-    // 4. Inicia transação
-    const client = await database.pool.connect();
+    // 4. Cria o pedido
+    const pedidoId = uuidv4();
+    const novoPedido = {
+      id: pedidoId,
+      valor_total: valorTotalCalculado,
+      descricao: value.descricao || null,
+      usuario_id: requestUserId,
+      loja_id: value.loja_id,
+      status: value.status || "pendente",
+      forma_pagamento: value.forma_pagamento,
+      prazo_dias: value.prazo_dias,
+      criado_em: new Date(),
+    };
 
-    try {
-      await client.query("BEGIN");
+    const pedidoCriado = await this.pedidosModel.create(novoPedido);
 
-      // 6. Cria o pedido
-      const pedidoId = uuidv4();
-      const novoPedido = {
-        id: pedidoId,
-        valor_total: valorTotalCalculado,
-        descricao: value.descricao || null,
-        usuario_id: requestUserId,
-        loja_id: value.loja_id,
-        status: value.status || "pendente",
-        forma_pagamento: value.forma_pagamento,
-        prazo_dias: value.prazo_dias,
-        criado_em: new Date(),
+    // 5. Cria os itens do pedido (pedidoproduto)
+    const itensCriados = [];
+    const now = new Date();
+
+    for (const itemData of produtosData) {
+      const itemId = uuidv4();
+      const novoItem = {
+        id: itemId,
+        pedido_id: pedidoId,
+        produto_id: itemData.produto_id,
+        quantidade: itemData.quantidade,
+        valor_unitario: itemData.valor_unitario,
+        criado_em: now,
+        atualizado_em: now,
       };
 
-      const pedidoCriado = await this.pedidosModel.create(novoPedido);
+      const itemCriado = await this.pedidoProdutoModel.create(novoItem);
+      itensCriados.push({
+        ...itemCriado,
+        produto_nome: itemData.produto.nome,
+      });
 
-      // 7. Cria os itens do pedido (pedidoproduto)
-      const itensCriados = [];
-      const now = new Date();
-
-      for (const itemData of produtosData) {
-        const itemId = uuidv4();
-        const novoItem = {
-          id: itemId,
-          pedido_id: pedidoId,
-          produto_id: itemData.produto_id,
-          quantidade: itemData.quantidade,
-          valor_unitario: itemData.valor_unitario,
-          criado_em: now,
-          atualizado_em: now,
-        };
-
-        const itemCriado = await this.pedidoProdutoModel.create(novoItem);
-        itensCriados.push({
-          ...itemCriado,
-          produto_nome: itemData.produto.nome,
-        });
-
-        // 8. Atualiza estoque do produto
-        await client.query({
-          text: "UPDATE produtos SET quantidade_estoque = quantidade_estoque - $1 WHERE id = $2",
-          values: [itemData.quantidade, itemData.produto_id],
-        });
-      }
-
-      // 9. Commit da transação
-      await client.query("COMMIT");
-
-      // 10. Retorna pedido completo com itens
-      const pedidoCompleto = {
-        ...pedidoCriado,
-        itens: itensCriados,
-      };
-
-      return new DefaultResponseDto(true, "Pedido criado com sucesso", pedidoCompleto);
-    } catch (error) {
-      // Rollback em caso de erro
-      await client.query("ROLLBACK");
-      console.error("Erro ao criar pedido (rollback):", error);
-      throw error;
-    } finally {
-      client.release();
+      // 6. Atualiza estoque do produto usando o model
+      await this.produtosModel.updateEstoque(itemData.produto_id, -itemData.quantidade);
     }
+
+    // 7. Retorna pedido completo com itens
+    const pedidoCompleto = {
+      ...pedidoCriado,
+      itens: itensCriados,
+    };
+
+    return new DefaultResponseDto(true, "Pedido criado com sucesso", pedidoCompleto);
   }
 
   /**

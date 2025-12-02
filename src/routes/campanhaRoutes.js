@@ -4,12 +4,10 @@ const campanhasController = require("../controllers/campanhaController");
 const asyncHandler = require("../middlewares/asyncHandler");
 const { authenticate } = require("../middlewares/authMiddleware");
 
-// Rotas públicas (sem autenticação)
-router.get("/", asyncHandler(campanhasController.getAll.bind(campanhasController)));
-router.get("/status/:status", asyncHandler(campanhasController.getByStatus.bind(campanhasController)));
-router.get("/:id", asyncHandler(campanhasController.getById.bind(campanhasController)));
-
 // Rotas privadas (requerem autenticação JWT)
+router.get("/", authenticate, asyncHandler(campanhasController.getAll.bind(campanhasController)));
+router.get("/status/:status", authenticate, asyncHandler(campanhasController.getByStatus.bind(campanhasController)));
+router.get("/:id", authenticate, asyncHandler(campanhasController.getById.bind(campanhasController)));
 router.post("/", authenticate, asyncHandler(campanhasController.create.bind(campanhasController)));
 router.patch("/:id", authenticate, asyncHandler(campanhasController.update.bind(campanhasController)));
 router.delete("/:id", authenticate, asyncHandler(campanhasController.delete.bind(campanhasController)));

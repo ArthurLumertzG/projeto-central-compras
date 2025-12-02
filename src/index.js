@@ -15,6 +15,7 @@ const enderecosRoutes = require("./routes/enderecosRoutes.js");
 const lojasRoutes = require("./routes/lojasRoutes.js");
 const campanhaRoutes = require("./routes/campanhaRoutes.js");
 const pedidosRoutes = require("./routes/pedidosRoutes.js");
+const condicaoComercialRoutes = require("./routes/condicaoComercialRoutes.js");
 
 const swaggerOptions = {
   definition: {
@@ -61,6 +62,7 @@ app.use("/enderecos", enderecosRoutes);
 app.use("/lojas", lojasRoutes);
 app.use("/campanhas", campanhaRoutes);
 app.use("/pedidos", pedidosRoutes);
+app.use("/condicoes-comerciais", condicaoComercialRoutes);
 
 app.use((req, res, next) => {
   next(new AppError(`Rota ${req.originalUrl} não encontrada`, 404));

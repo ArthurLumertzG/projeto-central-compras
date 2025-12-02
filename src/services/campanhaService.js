@@ -27,12 +27,27 @@ class CampanhasService {
   }
 
   /**
+   * Busca todas as campanhas de um fornecedor específico
+   * @param {string} fornecedor_id - UUID do fornecedor
+   * @returns {Promise<DefaultResponseDto>} Lista de campanhas do fornecedor
+   */
+  async getByFornecedor(fornecedor_id) {
+    const campanhas = await this.campanhasModel.selectByFornecedor(fornecedor_id);
+    if (!campanhas || campanhas.length === 0) {
+      return new DefaultResponseDto(true, "Nenhuma campanha encontrada", []);
+    }
+
+    return new DefaultResponseDto(true, "Campanhas encontradas com sucesso", campanhas);
+  }
+
+  /**
    * Busca uma campanha por ID
    * @param {string} id - UUID da campanha
+   * @param {string} fornecedor_id - UUID do fornecedor (para validar propriedade)
    * @returns {Promise<DefaultResponseDto>} Campanha encontrada
-   * @throws {AppError} 400 se ID inválido, 404 se não encontrada
+   * @throws {AppError} 400 se ID inválido, 404 se não encontrada, 403 se não pertence ao fornecedor
    */
-  async getById(id) {
+  async getById(id, fornecedor_id) {
     // 1. Valida UUID
     const { error } = uuidSchema.validate(id);
     if (error) {
@@ -43,6 +58,11 @@ class CampanhasService {
     const campanha = await this.campanhasModel.selectById(id);
     if (!campanha) {
       throw new AppError("Campanha não encontrada", 404);
+    }
+
+    // 3. Valida se a campanha pertence ao fornecedor
+    if (campanha.fornecedor_id !== fornecedor_id) {
+      throw new AppError("Você não tem permissão para acessar esta campanha", 403);
     }
 
     return new DefaultResponseDto(true, "Campanha encontrada com sucesso", campanha);
@@ -73,10 +93,11 @@ class CampanhasService {
   /**
    * Cria uma nova campanha
    * @param {Object} data - Dados da campanha
+   * @param {string} fornecedor_id - UUID do fornecedor
    * @returns {Promise<DefaultResponseDto>} Campanha criada
    * @throws {AppError} 400 se validação falhar, 409 se nome já existe
    */
-  async create(data) {
+  async create(data, fornecedor_id) {
     // 1. Validação com Joi
     const { error, value } = createCampanhaSchema.validate(data, { stripUnknown: true });
     if (error) {
@@ -94,6 +115,7 @@ class CampanhasService {
       id: uuidv4(),
       ...value,
       status: value.status || "ativo",
+      fornecedor_id,
       criado_em: new Date(),
       atualizado_em: new Date(),
     };
@@ -108,10 +130,11 @@ class CampanhasService {
    * Atualiza uma campanha existente
    * @param {string} id - UUID da campanha
    * @param {Object} data - Dados para atualizar
+   * @param {string} fornecedor_id - UUID do fornecedor (para validar propriedade)
    * @returns {Promise<DefaultResponseDto>} Campanha atualizada
-   * @throws {AppError} 400 se validação falhar, 404 se não encontrada, 409 se nome duplicado
+   * @throws {AppError} 400 se validação falhar, 404 se não encontrada, 403 se não pertence ao fornecedor, 409 se nome duplicado
    */
-  async update(id, data) {
+  async update(id, data, fornecedor_id) {
     // 1. Valida UUID
     const { error: uuidError } = uuidSchema.validate(id);
     if (uuidError) {
@@ -124,13 +147,18 @@ class CampanhasService {
       throw new AppError("Campanha não encontrada", 404);
     }
 
-    // 3. Validação com Joi
+    // 3. Valida se a campanha pertence ao fornecedor
+    if (campanhaExists.fornecedor_id !== fornecedor_id) {
+      throw new AppError("Você não tem permissão para atualizar esta campanha", 403);
+    }
+
+    // 4. Validação com Joi
     const { error, value } = updateCampanhaSchema.validate(data, { stripUnknown: true });
     if (error) {
       throw new AppError(error.details[0].message, 400);
     }
 
-    // 4. Verifica unicidade do nome (se está sendo alterado)
+    // 5. Verifica unicidade do nome (se está sendo alterado)
     if (value.nome && value.nome !== campanhaExists.nome) {
       const nomeExists = await this.campanhasModel.selectByNome(value.nome);
       if (nomeExists) {
@@ -138,13 +166,13 @@ class CampanhasService {
       }
     }
 
-    // 5. Adiciona timestamp de atualização
+    // 6. Adiciona timestamp de atualização
     const updateData = {
       ...value,
       atualizado_em: new Date(),
     };
 
-    // 6. Atualiza no banco
+    // 7. Atualiza no banco
     const updatedCampanha = await this.campanhasModel.update(id, updateData);
 
     return new DefaultResponseDto(true, "Campanha atualizada com sucesso", updatedCampanha);
@@ -153,10 +181,11 @@ class CampanhasService {
   /**
    * Deleta uma campanha (soft delete)
    * @param {string} id - UUID da campanha
+   * @param {string} fornecedor_id - UUID do fornecedor (para validar propriedade)
    * @returns {Promise<DefaultResponseDto>} Confirmação de deleção
-   * @throws {AppError} 400 se ID inválido, 404 se não encontrada
+   * @throws {AppError} 400 se ID inválido, 404 se não encontrada, 403 se não pertence ao fornecedor
    */
-  async delete(id) {
+  async delete(id, fornecedor_id) {
     // 1. Valida UUID
     const { error } = uuidSchema.validate(id);
     if (error) {
@@ -169,7 +198,12 @@ class CampanhasService {
       throw new AppError("Campanha não encontrada", 404);
     }
 
-    // 3. Deleta (soft delete)
+    // 3. Valida se a campanha pertence ao fornecedor
+    if (campanhaExists.fornecedor_id !== fornecedor_id) {
+      throw new AppError("Você não tem permissão para deletar esta campanha", 403);
+    }
+
+    // 4. Deleta (soft delete)
     await this.campanhasModel.delete(id);
 
     return new DefaultResponseDto(true, "Campanha deletada com sucesso", null);

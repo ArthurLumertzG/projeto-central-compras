@@ -29,6 +29,26 @@ class CampanhasModel {
   }
 
   /**
+   * Busca todas as campanhas de um fornecedor específico
+   * @param {string} fornecedor_id - UUID do fornecedor
+   * @returns {Promise<Array>} Lista de campanhas do fornecedor
+   * @throws {Error} Erro ao buscar campanhas
+   */
+  async selectByFornecedor(fornecedor_id) {
+    try {
+      const query = {
+        text: `SELECT * FROM ${this.tableName} WHERE fornecedor_id = $1 AND deletado_em IS NULL ORDER BY criado_em DESC`,
+        values: [fornecedor_id],
+      };
+      const result = await database.query(query);
+      return result.rows;
+    } catch (error) {
+      console.error("Erro ao buscar campanhas do fornecedor:", error);
+      throw error;
+    }
+  }
+
+  /**
    * Busca uma campanha por ID
    * @param {string} id - UUID da campanha
    * @returns {Promise<Object|null>} Campanha encontrada ou null
@@ -98,10 +118,21 @@ class CampanhasModel {
   async create(campanha) {
     try {
       const query = {
-        text: `INSERT INTO ${this.tableName} (id, nome, descricao, valor_min, quantidade_min, desconto_porcentagem, status, criado_em, atualizado_em) 
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+        text: `INSERT INTO ${this.tableName} (id, nome, descricao, valor_min, quantidade_min, desconto_porcentagem, status, fornecedor_id, criado_em, atualizado_em) 
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
                RETURNING *`,
-        values: [campanha.id, campanha.nome, campanha.descricao, campanha.valor_min, campanha.quantidade_min, campanha.desconto_porcentagem, campanha.status, campanha.criado_em, campanha.atualizado_em],
+        values: [
+          campanha.id,
+          campanha.nome,
+          campanha.descricao,
+          campanha.valor_min,
+          campanha.quantidade_min,
+          campanha.desconto_porcentagem,
+          campanha.status,
+          campanha.fornecedor_id,
+          campanha.criado_em,
+          campanha.atualizado_em,
+        ],
       };
       const result = await database.query(query);
       return result.rows[0];

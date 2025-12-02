@@ -12,11 +12,12 @@ class CampanhaPromocional {
    * @param {number|null} quantidade_min - Quantidade mínima para aplicar o desconto
    * @param {number} desconto_porcentagem - Percentual de desconto (0-100)
    * @param {string} status - Status da campanha (ativa, inativa, expirada)
+   * @param {string} fornecedor_id - UUID do fornecedor
    * @param {Date} criado_em - Data de criação
    * @param {Date} atualizado_em - Data da última atualização
    * @param {Date|null} deletado_em - Data de exclusão (soft delete)
    */
-  constructor(id, nome, descricao, valor_min, quantidade_min, desconto_porcentagem, status, criado_em, atualizado_em, deletado_em) {
+  constructor(id, nome, descricao, valor_min, quantidade_min, desconto_porcentagem, status, fornecedor_id, criado_em, atualizado_em, deletado_em) {
     this.id = id;
     this.nome = nome;
     this.descricao = descricao;
@@ -24,6 +25,7 @@ class CampanhaPromocional {
     this.quantidade_min = quantidade_min;
     this.desconto_porcentagem = desconto_porcentagem;
     this.status = status;
+    this.fornecedor_id = fornecedor_id;
     this.criado_em = criado_em;
     this.atualizado_em = atualizado_em;
     this.deletado_em = deletado_em;

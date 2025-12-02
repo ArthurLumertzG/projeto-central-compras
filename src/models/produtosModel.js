@@ -109,6 +109,20 @@ class ProdutosModel {
       throw error;
     }
   }
+
+  async updateEstoque(id, quantidade) {
+    try {
+      const query = {
+        text: `UPDATE ${this.tableName} SET quantidade_estoque = quantidade_estoque + $1, atualizado_em = NOW() WHERE id = $2 AND deletado_em IS NULL RETURNING *`,
+        values: [quantidade, id],
+      };
+      const result = await database.query(query);
+      return result.rows[0] || null;
+    } catch (error) {
+      console.error("Erro ao atualizar estoque:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = ProdutosModel;
