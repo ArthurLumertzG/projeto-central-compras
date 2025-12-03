@@ -118,7 +118,6 @@ const updateUsuarioSchema = Joi.object({
     "string.guid": "ID do endereço deve ser um UUID válido",
   }),
 
-  // Proibir alteração de campos sensíveis
   id: Joi.forbidden(),
   email_verificado: Joi.forbidden(),
   criado_em: Joi.forbidden(),
