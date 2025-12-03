@@ -3,8 +3,6 @@ const DefaultResponseDto = require("../dtos/defaultResponse.dto");
 const AppError = require("../errors/AppError");
 const { createEnderecoSchema, updateEnderecoSchema, uuidSchema, cepSchema } = require("../validations/enderecoValidation");
 
-const { v4: uuidv4 } = require("uuid");
-
 class EnderecosService {
   constructor() {
     this.enderecosModel = new EnderecosModel();
@@ -86,10 +84,7 @@ class EnderecosService {
     value.cep = value.cep.replace("-", "");
 
     const novoEndereco = {
-      id: uuidv4(),
       ...value,
-      criado_em: new Date(),
-      atualizado_em: new Date(),
     };
 
     const endereçoCriado = await this.enderecosModel.create(novoEndereco);
@@ -119,7 +114,6 @@ class EnderecosService {
 
     const enderecoToUpdate = {
       ...value,
-      atualizado_em: new Date(),
     };
 
     const enderecoAtualizado = await this.enderecosModel.update(id, enderecoToUpdate);

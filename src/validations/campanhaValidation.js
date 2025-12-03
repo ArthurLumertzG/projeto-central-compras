@@ -78,8 +78,8 @@ const updateCampanhaSchema = Joi.object({
     "object.min": "Pelo menos um campo deve ser informado para atualização",
   });
 
-const uuidSchema = Joi.string().uuid().required().messages({
-  "string.guid": "ID inválido",
+const uuidSchema = Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages({
+  "string.pattern.base": "ID inválido",
   "any.required": "ID é obrigatório",
 });
 

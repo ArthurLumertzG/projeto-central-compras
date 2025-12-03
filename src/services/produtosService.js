@@ -3,7 +3,6 @@ const DefaultResponseDto = require("../dtos/defaultResponse.dto");
 const AppError = require("../errors/AppError");
 const { createProdutoSchema, updateProdutoSchema, uuidSchema, nomeSchema } = require("../validations/produtoValidation");
 
-const { v4: uuidv4 } = require("uuid");
 
 class ProdutosService {
   constructor() {
@@ -66,10 +65,7 @@ class ProdutosService {
     }
 
     const newProduto = {
-      id: uuidv4(),
-      ...value,
-      criado_em: new Date(),
-      atualizado_em: new Date(),
+      ...value
     };
 
     const createdProduto = await this.produtosModel.create(newProduto);
@@ -95,14 +91,13 @@ class ProdutosService {
 
     if (value.nome) {
       const existingProduto = await this.produtosModel.selectByName(value.nome);
-      if (existingProduto && existingProduto.id !== id) {
+      if (existingProduto && existingProduto.id.toString() !== id.toString()) {
         throw new AppError("Já existe um produto com este nome", 409);
       }
     }
 
     const produtoToUpdate = {
-      ...value,
-      atualizado_em: new Date(),
+      ...value
     };
 
     const updatedProduto = await this.produtosModel.update(id, produtoToUpdate);

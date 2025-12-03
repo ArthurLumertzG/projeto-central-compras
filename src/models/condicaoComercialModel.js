@@ -1,18 +1,12 @@
-const database = require("../../db/database");
+const CondicaoComercial = require("./schemas/CondicaoComercial");
+const transformDocument = require("./helpers/transformDocument");
 
 class CondicaoComercialModel {
-  constructor() {
-    this.tableName = "condicoescomerciais";
-  }
-
   async selectByFornecedor(fornecedor_id) {
     try {
-      const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE fornecedor_id = $1 AND deletado_em IS NULL ORDER BY uf ASC`,
-        values: [fornecedor_id],
-      };
-      const result = await database.query(query);
-      return result.rows;
+      const result = await CondicaoComercial.find({ fornecedor_id, deletado_em: null });
+
+      return transformDocument(result);
     } catch (error) {
       console.error("Erro ao buscar condições comerciais:", error);
       throw error;
@@ -21,26 +15,20 @@ class CondicaoComercialModel {
 
   async selectById(id) {
     try {
-      const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE id = $1 AND deletado_em IS NULL`,
-        values: [id],
-      };
-      const result = await database.query(query);
-      return result.rows[0] || null;
+      const result = await CondicaoComercial.findOne({ _id: id, deletado_em: null });
+
+      return transformDocument(result);
     } catch (error) {
       console.error("Erro ao buscar condição comercial por ID:", error);
       throw error;
     }
   }
 
-  async selectByUfAndFornecedor(uf, fornecedor_id) {
+  async selectByUf(fornecedor_id, uf) {
     try {
-      const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE uf = $1 AND fornecedor_id = $2 AND deletado_em IS NULL`,
-        values: [uf, fornecedor_id],
-      };
-      const result = await database.query(query);
-      return result.rows[0] || null;
+      const result = await CondicaoComercial.findOne({ fornecedor_id, uf, deletado_em: null });
+
+      return transformDocument(result);
     } catch (error) {
       console.error("Erro ao buscar condição comercial por UF:", error);
       throw error;
@@ -49,69 +37,32 @@ class CondicaoComercialModel {
 
   async create(condicao) {
     try {
-      const query = {
-        text: `INSERT INTO ${this.tableName} (id, uf, cashback_porcentagem, prazo_extendido_dias, variacao_unitario, fornecedor_id, criado_em, atualizado_em) 
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
-               RETURNING *`,
-        values: [condicao.id, condicao.uf, condicao.cashback_porcentagem, condicao.prazo_extendido_dias, condicao.variacao_unitario, condicao.fornecedor_id, condicao.criado_em, condicao.atualizado_em],
-      };
-      const result = await database.query(query);
-      return result.rows[0];
+      const novaCondicao = new CondicaoComercial(condicao);
+      const saved = await novaCondicao.save();
+      return transformDocument(saved);
     } catch (error) {
       console.error("Erro ao criar condição comercial:", error);
       throw error;
     }
   }
 
-  async update(id, updates) {
+  async update(id, condicao) {
     try {
-      const fields = [];
-      const values = [];
-      let paramCount = 1;
-
-      if (updates.cashback_porcentagem !== undefined) {
-        fields.push(`cashback_porcentagem = $${paramCount++}`);
-        values.push(updates.cashback_porcentagem);
-      }
-      if (updates.prazo_extendido_dias !== undefined) {
-        fields.push(`prazo_extendido_dias = $${paramCount++}`);
-        values.push(updates.prazo_extendido_dias);
-      }
-      if (updates.variacao_unitario !== undefined) {
-        fields.push(`variacao_unitario = $${paramCount++}`);
-        values.push(updates.variacao_unitario);
-      }
-
-      fields.push(`atualizado_em = CURRENT_TIMESTAMP`);
-      values.push(id);
-
-      const query = {
-        text: `UPDATE ${this.tableName} 
-               SET ${fields.join(", ")} 
-               WHERE id = $${paramCount} AND deletado_em IS NULL 
-               RETURNING *`,
-        values,
-      };
-
-      const result = await database.query(query);
-      return result.rows[0];
+      const updated = await CondicaoComercial.findOneAndUpdate({ _id: id, deletado_em: null }, condicao, {
+        new: true,
+        runValidators: true,
+      });
+      return transformDocument(updated);
     } catch (error) {
       console.error("Erro ao atualizar condição comercial:", error);
       throw error;
     }
   }
 
-  async softDelete(id) {
+  async delete(id) {
     try {
-      const query = {
-        text: `UPDATE ${this.tableName} 
-               SET deletado_em = CURRENT_TIMESTAMP 
-               WHERE id = $1 AND deletado_em IS NULL 
-               RETURNING *`,
-        values: [id],
-      };
-      const result = await database.query(query);
-      return result.rows[0];
+      const deleted = await CondicaoComercial.findOneAndUpdate({ _id: id, deletado_em: null }, { deletado_em: new Date() }, { new: true });
+      return !!deleted;
     } catch (error) {
       console.error("Erro ao deletar condição comercial:", error);
       throw error;

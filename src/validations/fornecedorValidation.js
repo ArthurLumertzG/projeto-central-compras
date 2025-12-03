@@ -26,8 +26,8 @@ const createFornecedorSchema = Joi.object({
     "string.max": "Descrição deve ter no máximo 500 caracteres",
   }),
 
-  usuario_id: Joi.string().uuid().optional().messages({
-    "string.guid": "ID do usuário deve ser um UUID válido",
+  usuario_id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).optional().messages({
+    "string.pattern.base": "ID do usuário deve ser um ObjectId válido",
   }),
 });
 
@@ -55,8 +55,8 @@ const updateFornecedorSchema = Joi.object({
     "string.max": "Descrição deve ter no máximo 500 caracteres",
   }),
 
-  usuario_id: Joi.string().uuid().optional().messages({
-    "string.guid": "ID do usuário deve ser um UUID válido",
+  usuario_id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).optional().messages({
+    "string.pattern.base": "ID do usuário deve ser um ObjectId válido",
   }),
 
   id: Joi.forbidden(),
@@ -69,8 +69,8 @@ const updateFornecedorSchema = Joi.object({
     "object.min": "Pelo menos um campo deve ser fornecido para atualização",
   });
 
-const uuidSchema = Joi.string().uuid().required().messages({
-  "string.guid": "ID inválido. Deve ser um UUID válido",
+const uuidSchema = Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages({
+  "string.pattern.base": "ID inválido. Deve ser um ObjectId válido",
   "any.required": "ID é obrigatório",
 });
 

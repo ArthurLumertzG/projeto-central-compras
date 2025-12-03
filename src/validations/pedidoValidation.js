@@ -1,8 +1,8 @@
 const Joi = require("joi");
 
 const itemPedidoSchema = Joi.object({
-  produto_id: Joi.string().uuid().required().messages({
-    "string.guid": "ID do produto inválido",
+  produto_id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages({
+    "string.pattern.base": "ID do produto inválido",
     "any.required": "ID do produto é obrigatório",
   }),
 
@@ -21,8 +21,8 @@ const itemPedidoSchema = Joi.object({
 });
 
 const createPedidoSchema = Joi.object({
-  fornecedor_id: Joi.string().uuid().required().messages({
-    "string.guid": "ID do fornecedor inválido",
+  fornecedor_id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages({
+    "string.pattern.base": "ID do fornecedor inválido",
     "any.required": "ID do fornecedor é obrigatório",
   }),
 
@@ -90,8 +90,8 @@ const updatePedidoSchema = Joi.object({
     "object.min": "Pelo menos um campo deve ser informado para atualização",
   });
 
-const uuidSchema = Joi.string().uuid().required().messages({
-  "string.guid": "ID inválido",
+const uuidSchema = Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages({
+  "string.pattern.base": "ID inválido",
   "any.required": "ID é obrigatório",
 });
 

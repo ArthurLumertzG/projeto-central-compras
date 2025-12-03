@@ -1,7 +1,6 @@
 const CampanhasModel = require("../models/campanhaModel");
 const DefaultResponseDto = require("../dtos/defaultResponse.dto");
 const AppError = require("../errors/AppError");
-const { v4: uuidv4 } = require("uuid");
 const { createCampanhaSchema, updateCampanhaSchema, uuidSchema, statusSchema } = require("../validations/campanhaValidation");
 
 class CampanhasService {
@@ -38,7 +37,7 @@ class CampanhasService {
       throw new AppError("Campanha não encontrada", 404);
     }
 
-    if (campanha.fornecedor_id !== fornecedor_id) {
+    if (campanha.fornecedor_id.toString() !== fornecedor_id.toString()) {
       throw new AppError("Você não tem permissão para acessar esta campanha", 403);
     }
 
@@ -71,12 +70,9 @@ class CampanhasService {
     }
 
     const newCampanha = {
-      id: uuidv4(),
       ...value,
-      status: value.status || "ativo",
+      status: value.status || "ativa",
       fornecedor_id,
-      criado_em: new Date(),
-      atualizado_em: new Date(),
     };
 
     const createdCampanha = await this.campanhasModel.create(newCampanha);
@@ -95,7 +91,7 @@ class CampanhasService {
       throw new AppError("Campanha não encontrada", 404);
     }
 
-    if (campanhaExists.fornecedor_id !== fornecedor_id) {
+    if (campanhaExists.fornecedor_id.toString() !== fornecedor_id.toString()) {
       throw new AppError("Você não tem permissão para atualizar esta campanha", 403);
     }
 
@@ -113,7 +109,6 @@ class CampanhasService {
 
     const updateData = {
       ...value,
-      atualizado_em: new Date(),
     };
 
     const updatedCampanha = await this.campanhasModel.update(id, updateData);
@@ -132,7 +127,7 @@ class CampanhasService {
       throw new AppError("Campanha não encontrada", 404);
     }
 
-    if (campanhaExists.fornecedor_id !== fornecedor_id) {
+    if (campanhaExists.fornecedor_id.toString() !== fornecedor_id.toString()) {
       throw new AppError("Você não tem permissão para deletar esta campanha", 403);
     }
 

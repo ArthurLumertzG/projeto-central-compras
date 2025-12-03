@@ -1,101 +1,67 @@
-const database = require("../../db/database");
+const CampanhaPromocional = require("./schemas/CampanhaPromocional");
+const transformDocument = require("./helpers/transformDocument");
 
-class CampanhasModel {
-  constructor() {
-    this.tableName = "campanhaspromocionais";
-  }
-
+class CampanhaModel {
   async select() {
     try {
-      const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE deletado_em IS NULL ORDER BY criado_em DESC`,
-        values: [],
-      };
-      const result = await database.query(query);
-      return result.rows;
+      const result = await CampanhaPromocional.find({ deletado_em: null });
+
+      return transformDocument(result);
     } catch (error) {
       console.error("Erro ao buscar campanhas:", error);
       throw error;
     }
   }
 
-  async selectByFornecedor(fornecedor_id) {
-    try {
-      const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE fornecedor_id = $1 AND deletado_em IS NULL ORDER BY criado_em DESC`,
-        values: [fornecedor_id],
-      };
-      const result = await database.query(query);
-      return result.rows;
-    } catch (error) {
-      console.error("Erro ao buscar campanhas do fornecedor:", error);
-      throw error;
-    }
-  }
-
   async selectById(id) {
     try {
-      const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE id = $1 AND deletado_em IS NULL`,
-        values: [id],
-      };
-      const result = await database.query(query);
-      return result.rows[0] || null;
+      const result = await CampanhaPromocional.findOne({ _id: id, deletado_em: null });
+
+      return transformDocument(result);
     } catch (error) {
       console.error("Erro ao buscar campanha por ID:", error);
       throw error;
     }
   }
 
-  async selectByNome(nome) {
+  async selectByFornecedor(fornecedor_id) {
     try {
-      const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE nome = $1 AND deletado_em IS NULL`,
-        values: [nome],
-      };
-      const result = await database.query(query);
-      return result.rows[0] || null;
+      const result = await CampanhaPromocional.find({ fornecedor_id, deletado_em: null });
+
+      return transformDocument(result);
     } catch (error) {
-      console.error("Erro ao buscar campanha por nome:", error);
+      console.error("Erro ao buscar campanhas por fornecedor:", error);
       throw error;
     }
   }
 
   async selectByStatus(status) {
     try {
-      const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE status = $1 AND deletado_em IS NULL ORDER BY criado_em DESC`,
-        values: [status],
-      };
-      const result = await database.query(query);
-      return result.rows;
+      const result = await CampanhaPromocional.find({ status, deletado_em: null });
+
+      return transformDocument(result);
     } catch (error) {
       console.error("Erro ao buscar campanhas por status:", error);
       throw error;
     }
   }
 
+  async selectByNome(nome) {
+    try {
+      const result = await CampanhaPromocional.findOne({ nome: new RegExp(`^${nome}$`, "i"), deletado_em: null });
+
+      return transformDocument(result);
+    } catch (error) {
+      console.error("Erro ao buscar campanha por nome:", error);
+      throw error;
+    }
+  }
+
   async create(campanha) {
     try {
-      const query = {
-        text: `INSERT INTO ${this.tableName} (id, nome, descricao, valor_min, quantidade_min, desconto_porcentagem, status, fornecedor_id, criado_em, atualizado_em) 
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
-               RETURNING *`,
-        values: [
-          campanha.id,
-          campanha.nome,
-          campanha.descricao,
-          campanha.valor_min,
-          campanha.quantidade_min,
-          campanha.desconto_porcentagem,
-          campanha.status,
-          campanha.fornecedor_id,
-          campanha.criado_em,
-          campanha.atualizado_em,
-        ],
-      };
-      const result = await database.query(query);
-      return result.rows[0];
+      const novaCampanha = new CampanhaPromocional(campanha);
+      const saved = await novaCampanha.save();
+      return transformDocument(saved);
     } catch (error) {
       console.error("Erro ao criar campanha:", error);
       throw error;
@@ -104,17 +70,11 @@ class CampanhasModel {
 
   async update(id, campanha) {
     try {
-      const fields = Object.keys(campanha);
-      const setClause = fields.map((field, index) => `"${field}" = $${index + 2}`).join(", ");
-      const values = [id, ...Object.values(campanha)];
-
-      const query = {
-        text: `UPDATE ${this.tableName} SET ${setClause} WHERE id = $1 AND deletado_em IS NULL RETURNING *`,
-        values: values,
-      };
-
-      const result = await database.query(query);
-      return result.rows[0] || null;
+      const updated = await CampanhaPromocional.findOneAndUpdate({ _id: id, deletado_em: null }, campanha, {
+        new: true,
+        runValidators: true,
+      });
+      return transformDocument(updated);
     } catch (error) {
       console.error("Erro ao atualizar campanha:", error);
       throw error;
@@ -123,12 +83,8 @@ class CampanhasModel {
 
   async delete(id) {
     try {
-      const query = {
-        text: `UPDATE ${this.tableName} SET deletado_em = NOW() WHERE id = $1 AND deletado_em IS NULL`,
-        values: [id],
-      };
-      const result = await database.query(query);
-      return result.rowCount > 0;
+      const deleted = await CampanhaPromocional.findOneAndUpdate({ _id: id, deletado_em: null }, { deletado_em: new Date() }, { new: true });
+      return !!deleted;
     } catch (error) {
       console.error("Erro ao deletar campanha:", error);
       throw error;
@@ -136,4 +92,4 @@ class CampanhasModel {
   }
 }
 
-module.exports = CampanhasModel;
+module.exports = CampanhaModel;

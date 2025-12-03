@@ -107,9 +107,9 @@ const updateEnderecoSchema = Joi.object({
     "object.min": "Pelo menos um campo deve ser fornecido para atualização",
   });
 
-const uuidSchema = Joi.string().uuid().required().messages({
+const uuidSchema = Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages({
   "string.empty": "ID é obrigatório",
-  "string.guid": "ID deve ser um UUID válido",
+  "string.pattern.base": "ID deve ser um ObjectId válido",
   "any.required": "ID é obrigatório",
 });
 

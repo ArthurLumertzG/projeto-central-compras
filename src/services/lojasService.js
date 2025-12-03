@@ -1,6 +1,4 @@
-const { v4: uuidv4 } = require("uuid");
 const LojasModel = require("../models/lojasModel");
-const Loja = require("../entities/loja");
 const AppError = require("../errors/AppError");
 const DefaultResponseDto = require("../dtos/defaultResponse.dto");
 const { createLojaSchema, updateLojaSchema, uuidSchema, cnpjSchema } = require("../validations/lojaValidation");
@@ -12,11 +10,7 @@ class LojasService {
 
   async getAll() {
     const lojas = await this.lojasModel.select();
-    const data = lojas.map((lojaData) => {
-      const loja = new Loja(lojaData.id, lojaData.nome, lojaData.cnpj, lojaData.usuario_id, lojaData.endereco_id, lojaData.criado_em, lojaData.atualizado_em, lojaData.deletado_em);
-      return loja.toPublic();
-    });
-    return new DefaultResponseDto(true, "Lojas recuperadas com sucesso", data);
+    return new DefaultResponseDto(true, "Lojas recuperadas com sucesso", lojas);
   }
 
   async getById(id) {
@@ -30,8 +24,7 @@ class LojasService {
       throw new AppError("Loja não encontrada", 404);
     }
 
-    const loja = new Loja(lojaData.id, lojaData.nome, lojaData.cnpj, lojaData.usuario_id, lojaData.endereco_id, lojaData.criado_em, lojaData.atualizado_em, lojaData.deletado_em);
-    return new DefaultResponseDto(true, "Loja recuperada com sucesso", loja.toPublic());
+    return new DefaultResponseDto(true, "Loja recuperada com sucesso", lojaData);
   }
 
   async getByUsuarioId(usuario_id) {
@@ -41,11 +34,7 @@ class LojasService {
     }
 
     const lojas = await this.lojasModel.selectByUsuarioId(usuario_id);
-    const data = lojas.map((lojaData) => {
-      const loja = new Loja(lojaData.id, lojaData.nome, lojaData.cnpj, lojaData.usuario_id, lojaData.endereco_id, lojaData.criado_em, lojaData.atualizado_em, lojaData.deletado_em);
-      return loja.toPublic();
-    });
-    return new DefaultResponseDto(true, "Lojas do usuário recuperadas com sucesso", data);
+    return new DefaultResponseDto(true, "Lojas do usuário recuperadas com sucesso", lojas);
   }
 
   async create(data) {
@@ -82,12 +71,16 @@ class LojasService {
       throw new AppError("Já existe uma loja cadastrada com este CNPJ", 409);
     }
 
-    const loja = new Loja(uuidv4(), value.nome, value.cnpj, value.usuario_id, value.endereco_id || null, new Date(), new Date(), null);
+    const lojaData = {
+      nome: value.nome,
+      cnpj: value.cnpj,
+      usuario_id: value.usuario_id,
+      endereco_id: value.endereco_id || null,
+    };
 
-    const lojaData = await this.lojasModel.create(loja);
-    const lojaCreated = new Loja(lojaData.id, lojaData.nome, lojaData.cnpj, lojaData.usuario_id, lojaData.endereco_id, lojaData.criado_em, lojaData.atualizado_em, lojaData.deletado_em);
+    const lojaCreated = await this.lojasModel.create(lojaData);
 
-    return new DefaultResponseDto(true, "Loja criada com sucesso", lojaCreated.toPublic());
+    return new DefaultResponseDto(true, "Loja criada com sucesso", lojaCreated);
   }
 
   async update(id, data, requestUserId, userFuncao) {
@@ -101,7 +94,7 @@ class LojasService {
       throw new AppError("Loja não encontrada", 404);
     }
 
-    if (userFuncao !== "admin" && requestUserId && lojaExists.usuario_id !== requestUserId) {
+    if (userFuncao !== "admin" && requestUserId && lojaExists.usuario_id.toString() !== requestUserId.toString()) {
       throw new AppError("Você não tem permissão para atualizar esta loja", 403);
     }
 
@@ -141,21 +134,17 @@ class LojasService {
 
     if (value.cnpj && value.cnpj !== lojaExists.cnpj) {
       const cnpjExists = await this.lojasModel.selectByCnpj(value.cnpj);
-      if (cnpjExists && cnpjExists.id !== id) {
+      if (cnpjExists && cnpjExists.id.toString() !== id.toString()) {
         throw new AppError("Já existe uma loja cadastrada com este CNPJ", 409);
       }
     }
-
-    value.atualizado_em = new Date();
 
     const lojaData = await this.lojasModel.update(id, value);
     if (!lojaData) {
       throw new AppError("Erro ao atualizar loja", 500);
     }
 
-    const lojaUpdated = new Loja(lojaData.id, lojaData.nome, lojaData.cnpj, lojaData.usuario_id, lojaData.endereco_id, lojaData.criado_em, lojaData.atualizado_em, lojaData.deletado_em);
-
-    return new DefaultResponseDto(true, "Loja atualizada com sucesso", lojaUpdated.toPublic());
+    return new DefaultResponseDto(true, "Loja atualizada com sucesso", lojaData);
   }
 
   async delete(id, requestUserId, userFuncao) {
@@ -169,7 +158,7 @@ class LojasService {
       throw new AppError("Loja não encontrada", 404);
     }
 
-    if (userFuncao !== "admin" && requestUserId && lojaExists.usuario_id !== requestUserId) {
+    if (userFuncao !== "admin" && requestUserId && lojaExists.usuario_id.toString() !== requestUserId.toString()) {
       throw new AppError("Você não tem permissão para deletar esta loja", 403);
     }
 

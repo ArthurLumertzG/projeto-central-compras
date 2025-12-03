@@ -1,38 +1,44 @@
-const { Client } = require("pg");
+const mongoose = require("mongoose");
 
-async function query(queryObject) {
-  let client;
+let isConnected = false;
+
+async function connect() {
+  if (isConnected) {
+    return;
+  }
 
   try {
-    client = await getNewClient();
-    const result = await client.query(queryObject);
-    return result;
+    const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017/central-compras";
+
+    await mongoose.connect(mongoUri);
+
+    isConnected = true;
+    console.log("MongoDB conectado com sucesso");
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao conectar no MongoDB:", error);
     throw error;
-  } finally {
-    await client?.end();
   }
 }
 
-async function getNewClient() {
-  const client = new Client({
-    host: process.env.POSTGRES_HOST,
-    port: process.env.POSTGRES_PORT,
-    user: process.env.POSTGRES_USER,
-    database: process.env.POSTGRES_DB,
-    password: process.env.POSTGRES_PASSWORD,
-    ssl: true,
-  });
+async function disconnect() {
+  if (!isConnected) {
+    return;
+  }
 
-  await client.connect();
-
-  return client;
+  try {
+    await mongoose.disconnect();
+    isConnected = false;
+    console.log("MongoDB desconectado");
+  } catch (error) {
+    console.error("Erro ao desconectar do MongoDB:", error);
+    throw error;
+  }
 }
 
 const database = {
-  query,
-  getNewClient,
+  connect,
+  disconnect,
+  mongoose,
 };
 
 module.exports = database;

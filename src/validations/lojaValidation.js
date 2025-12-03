@@ -18,14 +18,14 @@ const createLojaSchema = Joi.object({
       "any.required": "CNPJ é obrigatório",
     }),
 
-  usuario_id: Joi.string().uuid().required().messages({
+  usuario_id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages({
     "string.empty": "ID do usuário é obrigatório",
-    "string.guid": "ID do usuário deve ser um UUID válido",
+    "string.pattern.base": "ID do usuário deve ser um ObjectId válido",
     "any.required": "ID do usuário é obrigatório",
   }),
 
-  endereco_id: Joi.string().uuid().allow(null).messages({
-    "string.guid": "ID do endereço deve ser um UUID válido",
+  endereco_id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).allow(null).messages({
+    "string.pattern.base": "ID do endereço deve ser um ObjectId válido",
   }),
 });
 
@@ -42,12 +42,12 @@ const updateLojaSchema = Joi.object({
       "string.pattern.base": "CNPJ inválido. Deve conter exatamente 14 dígitos",
     }),
 
-  usuario_id: Joi.string().uuid().messages({
-    "string.guid": "ID do usuário deve ser um UUID válido",
+  usuario_id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).messages({
+    "string.pattern.base": "ID do usuário deve ser um ObjectId válido",
   }),
 
-  endereco_id: Joi.string().uuid().allow(null).messages({
-    "string.guid": "ID do endereço deve ser um UUID válido",
+  endereco_id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).allow(null).messages({
+    "string.pattern.base": "ID do endereço deve ser um ObjectId válido",
   }),
 
   id: Joi.forbidden(),
@@ -60,9 +60,9 @@ const updateLojaSchema = Joi.object({
     "object.min": "Pelo menos um campo deve ser fornecido para atualização",
   });
 
-const uuidSchema = Joi.string().uuid().required().messages({
+const uuidSchema = Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages({
   "string.empty": "ID é obrigatório",
-  "string.guid": "ID deve ser um UUID válido",
+  "string.pattern.base": "ID deve ser um ObjectId válido",
   "any.required": "ID é obrigatório",
 });
 

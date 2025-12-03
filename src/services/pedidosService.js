@@ -4,7 +4,6 @@ const ProdutosModel = require("../models/produtosModel");
 const LojasModel = require("../models/lojasModel");
 const AppError = require("../errors/AppError");
 const DefaultResponseDto = require("../dtos/defaultResponse.dto");
-const { v4: uuidv4 } = require("uuid");
 const { createPedidoSchema, updatePedidoSchema, uuidSchema, statusSchema, dateSchema } = require("../validations/pedidoValidation");
 
 class PedidosService {
@@ -25,8 +24,10 @@ class PedidosService {
     const pedidosComItens = await Promise.all(
       pedidos.map(async (pedido) => {
         const itens = await this.pedidoProdutoModel.selectByPedidoId(pedido.id);
+        const { loja_id, ...pedidoData } = pedido;
         return {
-          ...pedido,
+          ...pedidoData,
+          loja: loja_id,
           itens: itens,
         };
       })
@@ -48,8 +49,10 @@ class PedidosService {
 
     const itens = await this.pedidoProdutoModel.selectByPedidoId(id);
 
+    const { loja_id, ...pedidoData } = pedido;
     const pedidoCompleto = {
-      ...pedido,
+      ...pedidoData,
+      loja: loja_id,
       itens: itens,
     };
 
@@ -71,8 +74,10 @@ class PedidosService {
     const pedidosComItens = await Promise.all(
       pedidos.map(async (pedido) => {
         const itens = await this.pedidoProdutoModel.selectByPedidoId(pedido.id);
+        const { loja_id, ...pedidoData } = pedido;
         return {
-          ...pedido,
+          ...pedidoData,
+          loja: loja_id,
           itens: itens,
         };
       })
@@ -96,8 +101,10 @@ class PedidosService {
     const pedidosComItens = await Promise.all(
       pedidos.map(async (pedido) => {
         const itens = await this.pedidoProdutoModel.selectByPedidoId(pedido.id);
+        const { loja_id, ...pedidoData } = pedido;
         return {
-          ...pedido,
+          ...pedidoData,
+          loja: loja_id,
           itens: itens,
         };
       })
@@ -158,7 +165,7 @@ class PedidosService {
         throw new AppError(`Produto com ID ${item.produto_id} não encontrado`, 404);
       }
 
-      if (produto.fornecedor_id !== value.fornecedor_id) {
+      if (produto.fornecedor_id.toString() !== value.fornecedor_id.toString()) {
         throw new AppError(`Todos os produtos do pedido devem ser do mesmo fornecedor`, 400);
       }
 
@@ -177,9 +184,7 @@ class PedidosService {
       });
     }
 
-    const pedidoId = uuidv4();
     const novoPedido = {
-      id: pedidoId,
       valor_total: valorTotalCalculado,
       descricao: value.descricao || null,
       usuario_id: requestUserId,
@@ -188,24 +193,18 @@ class PedidosService {
       status: value.status || "pendente",
       forma_pagamento: value.forma_pagamento,
       prazo_dias: value.prazo_dias,
-      criado_em: new Date(),
     };
 
     const pedidoCriado = await this.pedidosModel.create(novoPedido);
 
     const itensCriados = [];
-    const now = new Date();
 
     for (const itemData of produtosData) {
-      const itemId = uuidv4();
       const novoItem = {
-        id: itemId,
-        pedido_id: pedidoId,
+        pedido_id: pedidoCriado.id,
         produto_id: itemData.produto_id,
         quantidade: itemData.quantidade,
         valor_unitario: itemData.valor_unitario,
-        criado_em: now,
-        atualizado_em: now,
       };
 
       const itemCriado = await this.pedidoProdutoModel.create(novoItem);
@@ -236,7 +235,7 @@ class PedidosService {
       throw new AppError("Pedido não encontrado", 404);
     }
 
-    if (requestUserId && pedidoExists.usuario_id !== requestUserId) {
+    if (requestUserId && pedidoExists.usuario_id.toString() !== requestUserId.toString()) {
       throw new AppError("Você não tem permissão para atualizar este pedido", 403);
     }
 
@@ -280,7 +279,7 @@ class PedidosService {
       throw new AppError("Pedido não encontrado", 404);
     }
 
-    if (pedido.fornecedor_id !== fornecedorId) {
+    if (pedido.fornecedor_id.toString() !== fornecedorId.toString()) {
       throw new AppError("Você não tem permissão para atualizar este pedido", 403);
     }
 
@@ -323,7 +322,7 @@ class PedidosService {
       throw new AppError("Pedido não encontrado", 404);
     }
 
-    if (requestUserId && pedidoExists.usuario_id !== requestUserId) {
+    if (requestUserId && pedidoExists.usuario_id.toString() !== requestUserId.toString()) {
       throw new AppError("Você não tem permissão para deletar este pedido", 403);
     }
 

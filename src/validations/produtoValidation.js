@@ -28,9 +28,9 @@ const createProdutoSchema = Joi.object({
     "any.required": "Quantidade em estoque é obrigatória",
   }),
 
-  fornecedor_id: Joi.string().uuid().required().messages({
+  fornecedor_id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages({
     "string.empty": "ID do fornecedor é obrigatório",
-    "string.guid": "ID do fornecedor deve ser um UUID válido",
+    "string.pattern.base": "ID do fornecedor deve ser um ObjectId válido",
     "any.required": "ID do fornecedor é obrigatório",
   }),
 
@@ -68,8 +68,8 @@ const updateProdutoSchema = Joi.object({
     "number.min": "Quantidade em estoque não pode ser negativa",
   }),
 
-  fornecedor_id: Joi.string().uuid().messages({
-    "string.guid": "ID do fornecedor deve ser um UUID válido",
+  fornecedor_id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).messages({
+    "string.pattern.base": "ID do fornecedor deve ser um ObjectId válido",
   }),
 
   categoria: Joi.string().min(2).max(100).messages({
@@ -91,9 +91,9 @@ const updateProdutoSchema = Joi.object({
     "object.min": "Pelo menos um campo deve ser fornecido para atualização",
   });
 
-const uuidSchema = Joi.string().uuid().required().messages({
+const uuidSchema = Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages({
   "string.empty": "ID é obrigatório",
-  "string.guid": "ID deve ser um UUID válido",
+  "string.pattern.base": "ID deve ser um ObjectId válido",
   "any.required": "ID é obrigatório",
 });
 

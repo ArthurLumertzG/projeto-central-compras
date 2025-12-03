@@ -1,7 +1,6 @@
 const CondicaoComercialModel = require("../models/condicaoComercialModel");
 const DefaultResponseDto = require("../dtos/defaultResponse.dto");
 const AppError = require("../errors/AppError");
-const { v4: uuidv4 } = require("uuid");
 const { createCondicaoComercialSchema, updateCondicaoComercialSchema } = require("../validations/condicaoComercialValidation");
 
 class CondicaoComercialService {
@@ -24,7 +23,7 @@ class CondicaoComercialService {
       throw new AppError("Condição comercial não encontrada", 404);
     }
 
-    if (condicao.fornecedor_id !== fornecedor_id) {
+    if (condicao.fornecedor_id.toString() !== fornecedor_id.toString()) {
       throw new AppError("Você não tem permissão para acessar esta condição comercial", 403);
     }
 
@@ -37,17 +36,14 @@ class CondicaoComercialService {
       throw new AppError(error.details[0].message, 400);
     }
 
-    const condicaoExists = await this.condicaoComercialModel.selectByUfAndFornecedor(value.uf, fornecedor_id);
+    const condicaoExists = await this.condicaoComercialModel.selectByUf(fornecedor_id, value.uf);
     if (condicaoExists) {
       throw new AppError("Já existe uma condição comercial para este estado", 409);
     }
 
     const newCondicao = {
-      id: uuidv4(),
       ...value,
       fornecedor_id,
-      criado_em: new Date(),
-      atualizado_em: new Date(),
     };
 
     const condicaoCriada = await this.condicaoComercialModel.create(newCondicao);
@@ -66,7 +62,7 @@ class CondicaoComercialService {
       throw new AppError("Condição comercial não encontrada", 404);
     }
 
-    if (condicaoExistente.fornecedor_id !== fornecedor_id) {
+    if (condicaoExistente.fornecedor_id.toString() !== fornecedor_id.toString()) {
       throw new AppError("Você não tem permissão para atualizar esta condição comercial", 403);
     }
 
@@ -84,7 +80,7 @@ class CondicaoComercialService {
       throw new AppError("Condição comercial não encontrada", 404);
     }
 
-    if (condicaoExistente.fornecedor_id !== fornecedor_id) {
+    if (condicaoExistente.fornecedor_id.toString() !== fornecedor_id.toString()) {
       throw new AppError("Você não tem permissão para deletar esta condição comercial", 403);
     }
 

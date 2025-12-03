@@ -10,10 +10,10 @@ class CampanhasController {
 
   async getFornecedorIdByUsuarioId(usuario_id) {
     const fornecedor = await this.fornecedoresModel.selectByUsuarioId(usuario_id);
-    if (!fornecedor[0]) {
+    if (!fornecedor || !fornecedor.id) {
       throw new AppError("Fornecedor não encontrado para este usuário", 404);
     }
-    return fornecedor[0].id;
+    return fornecedor.id;
   }
 
   async getAll(req, res) {

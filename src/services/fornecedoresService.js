@@ -1,4 +1,3 @@
-const { v4: uuidv4 } = require("uuid");
 const FornecedoresModel = require("../models/fornecedoresModel");
 const ProdutosService = require("./produtosService");
 const PedidosService = require("./pedidosService");
@@ -16,21 +15,7 @@ class FornecedoresService {
 
   async getAll() {
     const fornecedores = await this.fornecedoresModel.select();
-    const data = fornecedores.map((fornecedorData) => {
-      const fornecedor = new Fornecedor(
-        fornecedorData.id,
-        fornecedorData.cnpj,
-        fornecedorData.razao_social,
-        fornecedorData.nome_fantasia,
-        fornecedorData.descricao,
-        fornecedorData.usuario_id,
-        fornecedorData.criado_em,
-        fornecedorData.atualizado_em,
-        fornecedorData.deletado_em
-      );
-      return fornecedor.toPublic();
-    });
-    return new DefaultResponseDto(true, "Fornecedores recuperados com sucesso", data);
+    return new DefaultResponseDto(true, "Fornecedores recuperados com sucesso", fornecedores);
   }
 
   async getById(id) {
@@ -44,19 +29,7 @@ class FornecedoresService {
       throw new AppError("Fornecedor não encontrado", 404);
     }
 
-    const fornecedor = new Fornecedor(
-      fornecedorData.id,
-      fornecedorData.cnpj,
-      fornecedorData.razao_social,
-      fornecedorData.nome_fantasia,
-      fornecedorData.descricao,
-      fornecedorData.usuario_id,
-      fornecedorData.criado_em,
-      fornecedorData.atualizado_em,
-      fornecedorData.deletado_em
-    );
-
-    return new DefaultResponseDto(true, "Fornecedor recuperado com sucesso", fornecedor.toPublic());
+    return new DefaultResponseDto(true, "Fornecedor recuperado com sucesso", fornecedorData);
   }
 
   async getByUsuarioId(usuario_id) {
@@ -65,21 +38,8 @@ class FornecedoresService {
       throw new AppError("ID do usuário inválido", 400);
     }
 
-    const fornecedores = await this.fornecedoresModel.selectByUsuarioId(usuario_id);
-    return fornecedores.map((fornecedorData) => {
-      const fornecedor = new Fornecedor(
-        fornecedorData.id,
-        fornecedorData.cnpj,
-        fornecedorData.razao_social,
-        fornecedorData.nome_fantasia,
-        fornecedorData.descricao,
-        fornecedorData.usuario_id,
-        fornecedorData.criado_em,
-        fornecedorData.atualizado_em,
-        fornecedorData.deletado_em
-      );
-      return fornecedor.toPublic();
-    });
+    const fornecedor = await this.fornecedoresModel.selectByUsuarioId(usuario_id);
+    return fornecedor ? [fornecedor] : [];
   }
 
   async getByCnpj(cnpj) {
@@ -93,19 +53,7 @@ class FornecedoresService {
       throw new AppError("Fornecedor não encontrado", 404);
     }
 
-    const fornecedor = new Fornecedor(
-      fornecedorData.id,
-      fornecedorData.cnpj,
-      fornecedorData.razao_social,
-      fornecedorData.nome_fantasia,
-      fornecedorData.descricao,
-      fornecedorData.usuario_id,
-      fornecedorData.criado_em,
-      fornecedorData.atualizado_em,
-      fornecedorData.deletado_em
-    );
-
-    return new DefaultResponseDto(true, "Fornecedor recuperado com sucesso", fornecedor.toPublic());
+    return new DefaultResponseDto(true, "Fornecedor recuperado com sucesso", fornecedorData);
   }
 
   async create(data) {
@@ -134,22 +82,17 @@ class FornecedoresService {
       throw new AppError("Já existe um fornecedor cadastrado com este CNPJ", 409);
     }
 
-    const fornecedor = new Fornecedor(uuidv4(), value.cnpj, value.razao_social || null, value.nome_fantasia || null, value.descricao || null, value.usuario_id || null, new Date(), new Date(), null);
+    const fornecedorData = {
+      cnpj: value.cnpj,
+      razao_social: value.razao_social || null,
+      nome_fantasia: value.nome_fantasia || null,
+      descricao: value.descricao || null,
+      usuario_id: value.usuario_id || null,
+    };
 
-    const fornecedorData = await this.fornecedoresModel.create(fornecedor);
-    const fornecedorCreated = new Fornecedor(
-      fornecedorData.id,
-      fornecedorData.cnpj,
-      fornecedorData.razao_social,
-      fornecedorData.nome_fantasia,
-      fornecedorData.descricao,
-      fornecedorData.usuario_id,
-      fornecedorData.criado_em,
-      fornecedorData.atualizado_em,
-      fornecedorData.deletado_em
-    );
+    const fornecedorCreated = await this.fornecedoresModel.create(fornecedorData);
 
-    return fornecedorCreated.toPublic();
+    return fornecedorCreated;
   }
 
   async update(id, data, requestUserId, userFuncao) {
@@ -163,7 +106,7 @@ class FornecedoresService {
       throw new AppError("Fornecedor não encontrado", 404);
     }
 
-    if (userFuncao !== "admin" && requestUserId && fornecedorExists.usuario_id !== requestUserId) {
+    if (userFuncao !== "admin" && requestUserId && fornecedorExists.usuario_id.toString() !== requestUserId.toString()) {
       throw new AppError("Você não tem permissão para atualizar este fornecedor", 403);
     }
 
@@ -193,7 +136,7 @@ class FornecedoresService {
 
     if (value.cnpj && value.cnpj !== fornecedorExists.cnpj) {
       const cnpjExists = await this.fornecedoresModel.selectByCnpj(value.cnpj);
-      if (cnpjExists && cnpjExists.id !== id) {
+      if (cnpjExists && cnpjExists.id.toString() !== id.toString()) {
         throw new AppError("Já existe um fornecedor cadastrado com este CNPJ", 409);
       }
     }
@@ -205,19 +148,7 @@ class FornecedoresService {
       throw new AppError("Erro ao atualizar fornecedor", 500);
     }
 
-    const fornecedorUpdated = new Fornecedor(
-      fornecedorData.id,
-      fornecedorData.cnpj,
-      fornecedorData.razao_social,
-      fornecedorData.nome_fantasia,
-      fornecedorData.descricao,
-      fornecedorData.usuario_id,
-      fornecedorData.criado_em,
-      fornecedorData.atualizado_em,
-      fornecedorData.deletado_em
-    );
-
-    return new DefaultResponseDto(true, "Fornecedor atualizado com sucesso", fornecedorUpdated.toPublic());
+    return new DefaultResponseDto(true, "Fornecedor atualizado com sucesso", fornecedorData);
   }
 
   async delete(id, requestUserId, userFuncao) {
@@ -231,7 +162,7 @@ class FornecedoresService {
       throw new AppError("Fornecedor não encontrado", 404);
     }
 
-    if (userFuncao !== "admin" && requestUserId && fornecedorExists.usuario_id !== requestUserId) {
+    if (userFuncao !== "admin" && requestUserId && fornecedorExists.usuario_id.toString() !== requestUserId.toString()) {
       throw new AppError("Você não tem permissão para deletar este fornecedor", 403);
     }
 
@@ -263,6 +194,9 @@ class FornecedoresService {
     if (!fornecedores || fornecedores.length === 0) {
       throw new AppError("Fornecedor não encontrado para este usuário", 404);
     }
+    if (!fornecedores[0] || !fornecedores[0].id) {
+      throw new AppError("Dados do fornecedor inválidos", 500);
+    }
     const fornecedorId = fornecedores[0].id;
     const fornecedor = await this.update(fornecedorId, data, requestUserId);
     return new DefaultResponseDto(true, "Perfil atualizado com sucesso", fornecedor);
@@ -273,6 +207,9 @@ class FornecedoresService {
     if (!fornecedores || fornecedores.length === 0) {
       throw new AppError("Fornecedor não encontrado para este usuário", 404);
     }
+    if (!fornecedores[0] || !fornecedores[0].id) {
+      throw new AppError("Dados do fornecedor inválidos", 500);
+    }
     const fornecedorId = fornecedores[0].id;
     return await this.produtosService.getByFornecedor(fornecedorId);
   }
@@ -281,6 +218,9 @@ class FornecedoresService {
     const fornecedores = await this.getByUsuarioId(requestUserId);
     if (!fornecedores || fornecedores.length === 0) {
       throw new AppError("Fornecedor não encontrado para este usuário", 404);
+    }
+    if (!fornecedores[0] || !fornecedores[0].id) {
+      throw new AppError("Dados do fornecedor inválidos", 500);
     }
     const fornecedorId = fornecedores[0].id;
     const produtoData = { ...data, fornecedor_id: fornecedorId };
@@ -292,10 +232,13 @@ class FornecedoresService {
     if (!fornecedores || fornecedores.length === 0) {
       throw new AppError("Fornecedor não encontrado para este usuário", 404);
     }
+    if (!fornecedores[0] || !fornecedores[0].id) {
+      throw new AppError("Dados do fornecedor inválidos", 500);
+    }
     const fornecedorId = fornecedores[0].id;
 
     const produto = await this.produtosService.getById(id);
-    if (produto.data.fornecedor_id !== fornecedorId) {
+    if (produto.data.fornecedor_id.toString() !== fornecedorId.toString()) {
       throw new AppError("Você não tem permissão para editar este produto", 403);
     }
 
@@ -307,10 +250,13 @@ class FornecedoresService {
     if (!fornecedores || fornecedores.length === 0) {
       throw new AppError("Fornecedor não encontrado para este usuário", 404);
     }
+    if (!fornecedores[0] || !fornecedores[0].id) {
+      throw new AppError("Dados do fornecedor inválidos", 500);
+    }
     const fornecedorId = fornecedores[0].id;
 
     const produto = await this.produtosService.getById(id);
-    if (produto.data.fornecedor_id !== fornecedorId) {
+    if (produto.data.fornecedor_id.toString() !== fornecedorId.toString()) {
       throw new AppError("Você não tem permissão para deletar este produto", 403);
     }
 
@@ -322,6 +268,9 @@ class FornecedoresService {
     if (!fornecedores || fornecedores.length === 0) {
       throw new AppError("Fornecedor não encontrado para este usuário", 404);
     }
+    if (!fornecedores[0] || !fornecedores[0].id) {
+      throw new AppError("Dados do fornecedor inválidos", 500);
+    }
     const fornecedorId = fornecedores[0].id;
     return await this.pedidosService.getByFornecedor(fornecedorId);
   }
@@ -331,10 +280,13 @@ class FornecedoresService {
     if (!fornecedores || fornecedores.length === 0) {
       throw new AppError("Fornecedor não encontrado para este usuário", 404);
     }
+    if (!fornecedores[0] || !fornecedores[0].id) {
+      throw new AppError("Dados do fornecedor inválidos", 500);
+    }
     const fornecedorId = fornecedores[0].id;
 
     const pedido = await this.pedidosService.getById(id);
-    if (pedido.data.fornecedor_id !== fornecedorId) {
+    if (pedido.data.fornecedor_id.toString() !== fornecedorId.toString()) {
       throw new AppError("Você não tem permissão para visualizar este pedido", 403);
     }
 
@@ -346,6 +298,9 @@ class FornecedoresService {
     if (!fornecedores || fornecedores.length === 0) {
       throw new AppError("Fornecedor não encontrado para este usuário", 404);
     }
+    if (!fornecedores[0] || !fornecedores[0].id) {
+      throw new AppError("Dados do fornecedor inválidos", 500);
+    }
     const fornecedorId = fornecedores[0].id;
 
     return await this.pedidosService.updateStatus(id, status, fornecedorId);
@@ -355,6 +310,9 @@ class FornecedoresService {
     const fornecedores = await this.getByUsuarioId(requestUserId);
     if (!fornecedores || fornecedores.length === 0) {
       throw new AppError("Fornecedor não encontrado para este usuário", 404);
+    }
+    if (!fornecedores[0] || !fornecedores[0].id) {
+      throw new AppError("Dados do fornecedor inválidos", 500);
     }
     const fornecedorId = fornecedores[0].id;
 

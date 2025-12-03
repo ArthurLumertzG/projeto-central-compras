@@ -1,32 +1,12 @@
-const database = require("../../db/database");
+const Pedido = require("./schemas/Pedido");
+const transformDocument = require("./helpers/transformDocument");
 
 class PedidosModel {
-  constructor() {
-    this.tableName = "pedidos";
-  }
-
   async select() {
     try {
-      const query = {
-        text: `
-          SELECT 
-            p.*,
-            json_build_object(
-              'id', l.id,
-              'nome', l.nome,
-              'cnpj', l.cnpj,
-              'usuario_id', l.usuario_id,
-              'endereco_id', l.endereco_id
-            ) as loja
-          FROM ${this.tableName} p
-          LEFT JOIN lojas l ON p.loja_id = l.id
-          WHERE p.deletado_em IS NULL 
-          ORDER BY p.criado_em DESC
-        `,
-        values: [],
-      };
-      const result = await database.query(query);
-      return result.rows;
+      const result = await Pedido.find({ deletado_em: null }).populate("loja_id", "nome cnpj").sort({ criado_em: -1 });
+
+      return transformDocument(result);
     } catch (error) {
       console.error("Erro ao buscar pedidos:", error);
       throw error;
@@ -35,25 +15,9 @@ class PedidosModel {
 
   async selectById(id) {
     try {
-      const query = {
-        text: `
-          SELECT 
-            p.*,
-            json_build_object(
-              'id', l.id,
-              'nome', l.nome,
-              'cnpj', l.cnpj,
-              'usuario_id', l.usuario_id,
-              'endereco_id', l.endereco_id
-            ) as loja
-          FROM ${this.tableName} p
-          LEFT JOIN lojas l ON p.loja_id = l.id
-          WHERE p.id = $1 AND p.deletado_em IS NULL
-        `,
-        values: [id],
-      };
-      const result = await database.query(query);
-      return result.rows[0] || null;
+      const result = await Pedido.findOne({ _id: id, deletado_em: null }).populate("loja_id", "nome cnpj");
+
+      return transformDocument(result);
     } catch (error) {
       console.error("Erro ao buscar pedido por ID:", error);
       throw error;
@@ -62,110 +26,43 @@ class PedidosModel {
 
   async selectByUsuarioId(usuario_id) {
     try {
-      const query = {
-        text: `
-          SELECT 
-            p.*,
-            json_build_object(
-              'id', l.id,
-              'nome', l.nome,
-              'cnpj', l.cnpj,
-              'usuario_id', l.usuario_id,
-              'endereco_id', l.endereco_id
-            ) as loja
-          FROM ${this.tableName} p
-          LEFT JOIN lojas l ON p.loja_id = l.id
-          WHERE p.usuario_id = $1 AND p.deletado_em IS NULL 
-          ORDER BY p.criado_em DESC
-        `,
-        values: [usuario_id],
-      };
-      const result = await database.query(query);
-      return result.rows;
+      const result = await Pedido.find({ usuario_id, deletado_em: null }).populate("loja_id", "nome cnpj").sort({ criado_em: -1 });
+
+      return transformDocument(result);
     } catch (error) {
       console.error("Erro ao buscar pedidos por usuário:", error);
       throw error;
     }
   }
 
-  async selectByLojaId(loja_id) {
+  async selectByFornecedor(fornecedor_id) {
     try {
-      const query = {
-        text: `
-          SELECT 
-            p.*,
-            json_build_object(
-              'id', l.id,
-              'nome', l.nome,
-              'cnpj', l.cnpj,
-              'usuario_id', l.usuario_id,
-              'endereco_id', l.endereco_id
-            ) as loja
-          FROM ${this.tableName} p
-          LEFT JOIN lojas l ON p.loja_id = l.id
-          WHERE p.loja_id = $1 AND p.deletado_em IS NULL 
-          ORDER BY p.criado_em DESC
-        `,
-        values: [loja_id],
-      };
-      const result = await database.query(query);
-      return result.rows;
+      const result = await Pedido.find({ fornecedor_id, deletado_em: null }).populate("loja_id", "nome cnpj").sort({ criado_em: -1 });
+
+      return transformDocument(result);
     } catch (error) {
-      console.error("Erro ao buscar pedidos por loja:", error);
+      console.error("Erro ao buscar pedidos por fornecedor:", error);
       throw error;
     }
   }
 
   async selectByStatus(status) {
     try {
-      const query = {
-        text: `
-          SELECT 
-            p.*,
-            json_build_object(
-              'id', l.id,
-              'nome', l.nome,
-              'cnpj', l.cnpj,
-              'usuario_id', l.usuario_id,
-              'endereco_id', l.endereco_id
-            ) as loja
-          FROM ${this.tableName} p
-          LEFT JOIN lojas l ON p.loja_id = l.id
-          WHERE p.status = $1 AND p.deletado_em IS NULL 
-          ORDER BY p.criado_em DESC
-        `,
-        values: [status],
-      };
-      const result = await database.query(query);
-      return result.rows;
+      const result = await Pedido.find({ status, deletado_em: null }).sort({ criado_em: -1 });
+
+      return transformDocument(result);
     } catch (error) {
       console.error("Erro ao buscar pedidos por status:", error);
       throw error;
     }
   }
 
-  async selectByDate(date) {
+  async selectByDate(startDate, endDate) {
     try {
-      const query = {
-        text: `
-          SELECT 
-            p.*,
-            json_build_object(
-              'id', l.id,
-              'nome', l.nome,
-              'cnpj', l.cnpj,
-              'usuario_id', l.usuario_id,
-              'endereco_id', l.endereco_id
-            ) as loja
-          FROM ${this.tableName} p
-          LEFT JOIN lojas l ON p.loja_id = l.id
-          WHERE DATE(p.criado_em) = $1 AND p.deletado_em IS NULL 
-          ORDER BY p.criado_em DESC
-        `,
-        values: [date],
-      };
-      const result = await database.query(query);
-      return result.rows;
+      return await Pedido.find({
+        criado_em: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        deletado_em: null,
+      }).sort({ criado_em: -1 });
     } catch (error) {
       console.error("Erro ao buscar pedidos por data:", error);
       throw error;
@@ -174,14 +71,9 @@ class PedidosModel {
 
   async create(pedido) {
     try {
-      const query = {
-        text: `INSERT INTO ${this.tableName} (id, valor_total, descricao, usuario_id, loja_id, status, forma_pagamento, prazo_dias, criado_em, fornecedor_id) 
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
-               RETURNING *`,
-        values: [pedido.id, pedido.valor_total, pedido.descricao, pedido.usuario_id, pedido.loja_id, pedido.status, pedido.forma_pagamento, pedido.prazo_dias, pedido.criado_em, pedido.fornecedor_id],
-      };
-      const result = await database.query(query);
-      return result.rows[0];
+      const novoPedido = new Pedido(pedido);
+      const saved = await novoPedido.save();
+      return transformDocument(saved);
     } catch (error) {
       console.error("Erro ao criar pedido:", error);
       throw error;
@@ -190,17 +82,11 @@ class PedidosModel {
 
   async update(id, pedido) {
     try {
-      const fields = Object.keys(pedido);
-      const setClause = fields.map((field, index) => `"${field}" = $${index + 2}`).join(", ");
-      const values = [id, ...Object.values(pedido)];
-
-      const query = {
-        text: `UPDATE ${this.tableName} SET ${setClause} WHERE id = $1 AND deletado_em IS NULL RETURNING *`,
-        values: values,
-      };
-
-      const result = await database.query(query);
-      return result.rows[0] || null;
+      const updated = await Pedido.findOneAndUpdate({ _id: id, deletado_em: null }, pedido, {
+        new: true,
+        runValidators: true,
+      });
+      return transformDocument(updated);
     } catch (error) {
       console.error("Erro ao atualizar pedido:", error);
       throw error;
@@ -209,40 +95,10 @@ class PedidosModel {
 
   async delete(id) {
     try {
-      const query = {
-        text: `UPDATE ${this.tableName} SET deletado_em = NOW() WHERE id = $1 AND deletado_em IS NULL`,
-        values: [id],
-      };
-      const result = await database.query(query);
-      return result.rowCount > 0;
+      const deleted = await Pedido.findOneAndUpdate({ _id: id, deletado_em: null }, { deletado_em: new Date() }, { new: true });
+      return !!deleted;
     } catch (error) {
       console.error("Erro ao deletar pedido:", error);
-      throw error;
-    }
-  }
-
-  async selectByFornecedor(fornecedorId) {
-    try {
-      const query = {
-        text: `
-          SELECT 
-            p.*,
-            json_build_object(
-              'id', l.id,
-              'nome', l.nome,
-              'cnpj', l.cnpj
-            ) as loja
-          FROM ${this.tableName} p
-          LEFT JOIN lojas l ON p.loja_id = l.id
-          WHERE p.fornecedor_id = $1 AND p.deletado_em IS NULL 
-          ORDER BY p.criado_em DESC
-        `,
-        values: [fornecedorId],
-      };
-      const result = await database.query(query);
-      return result.rows;
-    } catch (error) {
-      console.error("Erro ao buscar pedidos por fornecedor:", error);
       throw error;
     }
   }

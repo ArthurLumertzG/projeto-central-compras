@@ -5,6 +5,8 @@ const errorHandler = require("./middlewares/errorHandler.js");
 const AppError = require("./errors/AppError.js");
 const swaggerUI = require("swagger-ui-express");
 const swaggerJSDoc = require("swagger-jsdoc");
+const database = require("../db/database.js");
+const convertIdMiddleware = require("./middlewares/convertIdMiddleware.js");
 
 const port = 3000;
 
@@ -50,6 +52,7 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(convertIdMiddleware);
 
 app.get("/", (req, res) => {
   res.send("Projeto Central de Compras!");
@@ -69,7 +72,29 @@ app.use((req, res, next) => {
 });
 app.use(errorHandler);
 
-app.listen(port, () => {
-  console.log(`Projeto Central de Compras está rodando em: http://localhost:${port}`);
-  console.log(`Documentação da API disponível em: http://localhost:${port}/docs`);
+// Inicializar conexão com MongoDB antes de iniciar o servidor
+database
+  .connect()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Projeto Central de Compras está rodando em: http://localhost:${port}`);
+      console.log(`Documentação da API disponível em: http://localhost:${port}/docs`);
+    });
+  })
+  .catch((error) => {
+    console.error("❌ Erro ao conectar ao MongoDB:", error);
+    process.exit(1);
+  });
+
+// Graceful shutdown
+process.on("SIGINT", async () => {
+  console.log("\n🛑 Encerrando servidor...");
+  await database.disconnect();
+  process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+  console.log("\n🛑 Encerrando servidor...");
+  await database.disconnect();
+  process.exit(0);
 });

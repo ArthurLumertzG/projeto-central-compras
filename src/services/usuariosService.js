@@ -5,7 +5,6 @@ const AppError = require("../errors/AppError");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const { v4: uuidv4 } = require("uuid");
 const Joi = require("joi");
 const { createUsuarioSchema, loginSchema, updateUsuarioSchema, updatePasswordSchema, uuidSchema } = require("../validations/usuarioValidation");
 
@@ -116,14 +115,11 @@ class UsuariosService {
     const hashedPassword = await bcrypt.hash(senha, SALT_ROUNDS);
 
     const newUsuario = {
-      id: uuidv4(),
       ...restData,
       email,
       senha: hashedPassword,
       endereco_id: endereco_id || null,
-      email_verificado: true,
-      criado_em: new Date(),
-      atualizado_em: new Date(),
+      email_verificado: true
     };
 
     const createdUsuario = await this.usuariosModel.create(newUsuario);
@@ -232,8 +228,7 @@ class UsuariosService {
     const hashedPassword = await bcrypt.hash(value.novaSenha.trim(), SALT_ROUNDS);
 
     await this.usuariosModel.update(id, {
-      senha: hashedPassword,
-      atualizado_em: new Date(),
+      senha: hashedPassword
     });
 
     return new DefaultResponseDto(true, "Senha atualizada com sucesso", null);

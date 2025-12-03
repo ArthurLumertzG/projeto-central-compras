@@ -1,18 +1,11 @@
-const database = require("../../db/database");
+const Usuario = require("./schemas/Usuario");
+const transformDocument = require("./helpers/transformDocument");
 
 class UsuariosModel {
-  constructor() {
-    this.tableName = "usuarios";
-  }
-
   async select() {
     try {
-      const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE deletado_em IS NULL ORDER BY nome ASC`,
-        values: [],
-      };
-      const result = await database.query(query);
-      return result.rows;
+      const usuarios = await Usuario.find({ deletado_em: null }).sort({ nome: 1 });
+      return transformDocument(usuarios);
     } catch (error) {
       console.error("Erro ao buscar usuários:", error);
       throw error;
@@ -21,12 +14,8 @@ class UsuariosModel {
 
   async selectById(id) {
     try {
-      const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE id = $1 AND deletado_em IS NULL`,
-        values: [id],
-      };
-      const result = await database.query(query);
-      return result.rows[0] || null;
+      const usuario = await Usuario.findOne({ _id: id, deletado_em: null });
+      return transformDocument(usuario);
     } catch (error) {
       console.error("Erro ao buscar usuário por ID:", error);
       throw error;
@@ -35,12 +24,8 @@ class UsuariosModel {
 
   async selectByEmail(email) {
     try {
-      const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE email = $1 AND deletado_em IS NULL`,
-        values: [email],
-      };
-      const result = await database.query(query);
-      return result.rows[0] || null;
+      const usuario = await Usuario.findOne({ email, deletado_em: null });
+      return transformDocument(usuario);
     } catch (error) {
       console.error("Erro ao buscar usuário por email:", error);
       throw error;
@@ -49,26 +34,9 @@ class UsuariosModel {
 
   async create(usuario) {
     try {
-      const query = {
-        text: `INSERT INTO ${this.tableName} (id, nome, sobrenome, senha, email, telefone, funcao, endereco_id, criado_em, atualizado_em, email_verificado) 
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
-               RETURNING *`,
-        values: [
-          usuario.id,
-          usuario.nome,
-          usuario.sobrenome,
-          usuario.senha,
-          usuario.email,
-          usuario.telefone,
-          usuario.funcao,
-          usuario.endereco_id || null,
-          usuario.criado_em,
-          usuario.atualizado_em,
-          usuario.email_verificado,
-        ],
-      };
-      const result = await database.query(query);
-      return result.rows[0];
+      const novoUsuario = new Usuario(usuario);
+      const saved = await novoUsuario.save();
+      return transformDocument(saved);
     } catch (error) {
       console.error("Erro ao criar usuário:", error);
       throw error;
@@ -77,17 +45,11 @@ class UsuariosModel {
 
   async update(id, usuario) {
     try {
-      const fields = Object.keys(usuario);
-      const setClause = fields.map((field, index) => `"${field}" = $${index + 2}`).join(", ");
-      const values = [id, ...Object.values(usuario)];
-
-      const query = {
-        text: `UPDATE ${this.tableName} SET ${setClause} WHERE id = $1 AND deletado_em IS NULL RETURNING *`,
-        values: values,
-      };
-
-      const result = await database.query(query);
-      return result.rows[0] || null;
+      const updated = await Usuario.findOneAndUpdate({ _id: id, deletado_em: null }, usuario, {
+        new: true,
+        runValidators: true,
+      });
+      return transformDocument(updated);
     } catch (error) {
       console.error("Erro ao atualizar usuário:", error);
       throw error;
@@ -96,12 +58,8 @@ class UsuariosModel {
 
   async delete(id) {
     try {
-      const query = {
-        text: `UPDATE ${this.tableName} SET deletado_em = NOW() WHERE id = $1 AND deletado_em IS NULL`,
-        values: [id],
-      };
-      const result = await database.query(query);
-      return result.rowCount > 0;
+      const deleted = await Usuario.findOneAndUpdate({ _id: id, deletado_em: null }, { deletado_em: new Date() }, { new: true });
+      return !!deleted;
     } catch (error) {
       console.error("Erro ao deletar usuário:", error);
       throw error;

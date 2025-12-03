@@ -1,18 +1,12 @@
-const database = require("../../db/database");
+const Fornecedor = require("./schemas/Fornecedor");
+const transformDocument = require("./helpers/transformDocument");
 
 class FornecedoresModel {
-  constructor() {
-    this.tableName = "fornecedores";
-  }
-
   async select() {
     try {
-      const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE deletado_em IS NULL ORDER BY criado_em DESC`,
-        values: [],
-      };
-      const result = await database.query(query);
-      return result.rows;
+      const result = await Fornecedor.find({ deletado_em: null });
+
+      return transformDocument(result);
     } catch (error) {
       console.error("Erro ao buscar fornecedores:", error);
       throw error;
@@ -21,12 +15,9 @@ class FornecedoresModel {
 
   async selectById(id) {
     try {
-      const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE id = $1 AND deletado_em IS NULL`,
-        values: [id],
-      };
-      const result = await database.query(query);
-      return result.rows[0] || null;
+      const result = await Fornecedor.findOne({ _id: id, deletado_em: null });
+
+      return transformDocument(result);
     } catch (error) {
       console.error("Erro ao buscar fornecedor por ID:", error);
       throw error;
@@ -35,12 +26,9 @@ class FornecedoresModel {
 
   async selectByCnpj(cnpj) {
     try {
-      const query = {
-        text: `SELECT * FROM ${this.tableName} WHERE cnpj = $1 AND deletado_em IS NULL`,
-        values: [cnpj],
-      };
-      const result = await database.query(query);
-      return result.rows[0] || null;
+      const result = await Fornecedor.findOne({ cnpj, deletado_em: null });
+
+      return transformDocument(result);
     } catch (error) {
       console.error("Erro ao buscar fornecedor por CNPJ:", error);
       throw error;
@@ -49,40 +37,20 @@ class FornecedoresModel {
 
   async selectByUsuarioId(usuario_id) {
     try {
-      const query = {
-        text: `SELECT * FROM ${this.tableName} 
-               WHERE usuario_id = $1 
-               AND deletado_em IS NULL 
-               ORDER BY criado_em DESC`,
-        values: [usuario_id],
-      };
-      const result = await database.query(query);
-      return result.rows;
+      const result = await Fornecedor.findOne({ usuario_id, deletado_em: null });
+
+      return transformDocument(result);
     } catch (error) {
-      console.error("Erro ao buscar fornecedores por usuário:", error);
+      console.error("Erro ao buscar fornecedor por usuário:", error);
       throw error;
     }
   }
 
   async create(fornecedor) {
     try {
-      const query = {
-        text: `INSERT INTO ${this.tableName} (id, cnpj, razao_social, nome_fantasia, descricao, usuario_id, criado_em, atualizado_em) 
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
-               RETURNING *`,
-        values: [
-          fornecedor.id,
-          fornecedor.cnpj,
-          fornecedor.razao_social || null,
-          fornecedor.nome_fantasia || null,
-          fornecedor.descricao || null,
-          fornecedor.usuario_id || null,
-          fornecedor.criado_em,
-          fornecedor.atualizado_em,
-        ],
-      };
-      const result = await database.query(query);
-      return result.rows[0];
+      const novoFornecedor = new Fornecedor(fornecedor);
+      const saved = await novoFornecedor.save();
+      return transformDocument(saved);
     } catch (error) {
       console.error("Erro ao criar fornecedor:", error);
       throw error;
@@ -91,17 +59,11 @@ class FornecedoresModel {
 
   async update(id, fornecedor) {
     try {
-      const fields = Object.keys(fornecedor);
-      const setClause = fields.map((field, index) => `"${field}" = $${index + 2}`).join(", ");
-      const values = [id, ...Object.values(fornecedor)];
-
-      const query = {
-        text: `UPDATE ${this.tableName} SET ${setClause} WHERE id = $1 AND deletado_em IS NULL RETURNING *`,
-        values: values,
-      };
-
-      const result = await database.query(query);
-      return result.rows[0] || null;
+      const updated = await Fornecedor.findOneAndUpdate({ _id: id, deletado_em: null }, fornecedor, {
+        new: true,
+        runValidators: true,
+      });
+      return transformDocument(updated);
     } catch (error) {
       console.error("Erro ao atualizar fornecedor:", error);
       throw error;
@@ -110,12 +72,8 @@ class FornecedoresModel {
 
   async delete(id) {
     try {
-      const query = {
-        text: `UPDATE ${this.tableName} SET deletado_em = NOW() WHERE id = $1 AND deletado_em IS NULL`,
-        values: [id],
-      };
-      const result = await database.query(query);
-      return result.rowCount > 0;
+      const deleted = await Fornecedor.findOneAndUpdate({ _id: id, deletado_em: null }, { deletado_em: new Date() }, { new: true });
+      return !!deleted;
     } catch (error) {
       console.error("Erro ao deletar fornecedor:", error);
       throw error;

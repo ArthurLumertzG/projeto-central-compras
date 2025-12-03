@@ -64,8 +64,8 @@ const createUsuarioSchema = Joi.object({
       "any.only": "Função deve ser uma das seguintes: admin, usuario, fornecedor, loja",
     }),
 
-  endereco_id: Joi.string().uuid().allow(null).messages({
-    "string.guid": "ID do endereço deve ser um UUID válido",
+  endereco_id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).allow(null).messages({
+    "string.pattern.base": "ID do endereço deve ser um ObjectId válido",
   }),
 }).options({ stripUnknown: true });
 
@@ -114,8 +114,8 @@ const updateUsuarioSchema = Joi.object({
     "string.max": "Função deve ter no máximo 100 caracteres",
   }),
 
-  endereco_id: Joi.string().uuid().allow(null).messages({
-    "string.guid": "ID do endereço deve ser um UUID válido",
+  endereco_id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).allow(null).messages({
+    "string.pattern.base": "ID do endereço deve ser um ObjectId válido",
   }),
 
   id: Joi.forbidden(),
@@ -150,8 +150,8 @@ const updatePasswordSchema = Joi.object({
   }),
 }).options({ stripUnknown: true });
 
-const uuidSchema = Joi.string().uuid().required().messages({
-  "string.guid": "ID inválido",
+const uuidSchema = Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages({
+  "string.pattern.base": "ID inválido",
   "any.required": "ID é obrigatório",
 });
 
