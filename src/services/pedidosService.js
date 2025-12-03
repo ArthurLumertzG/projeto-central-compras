@@ -93,13 +93,13 @@ class PedidosService {
 
   async create(data, requestUserId) {
     const loja = await this.lojasModel.selectByUsuarioId(requestUserId);
-    if (!loja) {
+    if (!loja[0]) {
       throw new AppError("Loja não encontrada para o usuário logado", 404);
     }
 
     const pedidoData = {
       ...data,
-      loja_id: loja.id,
+      loja_id: loja[0].id,
       usuario_id: requestUserId,
     };
 
@@ -116,6 +116,10 @@ class PedidosService {
 
       if (!produto) {
         throw new AppError(`Produto com ID ${item.produto_id} não encontrado`, 404);
+      }
+
+      if (produto.fornecedor_id !== value.fornecedor_id) {
+        throw new AppError(`Todos os produtos do pedido devem ser do mesmo fornecedor`, 400);
       }
 
       if (produto.quantidade_estoque < item.quantidade) {
@@ -139,7 +143,8 @@ class PedidosService {
       valor_total: valorTotalCalculado,
       descricao: value.descricao || null,
       usuario_id: requestUserId,
-      loja_id: value.loja_id,
+      loja_id: loja[0].id,
+      fornecedor_id: value.fornecedor_id,
       status: value.status || "pendente",
       forma_pagamento: value.forma_pagamento,
       prazo_dias: value.prazo_dias,

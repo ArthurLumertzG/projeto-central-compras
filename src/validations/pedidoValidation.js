@@ -21,6 +21,11 @@ const itemPedidoSchema = Joi.object({
 });
 
 const createPedidoSchema = Joi.object({
+  fornecedor_id: Joi.string().uuid().required().messages({
+    "string.guid": "ID do fornecedor inválido",
+    "any.required": "ID do fornecedor é obrigatório",
+  }),
+
   descricao: Joi.string().trim().min(5).max(500).allow(null, "").messages({
     "string.min": "Descrição deve ter no mínimo 5 caracteres",
     "string.max": "Descrição deve ter no máximo 500 caracteres",
@@ -30,8 +35,8 @@ const createPedidoSchema = Joi.object({
     "any.only": "Status deve ser: pendente, enviado, entregue ou cancelado",
   }),
 
-  forma_pagamento: Joi.string().valid("dinheiro", "cartao_credito", "cartao_debito", "pix", "boleto").required().messages({
-    "any.only": "Forma de pagamento deve ser: dinheiro, cartao_credito, cartao_debito, pix ou boleto",
+  forma_pagamento: Joi.string().valid("dinheiro", "cartao", "cartao_debito", "pix", "boleto").required().messages({
+    "any.only": "Forma de pagamento deve ser: dinheiro, cartao, cartao_debito, pix ou boleto",
     "any.required": "Forma de pagamento é obrigatória",
   }),
 
@@ -60,8 +65,8 @@ const updatePedidoSchema = Joi.object({
     "any.only": "Status deve ser: pendente, enviado, entregue ou cancelado",
   }),
 
-  forma_pagamento: Joi.string().valid("dinheiro", "cartao_credito", "cartao_debito", "pix", "boleto").messages({
-    "any.only": "Forma de pagamento deve ser: dinheiro, cartao_credito, cartao_debito, pix ou boleto",
+  forma_pagamento: Joi.string().valid("dinheiro", "cartao", "cartao_debito", "pix", "boleto").messages({
+    "any.only": "Forma de pagamento deve ser: dinheiro, cartao, cartao_debito, pix ou boleto",
   }),
 
   prazo_dias: Joi.number().integer().min(1).max(365).messages({
@@ -73,6 +78,7 @@ const updatePedidoSchema = Joi.object({
   id: Joi.forbidden(),
   usuario_id: Joi.forbidden(),
   loja_id: Joi.forbidden(),
+  fornecedor_id: Joi.forbidden(),
   valor_total: Joi.forbidden(),
   criado_em: Joi.forbidden(),
   enviado_em: Joi.forbidden(),

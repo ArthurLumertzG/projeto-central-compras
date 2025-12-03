@@ -66,7 +66,7 @@ module.exports = router;
  *           example: "Pedido urgente - entregar na parte da manhã"
  *         forma_pagamento:
  *           type: string
- *           enum: [dinheiro, cartao_credito, cartao_debito, pix, boleto]
+ *           enum: [dinheiro, cartao, cartao_debito, pix, boleto]
  *           description: Forma de pagamento do pedido
  *           example: "pix"
  *         prazo_dias:
@@ -105,9 +105,9 @@ module.exports = router;
  *           example: "enviado"
  *         forma_pagamento:
  *           type: string
- *           enum: [dinheiro, cartao_credito, cartao_debito, pix, boleto]
+ *           enum: [dinheiro, cartao, cartao_debito, pix, boleto]
  *           description: Forma de pagamento
- *           example: "cartao_credito"
+ *           example: "cartao"
  *         prazo_dias:
  *           type: integer
  *           minimum: 1
@@ -149,7 +149,7 @@ module.exports = router;
  *           example: "pendente"
  *         forma_pagamento:
  *           type: string
- *           enum: [dinheiro, cartao_credito, cartao_debito, pix, boleto]
+ *           enum: [dinheiro, cartao, cartao_debito, pix, boleto]
  *           description: Forma de pagamento
  *           example: "pix"
  *         prazo_dias:
