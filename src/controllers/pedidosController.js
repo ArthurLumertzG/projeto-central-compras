@@ -44,6 +44,15 @@ class PedidosController {
     res.status(200).json(response);
   }
 
+  async updateStatus(req, res) {
+    const { id } = req.params;
+    const { status } = req.body;
+    const fornecedorId = req.user.fornecedorId;
+    
+    const response = await this.pedidosService.updateStatus(id, status, fornecedorId);
+    res.status(200).json(response);
+  }
+
   async delete(req, res) {
     const { id } = req.params;
     const response = await this.pedidosService.delete(id, req.userId);

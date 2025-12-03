@@ -152,7 +152,7 @@ class FornecedoresService {
     return fornecedorCreated.toPublic();
   }
 
-  async update(id, data, requestUserId) {
+  async update(id, data, requestUserId, userFuncao) {
     const { error: uuidError } = uuidSchema.validate(id);
     if (uuidError) {
       throw new AppError("ID do fornecedor inválido", 400);
@@ -163,7 +163,7 @@ class FornecedoresService {
       throw new AppError("Fornecedor não encontrado", 404);
     }
 
-    if (requestUserId && fornecedorExists.usuario_id !== requestUserId) {
+    if (userFuncao !== "admin" && requestUserId && fornecedorExists.usuario_id !== requestUserId) {
       throw new AppError("Você não tem permissão para atualizar este fornecedor", 403);
     }
 
@@ -220,7 +220,7 @@ class FornecedoresService {
     return new DefaultResponseDto(true, "Fornecedor atualizado com sucesso", fornecedorUpdated.toPublic());
   }
 
-  async delete(id, requestUserId) {
+  async delete(id, requestUserId, userFuncao) {
     const { error: uuidError } = uuidSchema.validate(id);
     if (uuidError) {
       throw new AppError("ID do fornecedor inválido", 400);
@@ -231,7 +231,7 @@ class FornecedoresService {
       throw new AppError("Fornecedor não encontrado", 404);
     }
 
-    if (requestUserId && fornecedorExists.usuario_id !== requestUserId) {
+    if (userFuncao !== "admin" && requestUserId && fornecedorExists.usuario_id !== requestUserId) {
       throw new AppError("Você não tem permissão para deletar este fornecedor", 403);
     }
 
@@ -348,12 +348,7 @@ class FornecedoresService {
     }
     const fornecedorId = fornecedores[0].id;
 
-    const pedido = await this.pedidosService.getById(id);
-    if (pedido.data.fornecedor_id !== fornecedorId) {
-      throw new AppError("Você não tem permissão para atualizar este pedido", 403);
-    }
-
-    return await this.pedidosService.update(id, { status }, requestUserId);
+    return await this.pedidosService.updateStatus(id, status, fornecedorId);
   }
 
   async getMyStatistics(requestUserId) {

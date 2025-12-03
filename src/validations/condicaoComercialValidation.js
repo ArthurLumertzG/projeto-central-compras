@@ -51,7 +51,6 @@ const updateCondicaoComercialSchema = Joi.object({
   }),
 
   id: Joi.forbidden(),
-  uf: Joi.forbidden(),
   fornecedor_id: Joi.forbidden(),
   criado_em: Joi.forbidden(),
   atualizado_em: Joi.forbidden(),

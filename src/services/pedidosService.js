@@ -22,7 +22,17 @@ class PedidosService {
       return new DefaultResponseDto(true, "Nenhum pedido encontrado", []);
     }
 
-    return new DefaultResponseDto(true, "Pedidos encontrados com sucesso", pedidos);
+    const pedidosComItens = await Promise.all(
+      pedidos.map(async (pedido) => {
+        const itens = await this.pedidoProdutoModel.selectByPedidoId(pedido.id);
+        return {
+          ...pedido,
+          itens: itens,
+        };
+      })
+    );
+
+    return new DefaultResponseDto(true, "Pedidos encontrados com sucesso", pedidosComItens);
   }
 
   async getById(id) {
@@ -58,7 +68,17 @@ class PedidosService {
       return new DefaultResponseDto(true, "Nenhum pedido encontrado para este usuário", []);
     }
 
-    return new DefaultResponseDto(true, "Pedidos encontrados com sucesso", pedidos);
+    const pedidosComItens = await Promise.all(
+      pedidos.map(async (pedido) => {
+        const itens = await this.pedidoProdutoModel.selectByPedidoId(pedido.id);
+        return {
+          ...pedido,
+          itens: itens,
+        };
+      })
+    );
+
+    return new DefaultResponseDto(true, "Pedidos encontrados com sucesso", pedidosComItens);
   }
 
   async getByStatus(status) {
@@ -73,7 +93,17 @@ class PedidosService {
       return new DefaultResponseDto(true, `Nenhum pedido encontrado com status '${status}'`, []);
     }
 
-    return new DefaultResponseDto(true, "Pedidos encontrados com sucesso", pedidos);
+    const pedidosComItens = await Promise.all(
+      pedidos.map(async (pedido) => {
+        const itens = await this.pedidoProdutoModel.selectByPedidoId(pedido.id);
+        return {
+          ...pedido,
+          itens: itens,
+        };
+      })
+    );
+
+    return new DefaultResponseDto(true, "Pedidos encontrados com sucesso", pedidosComItens);
   }
 
   async getByDate(date) {
@@ -88,7 +118,17 @@ class PedidosService {
       return new DefaultResponseDto(true, `Nenhum pedido encontrado para a data ${date}`, []);
     }
 
-    return new DefaultResponseDto(true, "Pedidos encontrados com sucesso", pedidos);
+    const pedidosComItens = await Promise.all(
+      pedidos.map(async (pedido) => {
+        const itens = await this.pedidoProdutoModel.selectByPedidoId(pedido.id);
+        return {
+          ...pedido,
+          itens: itens,
+        };
+      })
+    );
+
+    return new DefaultResponseDto(true, "Pedidos encontrados com sucesso", pedidosComItens);
   }
 
   async create(data, requestUserId) {
@@ -224,6 +264,54 @@ class PedidosService {
     return new DefaultResponseDto(true, "Pedido atualizado com sucesso", pedidoAtualizado);
   }
 
+  async updateStatus(id, status, fornecedorId) {
+    const { error: idError } = uuidSchema.validate(id);
+    if (idError) {
+      throw new AppError(idError.details[0].message, 400);
+    }
+
+    const { error: statusError } = statusSchema.validate(status);
+    if (statusError) {
+      throw new AppError(statusError.details[0].message, 400);
+    }
+
+    const pedido = await this.pedidosModel.selectById(id);
+    if (!pedido) {
+      throw new AppError("Pedido não encontrado", 404);
+    }
+
+    if (pedido.fornecedor_id !== fornecedorId) {
+      throw new AppError("Você não tem permissão para atualizar este pedido", 403);
+    }
+
+    if (pedido.status === "entregue" || pedido.status === "cancelado") {
+      throw new AppError(`Pedido já está ${pedido.status} e não pode ser atualizado`, 409);
+    }
+
+    const validTransitions = {
+      pendente: ["processando", "cancelado"],
+      processando: ["enviado", "cancelado"],
+      enviado: ["entregue"],
+    };
+
+    const allowedStatuses = validTransitions[pedido.status] || [];
+    if (!allowedStatuses.includes(status)) {
+      throw new AppError(`Transição de '${pedido.status}' para '${status}' não é permitida`, 400);
+    }
+
+    const updateData = { status };
+
+    if (status === "enviado") {
+      updateData.enviado_em = new Date();
+    } else if (status === "entregue") {
+      updateData.entregue_em = new Date();
+    }
+
+    const pedidoAtualizado = await this.pedidosModel.update(id, updateData);
+
+    return new DefaultResponseDto(true, "Status do pedido atualizado com sucesso", pedidoAtualizado);
+  }
+
   async delete(id, requestUserId) {
     const { error } = uuidSchema.validate(id);
     if (error) {
@@ -257,7 +345,22 @@ class PedidosService {
     }
 
     const pedidos = await this.pedidosModel.selectByFornecedor(fornecedorId);
-    return new DefaultResponseDto(true, "Pedidos recuperados com sucesso", pedidos);
+
+    if (!pedidos || pedidos.length === 0) {
+      return new DefaultResponseDto(true, "Nenhum pedido encontrado para este fornecedor", []);
+    }
+
+    const pedidosComItens = await Promise.all(
+      pedidos.map(async (pedido) => {
+        const itens = await this.pedidoProdutoModel.selectByPedidoId(pedido.id);
+        return {
+          ...pedido,
+          itens: itens,
+        };
+      })
+    );
+
+    return new DefaultResponseDto(true, "Pedidos recuperados com sucesso", pedidosComItens);
   }
 }
 

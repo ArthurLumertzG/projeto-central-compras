@@ -36,7 +36,8 @@ class UsuariosController {
     const { id } = req.params;
     const usuario = req.body;
     const requestUserId = req.user.id;
-    const response = await usuariosService.update(id, usuario, requestUserId);
+    const userFuncao = req.user.funcao;
+    const response = await usuariosService.update(id, usuario, requestUserId, userFuncao);
     res.status(200).json(response);
   }
 
@@ -51,7 +52,8 @@ class UsuariosController {
   async delete(req, res) {
     const { id } = req.params;
     const requestUserId = req.user.id;
-    const response = await usuariosService.delete(id, requestUserId);
+    const userFuncao = req.user.funcao;
+    const response = await usuariosService.delete(id, requestUserId, userFuncao);
     res.status(200).json(response);
   }
 }

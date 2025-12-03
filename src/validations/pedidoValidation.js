@@ -31,8 +31,8 @@ const createPedidoSchema = Joi.object({
     "string.max": "Descrição deve ter no máximo 500 caracteres",
   }),
 
-  status: Joi.string().valid("pendente", "enviado", "entregue", "cancelado").default("pendente").messages({
-    "any.only": "Status deve ser: pendente, enviado, entregue ou cancelado",
+  status: Joi.string().valid("pendente", "processando", "enviado", "entregue", "cancelado").default("pendente").messages({
+    "any.only": "Status deve ser: pendente, processando, enviado, entregue ou cancelado",
   }),
 
   forma_pagamento: Joi.string().valid("dinheiro", "cartao", "cartao_debito", "pix", "boleto").required().messages({
@@ -61,8 +61,8 @@ const updatePedidoSchema = Joi.object({
     "string.max": "Descrição deve ter no máximo 500 caracteres",
   }),
 
-  status: Joi.string().valid("pendente", "enviado", "entregue", "cancelado").messages({
-    "any.only": "Status deve ser: pendente, enviado, entregue ou cancelado",
+  status: Joi.string().valid("pendente", "processando", "enviado", "entregue", "cancelado").messages({
+    "any.only": "Status deve ser: pendente, processando, enviado, entregue ou cancelado",
   }),
 
   forma_pagamento: Joi.string().valid("dinheiro", "cartao", "cartao_debito", "pix", "boleto").messages({
@@ -95,8 +95,8 @@ const uuidSchema = Joi.string().uuid().required().messages({
   "any.required": "ID é obrigatório",
 });
 
-const statusSchema = Joi.string().valid("pendente", "enviado", "entregue", "cancelado").required().messages({
-  "any.only": "Status deve ser: pendente, enviado, entregue ou cancelado",
+const statusSchema = Joi.string().valid("pendente", "processando", "enviado", "entregue", "cancelado").required().messages({
+  "any.only": "Status deve ser: pendente, processando, enviado, entregue ou cancelado",
   "any.required": "Status é obrigatório",
 });
 

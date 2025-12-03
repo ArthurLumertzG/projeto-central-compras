@@ -136,7 +136,7 @@ class UsuariosService {
     });
   }
 
-  async update(id, updateData, requestUserId) {
+  async update(id, updateData, requestUserId, userFuncao) {
     const { error: idError } = uuidSchema.validate(id);
     if (idError) {
       throw new AppError("ID inválido", 400);
@@ -151,7 +151,8 @@ class UsuariosService {
       throw new AppError("Usuário não encontrado", 404);
     }
 
-    if (id !== requestUserId) {
+    // Admin pode atualizar qualquer usuário
+    if (userFuncao !== "admin" && id !== requestUserId) {
       throw new AppError("Você não tem permissão para atualizar este usuário", 403);
     }
 
@@ -222,12 +223,13 @@ class UsuariosService {
       throw new AppError("Usuário não encontrado", 404);
     }
 
-    const passwordMatch = await bcrypt.compare(value.senhaAtual, usuario.senha);
+    const senhaAtual = value.senhaAtual.trim();
+    const passwordMatch = await bcrypt.compare(senhaAtual, usuario.senha);
     if (!passwordMatch) {
       throw new AppError("Senha atual incorreta", 401);
     }
 
-    const hashedPassword = await bcrypt.hash(value.novaSenha, SALT_ROUNDS);
+    const hashedPassword = await bcrypt.hash(value.novaSenha.trim(), SALT_ROUNDS);
 
     await this.usuariosModel.update(id, {
       senha: hashedPassword,
@@ -237,7 +239,7 @@ class UsuariosService {
     return new DefaultResponseDto(true, "Senha atualizada com sucesso", null);
   }
 
-  async delete(id, requestUserId) {
+  async delete(id, requestUserId, userFuncao) {
     const { error: idError } = uuidSchema.validate(id);
     if (idError) {
       throw new AppError("ID inválido", 400);
@@ -252,7 +254,7 @@ class UsuariosService {
       throw new AppError("Usuário não encontrado", 404);
     }
 
-    if (id !== requestUserId) {
+    if (userFuncao !== "admin" && id !== requestUserId) {
       throw new AppError("Você não tem permissão para deletar este usuário", 403);
     }
 

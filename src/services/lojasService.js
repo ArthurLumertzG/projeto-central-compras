@@ -90,7 +90,7 @@ class LojasService {
     return new DefaultResponseDto(true, "Loja criada com sucesso", lojaCreated.toPublic());
   }
 
-  async update(id, data, requestUserId) {
+  async update(id, data, requestUserId, userFuncao) {
     const { error: uuidError } = uuidSchema.validate(id);
     if (uuidError) {
       throw new AppError("ID da loja inválido", 400);
@@ -101,7 +101,7 @@ class LojasService {
       throw new AppError("Loja não encontrada", 404);
     }
 
-    if (requestUserId && lojaExists.usuario_id !== requestUserId) {
+    if (userFuncao !== "admin" && requestUserId && lojaExists.usuario_id !== requestUserId) {
       throw new AppError("Você não tem permissão para atualizar esta loja", 403);
     }
 
@@ -158,7 +158,7 @@ class LojasService {
     return new DefaultResponseDto(true, "Loja atualizada com sucesso", lojaUpdated.toPublic());
   }
 
-  async delete(id, requestUserId) {
+  async delete(id, requestUserId, userFuncao) {
     const { error: uuidError } = uuidSchema.validate(id);
     if (uuidError) {
       throw new AppError("ID da loja inválido", 400);
@@ -169,7 +169,7 @@ class LojasService {
       throw new AppError("Loja não encontrada", 404);
     }
 
-    if (requestUserId && lojaExists.usuario_id !== requestUserId) {
+    if (userFuncao !== "admin" && requestUserId && lojaExists.usuario_id !== requestUserId) {
       throw new AppError("Você não tem permissão para deletar esta loja", 403);
     }
 

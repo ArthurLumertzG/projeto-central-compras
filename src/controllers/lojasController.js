@@ -34,13 +34,13 @@ class LojasController {
 
   async update(req, res) {
     const { id } = req.params;
-    const result = await this.lojasService.update(id, req.body, req.userId);
+    const result = await this.lojasService.update(id, req.body, req.user.id, req.user.funcao);
     res.status(200).json(result);
   }
 
   async delete(req, res) {
     const { id } = req.params;
-    const result = await this.lojasService.delete(id, req.userId);
+    const result = await this.lojasService.delete(id, req.user.id, req.user.funcao);
     res.status(200).json(result);
   }
 }

@@ -136,20 +136,13 @@ const updatePasswordSchema = Joi.object({
     "any.required": "Senha atual é obrigatória",
   }),
 
-  novaSenha: Joi.string()
-    .min(8)
-    .max(100)
-    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
-    .required()
-    .invalid(Joi.ref("senhaAtual"))
-    .messages({
-      "string.empty": "Nova senha é obrigatória",
-      "string.min": "Nova senha deve ter pelo menos 8 caracteres",
-      "string.max": "Nova senha deve ter no máximo 100 caracteres",
-      "string.pattern.base": "Nova senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial (@$!%*?&)",
-      "any.invalid": "Nova senha deve ser diferente da senha atual",
-      "any.required": "Nova senha é obrigatória",
-    }),
+  novaSenha: Joi.string().min(6).max(100).required().invalid(Joi.ref("senhaAtual")).messages({
+    "string.empty": "Nova senha é obrigatória",
+    "string.min": "Nova senha deve ter pelo menos 6 caracteres",
+    "string.max": "Nova senha deve ter no máximo 100 caracteres",
+    "any.invalid": "Nova senha deve ser diferente da senha atual",
+    "any.required": "Nova senha é obrigatória",
+  }),
 
   confirmarNovaSenha: Joi.string().valid(Joi.ref("novaSenha")).required().messages({
     "any.only": "As senhas não coincidem",

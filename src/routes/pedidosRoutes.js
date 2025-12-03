@@ -77,7 +77,7 @@ module.exports = router;
  *           example: 5
  *         status:
  *           type: string
- *           enum: [pendente, enviado, entregue, cancelado]
+ *           enum: [pendente, processando, enviado, entregue, cancelado]
  *           default: pendente
  *           description: Status inicial do pedido
  *           example: "pendente"
@@ -100,7 +100,7 @@ module.exports = router;
  *           example: "Pedido confirmado - cliente aguardando"
  *         status:
  *           type: string
- *           enum: [pendente, enviado, entregue, cancelado]
+ *           enum: [pendente, processando, enviado, entregue, cancelado]
  *           description: Status do pedido
  *           example: "enviado"
  *         forma_pagamento:
@@ -144,7 +144,7 @@ module.exports = router;
  *           example: "7a6cc128-2c5f-6ec0-235a-cd2bfa780145"
  *         status:
  *           type: string
- *           enum: [pendente, enviado, entregue, cancelado]
+ *           enum: [pendente, processando, enviado, entregue, cancelado]
  *           description: Status do pedido
  *           example: "pendente"
  *         forma_pagamento:
@@ -240,7 +240,7 @@ module.exports = router;
  *         required: true
  *         schema:
  *           type: string
- *           enum: [pendente, enviado, entregue, cancelado]
+ *           enum: [pendente, processando, enviado, entregue, cancelado]
  *         description: Status do pedido
  *         example: "pendente"
  *     responses:
