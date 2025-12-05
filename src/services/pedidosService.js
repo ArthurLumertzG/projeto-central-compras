@@ -2,6 +2,7 @@ const PedidosModel = require("../models/pedidosModel");
 const PedidoProdutoModel = require("../models/pedidoProdutoModel");
 const ProdutosModel = require("../models/produtosModel");
 const LojasModel = require("../models/lojasModel");
+const FornecedoresModel = require("../models/fornecedoresModel");
 const AppError = require("../errors/AppError");
 const DefaultResponseDto = require("../dtos/defaultResponse.dto");
 const { createPedidoSchema, updatePedidoSchema, uuidSchema, statusSchema, dateSchema } = require("../validations/pedidoValidation");
@@ -12,6 +13,7 @@ class PedidosService {
     this.pedidoProdutoModel = new PedidoProdutoModel();
     this.produtosModel = new ProdutosModel();
     this.lojasModel = new LojasModel();
+    this.fornecedoresModel = new FornecedoresModel();
   }
 
   async getAll() {
@@ -24,10 +26,22 @@ class PedidosService {
     const pedidosComItens = await Promise.all(
       pedidos.map(async (pedido) => {
         const itens = await this.pedidoProdutoModel.selectByPedidoId(pedido.id);
-        const { loja_id, ...pedidoData } = pedido;
+        const { loja_id, fornecedor_id, ...pedidoData } = pedido;
+
+        let fornecedorNome = null;
+        if (fornecedor_id) {
+          try {
+            const fornecedor = await this.fornecedoresModel.selectById(fornecedor_id);
+            fornecedorNome = fornecedor?.nome_fantasia || fornecedor?.razao_social || null;
+          } catch (error) {
+            console.error("Erro ao buscar fornecedor:", error);
+          }
+        }
+
         return {
           ...pedidoData,
           loja: loja_id,
+          fornecedor_nome: fornecedorNome,
           itens: itens,
         };
       })
