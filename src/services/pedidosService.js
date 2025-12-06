@@ -2,6 +2,10 @@ const PedidosModel = require("../models/pedidosModel");
 const PedidoProdutoModel = require("../models/pedidoProdutoModel");
 const ProdutosModel = require("../models/produtosModel");
 const LojasModel = require("../models/lojasModel");
+const CampanhasModel = require("../models/campanhaModel");
+const CondicaoComercialModel = require("../models/condicaoComercialModel");
+const EnderecosModel = require("../models/enderecosModel");
+const CampanhaPromocional = require("../entities/campanhaPromocional");
 const AppError = require("../errors/AppError");
 const DefaultResponseDto = require("../dtos/defaultResponse.dto");
 const { v4: uuidv4 } = require("uuid");
@@ -13,6 +17,9 @@ class PedidosService {
     this.pedidoProdutoModel = new PedidoProdutoModel();
     this.produtosModel = new ProdutosModel();
     this.lojasModel = new LojasModel();
+    this.campanhasModel = new CampanhasModel();
+    this.condicaoComercialModel = new CondicaoComercialModel();
+    this.enderecosModel = new EnderecosModel();
   }
 
   async getAll() {
@@ -149,7 +156,8 @@ class PedidosService {
     }
 
     const produtosData = [];
-    let valorTotalCalculado = 0;
+    let valorOriginal = 0;
+    let quantidadeTotal = 0;
 
     for (const item of value.produtos) {
       const produto = await this.produtosModel.selectById(item.produto_id);
@@ -167,7 +175,8 @@ class PedidosService {
       }
 
       const valorItem = item.quantidade * item.valor_unitario;
-      valorTotalCalculado += valorItem;
+      valorOriginal += valorItem;
+      quantidadeTotal += item.quantidade;
 
       produtosData.push({
         produto_id: item.produto_id,
@@ -177,17 +186,73 @@ class PedidosService {
       });
     }
 
+    const campanhasAtivas = await this.campanhasModel.selectByStatus("ativo");
+    const campanhasFornecedor = campanhasAtivas.filter((c) => c.fornecedor_id === value.fornecedor_id);
+
+    let campanhaAplicada = null;
+    let maiorDesconto = 0;
+
+    for (const campanhaRaw of campanhasFornecedor) {
+      const campanha = new CampanhaPromocional(
+        campanhaRaw.id,
+        campanhaRaw.nome,
+        campanhaRaw.descricao,
+        parseFloat(campanhaRaw.valor_min),
+        parseInt(campanhaRaw.quantidade_min),
+        parseFloat(campanhaRaw.desconto_porcentagem),
+        campanhaRaw.status,
+        campanhaRaw.fornecedor_id,
+        campanhaRaw.criado_em,
+        campanhaRaw.atualizado_em,
+        campanhaRaw.deletado_em
+      );
+
+      if (campanha.podeAplicar(valorOriginal, quantidadeTotal)) {
+        const desconto = (valorOriginal * campanha.desconto_porcentagem) / 100;
+        if (desconto > maiorDesconto) {
+          maiorDesconto = desconto;
+          campanhaAplicada = campanha;
+        }
+      }
+    }
+
+    let valorComDesconto = valorOriginal;
+    let descontoAplicado = 0;
+
+    if (campanhaAplicada) {
+      valorComDesconto = campanhaAplicada.calcularValorComDesconto(valorOriginal);
+      descontoAplicado = valorOriginal - valorComDesconto;
+    }
+
+    const enderecoLoja = await this.enderecosModel.selectById(loja[0].endereco_id);
+    let condicaoComercial = null;
+    let cashbackCalculado = 0;
+    let prazoExtendido = value.prazo_dias;
+
+    if (enderecoLoja) {
+      condicaoComercial = await this.condicaoComercialModel.selectByUfAndFornecedor(enderecoLoja.estado, value.fornecedor_id);
+
+      if (condicaoComercial) {
+        if (condicaoComercial.cashback_porcentagem) {
+          cashbackCalculado = (valorComDesconto * parseFloat(condicaoComercial.cashback_porcentagem)) / 100;
+        }
+        if (condicaoComercial.prazo_extendido_dias) {
+          prazoExtendido = value.prazo_dias + parseInt(condicaoComercial.prazo_extendido_dias);
+        }
+      }
+    }
+
     const pedidoId = uuidv4();
     const novoPedido = {
       id: pedidoId,
-      valor_total: valorTotalCalculado,
+      valor_total: valorComDesconto,
       descricao: value.descricao || null,
       usuario_id: requestUserId,
       loja_id: loja[0].id,
       fornecedor_id: value.fornecedor_id,
       status: value.status || "pendente",
       forma_pagamento: value.forma_pagamento,
-      prazo_dias: value.prazo_dias,
+      prazo_dias: prazoExtendido,
       criado_em: new Date(),
     };
 
@@ -220,6 +285,23 @@ class PedidosService {
     const pedidoCompleto = {
       ...pedidoCriado,
       itens: itensCriados,
+      valor_original: valorOriginal,
+      desconto_aplicado: descontoAplicado,
+      campanha_aplicada: campanhaAplicada
+        ? {
+            id: campanhaAplicada.id,
+            nome: campanhaAplicada.nome,
+            desconto_porcentagem: campanhaAplicada.desconto_porcentagem,
+          }
+        : null,
+      cashback: cashbackCalculado,
+      condicao_comercial: condicaoComercial
+        ? {
+            uf: condicaoComercial.uf,
+            cashback_porcentagem: condicaoComercial.cashback_porcentagem,
+            prazo_extendido_dias: condicaoComercial.prazo_extendido_dias,
+          }
+        : null,
     };
 
     return new DefaultResponseDto(true, "Pedido criado com sucesso", pedidoCompleto);

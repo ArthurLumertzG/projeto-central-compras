@@ -5,7 +5,7 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const { authenticate } = require("../middlewares/authMiddleware");
 
 router.get("/", authenticate, asyncHandler(campanhasController.getAll.bind(campanhasController)));
-router.get("/status/:status", authenticate, asyncHandler(campanhasController.getByStatus.bind(campanhasController)));
+router.get("/status/:status", asyncHandler(campanhasController.getByStatus.bind(campanhasController)));
 router.get("/:id", authenticate, asyncHandler(campanhasController.getById.bind(campanhasController)));
 router.post("/", authenticate, asyncHandler(campanhasController.create.bind(campanhasController)));
 router.patch("/:id", authenticate, asyncHandler(campanhasController.update.bind(campanhasController)));
