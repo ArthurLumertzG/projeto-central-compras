@@ -17,9 +17,11 @@ class PedidosModel {
               'cnpj', l.cnpj,
               'usuario_id', l.usuario_id,
               'endereco_id', l.endereco_id
-            ) as loja
+            ) as loja,
+            COALESCE(f.nome_fantasia, f.razao_social) as fornecedor_nome
           FROM ${this.tableName} p
           LEFT JOIN lojas l ON p.loja_id = l.id
+          LEFT JOIN fornecedores f ON p.fornecedor_id = f.id
           WHERE p.deletado_em IS NULL 
           ORDER BY p.criado_em DESC
         `,
