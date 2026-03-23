@@ -27,7 +27,7 @@ class CampanhasService {
     return new DefaultResponseDto(true, "Campanhas encontradas com sucesso", campanhas);
   }
 
-  async getById(id, fornecedor_id) {
+  async getById(id, fornecedor_id = null) {
     const { error } = uuidSchema.validate(id);
     if (error) {
       throw new AppError(error.details[0].message, 400);
@@ -38,7 +38,7 @@ class CampanhasService {
       throw new AppError("Campanha não encontrada", 404);
     }
 
-    if (campanha.fornecedor_id !== fornecedor_id) {
+    if (fornecedor_id && campanha.fornecedor_id !== fornecedor_id) {
       throw new AppError("Você não tem permissão para acessar esta campanha", 403);
     }
 

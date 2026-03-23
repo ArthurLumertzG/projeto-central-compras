@@ -110,8 +110,9 @@ const updateUsuarioSchema = Joi.object({
       "string.max": "Telefone deve ter no máximo 20 caracteres",
     }),
 
-  funcao: Joi.string().trim().max(100).allow(null, "").messages({
+  funcao: Joi.string().trim().max(100).allow(null, "").valid("admin", "usuario", "fornecedor", "loja").messages({
     "string.max": "Função deve ter no máximo 100 caracteres",
+    "any.only": "Função deve ser uma das seguintes: admin, usuario, fornecedor, loja",
   }),
 
   endereco_id: Joi.string().uuid().allow(null).messages({

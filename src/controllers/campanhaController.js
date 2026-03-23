@@ -17,14 +17,13 @@ class CampanhasController {
   }
 
   async getAll(req, res) {
-    const fornecedor_id = await this.getFornecedorIdByUsuarioId(req.user.id);
-    const response = await this.campanhasService.getByFornecedor(fornecedor_id);
+    const response = await this.campanhasService.getAll();
     res.status(200).json(response);
   }
 
   async getById(req, res) {
     const { id } = req.params;
-    const fornecedor_id = await this.getFornecedorIdByUsuarioId(req.user.id);
+    const fornecedor_id = req.user ? await this.getFornecedorIdByUsuarioId(req.user.id) : null;
     const response = await this.campanhasService.getById(id, fornecedor_id);
     res.status(200).json(response);
   }

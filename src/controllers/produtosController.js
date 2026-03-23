@@ -21,20 +21,20 @@ class ProdutosController {
 
   async create(req, res) {
     const produto = req.body;
-    const response = await produtosService.create(produto);
+    const response = await produtosService.create(produto, req.user);
     res.status(201).json(response);
   }
 
   async update(req, res) {
     const { id } = req.params;
     const produto = req.body;
-    const response = await produtosService.update(id, produto);
+    const response = await produtosService.update(id, produto, req.user);
     res.status(200).json(response);
   }
 
   async delete(req, res) {
     const { id } = req.params;
-    const response = await produtosService.delete(id);
+    const response = await produtosService.delete(id, req.user);
     res.status(200).json(response);
   }
 }

@@ -6,9 +6,11 @@ const { authenticate } = require("../middlewares/authMiddleware");
 
 router.post("/login", asyncHandler(usuariosController.login));
 router.post("/cadastro", asyncHandler(usuariosController.create));
+router.post("/logout", asyncHandler(usuariosController.logout));
 router.get("/", authenticate, asyncHandler(usuariosController.getAll));
-router.get("/:id", authenticate, asyncHandler(usuariosController.getById));
+router.get("/me", authenticate, asyncHandler(usuariosController.getMe));
 router.get("/email/:email", authenticate, asyncHandler(usuariosController.getByEmail));
+router.get("/:id", authenticate, asyncHandler(usuariosController.getById));
 router.patch("/:id", authenticate, asyncHandler(usuariosController.update));
 router.put("/:id/senha", authenticate, asyncHandler(usuariosController.updatePassword));
 router.delete("/:id", authenticate, asyncHandler(usuariosController.delete));

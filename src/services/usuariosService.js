@@ -12,12 +12,28 @@ const { createUsuarioSchema, loginSchema, updateUsuarioSchema, updatePasswordSch
 dotenv.config();
 
 const jwtSecret = process.env.JWT_SECRET;
+const accessTokenExpiresIn = process.env.JWT_ACCESS_EXPIRES_IN || "2h";
 const SALT_ROUNDS = 12;
 
 class UsuariosService {
   constructor() {
+    if (!jwtSecret) {
+      throw new AppError("JWT_SECRET não configurado no ambiente", 500);
+    }
+
     this.usuariosModel = new UsuariosModel();
     this.enderecosService = new EnderecosService();
+  }
+
+  createAccessToken(usuario) {
+    const jwtPayload = this.createJwtPayload(usuario);
+    return jwt.sign(jwtPayload, jwtSecret, { expiresIn: accessTokenExpiresIn });
+  }
+
+  sanitizeUser(usuario) {
+    if (!usuario) return null;
+    const { senha, ...usuarioWithoutPassword } = usuario;
+    return usuarioWithoutPassword;
   }
 
   async login(email, senha) {
@@ -42,29 +58,42 @@ class UsuariosService {
       throw new AppError("Email não verificado. Verifique seu email antes de fazer login.", 403);
     }
 
-    const jwtPayload = this.createJwtPayload(usuario);
-    const token = jwt.sign(jwtPayload, jwtSecret, { expiresIn: "24h" });
+    const token = this.createAccessToken(usuario);
+    const user = this.sanitizeUser(usuario);
 
     return new DefaultResponseDto(true, "Login realizado com sucesso", {
       token,
+      user,
     });
   }
 
-  async getAll() {
+  async getAll(requestUserFuncao) {
+    if (requestUserFuncao !== "admin") {
+      throw new AppError("Apenas administradores podem listar usuários", 403);
+    }
+
     const usuarios = await this.usuariosModel.select();
     if (!usuarios || usuarios.length === 0) {
       return new DefaultResponseDto(true, "Nenhum usuário encontrado", []);
     }
 
-    const usuariosWithoutPasswords = usuarios.map(({ senha, ...rest }) => rest);
+    const usuariosWithoutPasswords = usuarios.map((usuario) => this.sanitizeUser(usuario));
 
     return new DefaultResponseDto(true, "Usuários encontrados com sucesso", usuariosWithoutPasswords);
   }
 
-  async getById(id, requestUserId = null) {
+  async getById(id, requestUserId, requestUserFuncao) {
     const { error } = uuidSchema.validate(id);
     if (error) {
       throw new AppError("ID inválido", 400);
+    }
+
+    if (!requestUserId) {
+      throw new AppError("Usuário não autenticado", 401);
+    }
+
+    if (requestUserFuncao !== "admin" && id !== requestUserId) {
+      throw new AppError("Você não tem permissão para acessar este usuário", 403);
     }
 
     const usuario = await this.usuariosModel.selectById(id);
@@ -72,12 +101,16 @@ class UsuariosService {
       throw new AppError("Usuário não encontrado", 404);
     }
 
-    const { senha, ...usuarioWithoutPassword } = usuario;
+    const usuarioWithoutPassword = this.sanitizeUser(usuario);
 
     return new DefaultResponseDto(true, "Usuário encontrado com sucesso", usuarioWithoutPassword);
   }
 
-  async getByEmail(email) {
+  async getByEmail(email, requestUserFuncao) {
+    if (requestUserFuncao !== "admin") {
+      throw new AppError("Apenas administradores podem consultar por email", 403);
+    }
+
     const { error, value } = Joi.string().email().required().validate(email);
     if (error) {
       throw new AppError("Email inválido", 400);
@@ -88,7 +121,7 @@ class UsuariosService {
       throw new AppError("Usuário não encontrado", 404);
     }
 
-    const { senha, ...usuarioWithoutPassword } = usuario;
+    const usuarioWithoutPassword = this.sanitizeUser(usuario);
 
     return new DefaultResponseDto(true, "Usuário encontrado com sucesso", usuarioWithoutPassword);
   }
@@ -121,18 +154,16 @@ class UsuariosService {
       email,
       senha: hashedPassword,
       endereco_id: endereco_id || null,
-      email_verificado: true,
+      email_verificado: false,
       criado_em: new Date(),
       atualizado_em: new Date(),
     };
 
     const createdUsuario = await this.usuariosModel.create(newUsuario);
-
-    const jwtPayload = this.createJwtPayload(createdUsuario);
-    const token = jwt.sign(jwtPayload, jwtSecret, { expiresIn: "24h" });
+    const usuario = this.sanitizeUser(createdUsuario);
 
     return new DefaultResponseDto(true, "Usuário criado com sucesso", {
-      token,
+      user: usuario,
     });
   }
 
@@ -161,6 +192,14 @@ class UsuariosService {
       throw new AppError(error.details[0].message, 400);
     }
 
+    if (value.funcao && userFuncao !== "admin") {
+      throw new AppError("Apenas administradores podem alterar função de usuário", 403);
+    }
+
+    if (value.funcao && userFuncao === "admin" && id === requestUserId) {
+      throw new AppError("Não é permitido alterar a própria função de acesso", 400);
+    }
+
     if (value.email && value.email !== originalUsuario.email) {
       const emailExists = await this.usuariosModel.selectByEmail(value.email);
       if (emailExists) {
@@ -183,20 +222,9 @@ class UsuariosService {
       throw new AppError("Erro ao atualizar usuário", 500);
     }
 
-    const { senha, ...usuarioWithoutPassword } = updatedUsuario;
+    const usuarioWithoutPassword = this.sanitizeUser(updatedUsuario);
 
-    const jwtPayload = this.createJwtPayload(updatedUsuario);
-    const newToken = jwt.sign(jwtPayload, jwtSecret, { expiresIn: "24h" });
-
-    return new DefaultResponseDto(
-      true,
-      "Usuário atualizado com sucesso",
-      {
-        usuario: usuarioWithoutPassword,
-        token: newToken,
-      },
-      usuarioWithoutPassword
-    );
+    return new DefaultResponseDto(true, "Usuário atualizado com sucesso", usuarioWithoutPassword);
   }
 
   async updatePassword(id, passwordData, requestUserId) {
@@ -274,7 +302,6 @@ class UsuariosService {
       email: usuario.email,
       funcao: usuario.funcao,
       email_verificado: usuario.email_verificado,
-      iat: Math.floor(Date.now() / 1000),
     };
   }
 }

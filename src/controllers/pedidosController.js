@@ -40,7 +40,7 @@ class PedidosController {
 
   async update(req, res) {
     const { id } = req.params;
-    const response = await this.pedidosService.update(id, req.body, req.userId);
+    const response = await this.pedidosService.update(id, req.body, req.user.id);
     res.status(200).json(response);
   }
 
@@ -55,7 +55,7 @@ class PedidosController {
 
   async delete(req, res) {
     const { id } = req.params;
-    const response = await this.pedidosService.delete(id, req.userId);
+    const response = await this.pedidosService.delete(id, req.user.id);
     res.status(200).json(response);
   }
 }

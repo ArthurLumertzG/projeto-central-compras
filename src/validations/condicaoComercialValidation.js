@@ -27,7 +27,9 @@ const createCondicaoComercialSchema = Joi.object({
     "any.required": "Prazo extendido é obrigatório",
   }),
 
-  variacao_unitario: Joi.number().precision(2).required().messages({
+  variacao_unitario: Joi.number().min(-100).max(100).precision(2).required().messages({
+    "number.min": "Variação unitário deve ser no mínimo -100",
+    "number.max": "Variação unitário deve ser no máximo 100",
     "number.base": "Variação unitário deve ser um número",
     "any.required": "Variação unitário é obrigatório",
   }),
@@ -46,7 +48,9 @@ const updateCondicaoComercialSchema = Joi.object({
     "number.base": "Prazo extendido deve ser um número",
   }),
 
-  variacao_unitario: Joi.number().precision(2).messages({
+  variacao_unitario: Joi.number().min(-100).max(100).precision(2).messages({
+    "number.min": "Variação unitário deve ser no mínimo -100",
+    "number.max": "Variação unitário deve ser no máximo 100",
     "number.base": "Variação unitário deve ser um número",
   }),
 

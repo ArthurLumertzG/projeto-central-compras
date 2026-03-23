@@ -1,4 +1,5 @@
 const ProdutosModel = require("../models/produtosModel");
+const FornecedoresModel = require("../models/fornecedoresModel");
 const DefaultResponseDto = require("../dtos/defaultResponse.dto");
 const AppError = require("../errors/AppError");
 const { createProdutoSchema, updateProdutoSchema, uuidSchema, nomeSchema } = require("../validations/produtoValidation");
@@ -8,6 +9,45 @@ const { v4: uuidv4 } = require("uuid");
 class ProdutosService {
   constructor() {
     this.produtosModel = new ProdutosModel();
+    this.fornecedoresModel = new FornecedoresModel();
+  }
+
+  async getFornecedorIdByUsuarioId(usuarioId) {
+    const fornecedores = await this.fornecedoresModel.selectByUsuarioId(usuarioId);
+
+    if (!fornecedores || fornecedores.length === 0) {
+      throw new AppError("Fornecedor não encontrado para este usuário", 404);
+    }
+
+    return fornecedores[0].id;
+  }
+
+  async resolveFornecedorIdForMutation(user, fornecedorIdFromPayload) {
+    if (!user) {
+      throw new AppError("Usuário não autenticado", 401);
+    }
+
+    const userRole = user.funcao;
+
+    if (userRole === "admin") {
+      if (!fornecedorIdFromPayload) {
+        throw new AppError("fornecedor_id é obrigatório para usuários admin", 400);
+      }
+
+      return fornecedorIdFromPayload;
+    }
+
+    if (userRole !== "fornecedor") {
+      throw new AppError("Apenas administradores e fornecedores podem modificar produtos", 403);
+    }
+
+    const fornecedorId = await this.getFornecedorIdByUsuarioId(user.id);
+
+    if (fornecedorIdFromPayload && fornecedorIdFromPayload !== fornecedorId) {
+      throw new AppError("Você não tem permissão para usar este fornecedor_id", 403);
+    }
+
+    return fornecedorId;
   }
 
   async getAll() {
@@ -48,7 +88,7 @@ class ProdutosService {
     return new DefaultResponseDto(true, "Produto encontrado com sucesso", produto);
   }
 
-  async create(produtoData) {
+  async create(produtoData, user) {
     const { error, value } = createProdutoSchema.validate(produtoData, {
       abortEarly: false,
       stripUnknown: true,
@@ -65,9 +105,12 @@ class ProdutosService {
       throw new AppError("Já existe um produto com este nome", 409);
     }
 
+    const fornecedorId = await this.resolveFornecedorIdForMutation(user, value.fornecedor_id);
+
     const newProduto = {
       id: uuidv4(),
       ...value,
+      fornecedor_id: fornecedorId,
       criado_em: new Date(),
       atualizado_em: new Date(),
     };
@@ -77,10 +120,31 @@ class ProdutosService {
     return new DefaultResponseDto(true, "Produto criado com sucesso", createdProduto);
   }
 
-  async update(id, updateData) {
+  async update(id, updateData, user) {
     const idValidation = uuidSchema.validate(id);
     if (idValidation.error) {
       throw new AppError(idValidation.error.details[0].message, 400);
+    }
+
+    const produtoAtual = await this.produtosModel.selectById(id);
+    if (!produtoAtual) {
+      throw new AppError("Produto não encontrado", 404);
+    }
+
+    const userRole = user?.funcao;
+    if (!userRole) {
+      throw new AppError("Usuário não autenticado", 401);
+    }
+
+    if (userRole !== "admin") {
+      if (userRole !== "fornecedor") {
+        throw new AppError("Apenas administradores e fornecedores podem modificar produtos", 403);
+      }
+
+      const fornecedorId = await this.getFornecedorIdByUsuarioId(user.id);
+      if (produtoAtual.fornecedor_id !== fornecedorId) {
+        throw new AppError("Você não tem permissão para atualizar este produto", 403);
+      }
     }
 
     const { error, value } = updateProdutoSchema.validate(updateData, {
@@ -105,6 +169,10 @@ class ProdutosService {
       atualizado_em: new Date(),
     };
 
+    if (userRole !== "admin") {
+      delete produtoToUpdate.fornecedor_id;
+    }
+
     const updatedProduto = await this.produtosModel.update(id, produtoToUpdate);
 
     if (!updatedProduto) {
@@ -114,10 +182,31 @@ class ProdutosService {
     return new DefaultResponseDto(true, "Produto atualizado com sucesso", updatedProduto);
   }
 
-  async delete(id) {
+  async delete(id, user) {
     const { error } = uuidSchema.validate(id);
     if (error) {
       throw new AppError(error.details[0].message, 400);
+    }
+
+    const produtoAtual = await this.produtosModel.selectById(id);
+    if (!produtoAtual) {
+      throw new AppError("Produto não encontrado", 404);
+    }
+
+    const userRole = user?.funcao;
+    if (!userRole) {
+      throw new AppError("Usuário não autenticado", 401);
+    }
+
+    if (userRole !== "admin") {
+      if (userRole !== "fornecedor") {
+        throw new AppError("Apenas administradores e fornecedores podem remover produtos", 403);
+      }
+
+      const fornecedorId = await this.getFornecedorIdByUsuarioId(user.id);
+      if (produtoAtual.fornecedor_id !== fornecedorId) {
+        throw new AppError("Você não tem permissão para deletar este produto", 403);
+      }
     }
 
     const produtoIsDeleted = await this.produtosModel.delete(id);

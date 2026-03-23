@@ -9,10 +9,10 @@ router.post("/", authenticate, asyncHandler(pedidosController.create.bind(pedido
 router.patch("/:id", authenticate, asyncHandler(pedidosController.update.bind(pedidosController)));
 router.delete("/:id", authenticate, asyncHandler(pedidosController.delete.bind(pedidosController)));
 
-router.get("/", asyncHandler(pedidosController.getAll.bind(pedidosController)));
-router.get("/status/:status", asyncHandler(pedidosController.getByStatus.bind(pedidosController)));
-router.get("/search/date", asyncHandler(pedidosController.getByDate.bind(pedidosController)));
-router.get("/:id", asyncHandler(pedidosController.getById.bind(pedidosController)));
+router.get("/", authenticate, asyncHandler(pedidosController.getAll.bind(pedidosController)));
+router.get("/status/:status", authenticate, asyncHandler(pedidosController.getByStatus.bind(pedidosController)));
+router.get("/search/date", authenticate, asyncHandler(pedidosController.getByDate.bind(pedidosController)));
+router.get("/:id", authenticate, asyncHandler(pedidosController.getById.bind(pedidosController)));
 
 module.exports = router;
 

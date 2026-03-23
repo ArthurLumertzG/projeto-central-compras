@@ -8,7 +8,7 @@ router.get("/", asyncHandler(enderecosController.getAll));
 router.get("/:id", asyncHandler(enderecosController.getById));
 router.get("/cep/:cep", asyncHandler(enderecosController.getByCep));
 router.get("/cidade/:cidade/estado/:estado", asyncHandler(enderecosController.getByCidadeEstado));
-router.post("/", asyncHandler(enderecosController.create));
+router.post("/", authenticate, asyncHandler(enderecosController.create));
 
 router.patch("/:id", authenticate, asyncHandler(enderecosController.update));
 router.delete("/:id", authenticate, asyncHandler(enderecosController.delete));

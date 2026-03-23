@@ -6,14 +6,22 @@ dotenv.config();
 
 const jwtSecret = process.env.JWT_SECRET;
 
-const authenticate = (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
+const parseCookieHeader = (cookieHeader = "") => {
+  if (!cookieHeader) return {};
 
-    if (!authHeader) {
-      throw new AppError("Token não fornecido", 401);
-    }
+  return cookieHeader.split(";").reduce((acc, part) => {
+    const [rawKey, ...rawValue] = part.trim().split("=");
+    if (!rawKey) return acc;
 
+    acc[rawKey] = decodeURIComponent(rawValue.join("="));
+    return acc;
+  }, {});
+};
+
+const extractToken = (req) => {
+  const authHeader = req.headers.authorization;
+
+  if (authHeader) {
     const parts = authHeader.split(" ");
 
     if (parts.length !== 2) {
@@ -26,16 +34,48 @@ const authenticate = (req, res, next) => {
       throw new AppError("Token mal formatado", 401);
     }
 
+    if (!token) {
+      throw new AppError("Token não fornecido", 401);
+    }
+
+    return token;
+  }
+
+  const cookies = parseCookieHeader(req.headers.cookie || "");
+  const cookieToken = cookies.auth_token;
+
+  if (!cookieToken) {
+    throw new AppError("Token não fornecido", 401);
+  }
+
+  return cookieToken;
+};
+
+const buildUserContext = (decoded) => {
+  if (!decoded?.sub || !decoded?.funcao) {
+    throw new AppError("Token inválido", 401);
+  }
+
+  return {
+    id: decoded.sub,
+    nome: decoded.nome,
+    sobrenome: decoded.sobrenome,
+    email: decoded.email,
+    funcao: decoded.funcao,
+    email_verificado: decoded.email_verificado,
+  };
+};
+
+const authenticate = (req, res, next) => {
+  try {
+    if (!jwtSecret) {
+      throw new AppError("Configuração de autenticação inválida", 500);
+    }
+
+    const token = extractToken(req);
     const decoded = jwt.verify(token, jwtSecret);
 
-    req.user = {
-      id: decoded.sub,
-      nome: decoded.nome,
-      sobrenome: decoded.sobrenome,
-      email: decoded.email,
-      funcao: decoded.funcao,
-      email_verificado: decoded.email_verificado,
-    };
+    req.user = buildUserContext(decoded);
 
     req.userId = decoded.sub;
     req.userFuncao = decoded.funcao;
@@ -59,35 +99,23 @@ const authenticate = (req, res, next) => {
 
 const optionalAuthenticate = (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader) {
+    if (!jwtSecret) {
       return next();
     }
 
-    const parts = authHeader.split(" ");
+    let token;
 
-    if (parts.length !== 2) {
-      return next();
-    }
-
-    const [scheme, token] = parts;
-
-    if (!/^Bearer$/i.test(scheme)) {
+    try {
+      token = extractToken(req);
+    } catch (_error) {
       return next();
     }
 
     jwt.verify(token, jwtSecret, (err, decoded) => {
       if (!err) {
-        req.user = {
-          id: decoded.sub,
-          nome: decoded.nome,
-          sobrenome: decoded.sobrenome,
-          email: decoded.email,
-          funcao: decoded.funcao,
-          email_verificado: decoded.email_verificado,
-        };
+        req.user = buildUserContext(decoded);
       }
+
       return next();
     });
   } catch (error) {

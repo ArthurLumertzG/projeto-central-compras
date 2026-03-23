@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const campanhasController = require("../controllers/campanhaController");
 const asyncHandler = require("../middlewares/asyncHandler");
-const { authenticate } = require("../middlewares/authMiddleware");
+const { authenticate, optionalAuthenticate } = require("../middlewares/authMiddleware");
 
-router.get("/", authenticate, asyncHandler(campanhasController.getAll.bind(campanhasController)));
+router.get("/", asyncHandler(campanhasController.getAll.bind(campanhasController)));
 router.get("/status/:status", asyncHandler(campanhasController.getByStatus.bind(campanhasController)));
-router.get("/:id", authenticate, asyncHandler(campanhasController.getById.bind(campanhasController)));
+router.get("/:id", optionalAuthenticate, asyncHandler(campanhasController.getById.bind(campanhasController)));
 router.post("/", authenticate, asyncHandler(campanhasController.create.bind(campanhasController)));
 router.patch("/:id", authenticate, asyncHandler(campanhasController.update.bind(campanhasController)));
 router.delete("/:id", authenticate, asyncHandler(campanhasController.delete.bind(campanhasController)));

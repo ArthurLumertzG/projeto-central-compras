@@ -16,13 +16,15 @@ async function query(queryObject) {
 }
 
 async function getNewClient() {
+  const useSsl = String(process.env.POSTGRES_SSL || "false").toLowerCase() === "true";
+
   const client = new Client({
     host: process.env.POSTGRES_HOST,
     port: process.env.POSTGRES_PORT,
     user: process.env.POSTGRES_USER,
     database: process.env.POSTGRES_DB,
     password: process.env.POSTGRES_PASSWORD,
-    ssl: true,
+    ssl: useSsl,
   });
 
   await client.connect();

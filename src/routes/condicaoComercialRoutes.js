@@ -3,12 +3,13 @@ const router = express.Router();
 const condicaoComercialController = require("../controllers/condicaoComercialController");
 const asyncHandler = require("../middlewares/asyncHandler");
 const { authenticate } = require("../middlewares/authMiddleware");
+const { supplierAuth } = require("../middlewares/supplierAuthMiddleware");
 
-router.get("/", authenticate, asyncHandler(condicaoComercialController.getAll.bind(condicaoComercialController)));
-router.get("/:id", authenticate, asyncHandler(condicaoComercialController.getById.bind(condicaoComercialController)));
-router.post("/", authenticate, asyncHandler(condicaoComercialController.create.bind(condicaoComercialController)));
-router.patch("/:id", authenticate, asyncHandler(condicaoComercialController.update.bind(condicaoComercialController)));
-router.delete("/:id", authenticate, asyncHandler(condicaoComercialController.delete.bind(condicaoComercialController)));
+router.get("/", authenticate, supplierAuth, asyncHandler(condicaoComercialController.getAll.bind(condicaoComercialController)));
+router.get("/:id", authenticate, supplierAuth, asyncHandler(condicaoComercialController.getById.bind(condicaoComercialController)));
+router.post("/", authenticate, supplierAuth, asyncHandler(condicaoComercialController.create.bind(condicaoComercialController)));
+router.patch("/:id", authenticate, supplierAuth, asyncHandler(condicaoComercialController.update.bind(condicaoComercialController)));
+router.delete("/:id", authenticate, supplierAuth, asyncHandler(condicaoComercialController.delete.bind(condicaoComercialController)));
 
 module.exports = router;
 
